@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="project4Flow" doc:id="e46bf808-c764-4807-93eb-8b3134a2923c" >
+		<http:listener doc:name="Listener" doc:id="de215e97-74fb-4ca8-ba17-755c7d31a523" config-ref="HTTP_Listener_config" path="/project4"/>
+		<db:insert doc:name="Insert" doc:id="31666cd8-0e02-49b8-bc0a-28b75c39747c" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into BikeStore values]]></db:sql>
+		</db:insert>
+	</flow>
+</mule>

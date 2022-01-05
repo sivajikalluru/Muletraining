@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9b8bb69f-67f1-457e-8d9b-8373997174e7" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config1" doc:name="JMS Config" doc:id="b4ae6ac7-5d3c-4644-9da6-a5a2e1499e61" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="jms-connecterFlow" doc:id="51ee3354-785a-47ab-b671-be48d5d65bb1" >
+		<http:listener doc:name="Listener" doc:id="8201b995-1ac8-4d39-89a5-caefe67300f8" config-ref="HTTP_Listener_config" path="/connecter"/>
+		<jms:consume doc:name="Consume" doc:id="fdcacbaf-dcc3-4f46-961d-82d7cbdb6e83" config-ref="JMS_Config1" destination="Queue.test.consume" maximumWait="10" maximumWaitUnit="SECONDS"/>
+		<logger level="INFO" doc:name="Logger" doc:id="24544766-9826-4595-b1d4-3c3e941112e9" message="#[payload]"/>
+	</flow>
+	<flow name="jms-connecterFlow2" doc:id="a8a39e2e-44cf-4b7b-a61e-77413ee7a66f" >
+		<http:listener doc:name="Listener" doc:id="50a0b703-3a12-4d06-9478-693450ad798d" config-ref="HTTP_Listener_config" path="/publish"/>
+		<ee:transform doc:name="Transform Message" doc:id="4f8b1136-a98e-4d93-bb2e-3e5bc50cdb0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Name": "sivan"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<jms:publish doc:name="Publish" doc:id="d7140004-c279-46c1-bb26-1cff0653a7b9" config-ref="JMS_Config1" destination="Queue.test.consume"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d4ed6a99-0c5c-4cec-831c-700d9716f0af" message="published the messages"/>
+	</flow>
+	<flow name="jms-connecterFlow1" doc:id="3b9c0ea2-3f9a-43fd-bf4c-02ba6f0ebfdb" >
+		<jms:listener doc:name="On New Message" doc:id="34fadd27-eaa8-45c0-8920-160c5cb09c81" config-ref="JMS_Config1" destination="Mule-Topic1" numberOfConsumers="2">
+			<jms:consumer-type >
+				<jms:topic-consumer subscriptionName="Subscriber1" />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="d1e873f3-1375-4700-94c4-7a609d0ccb1d" message="#[payload]"/>
+	</flow>
+	<flow name="Copy_of_jms-connecterFlow" doc:id="67ad0fd2-5925-4f08-9d4f-3b7c5fdcc4ec" >
+		<jms:listener doc:name="Copy_of_On New Message" doc:id="4d07c2e2-576d-45d1-a66d-88b0b35b7433" config-ref="JMS_Config1" destination="Mule-Topic1" numberOfConsumers="2" >
+			<jms:consumer-type >
+				<jms:topic-consumer subscriptionName="Subscriber2" durable="true" shared="true"/>
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Copy_of_Logger" doc:id="551c6d18-9363-4f5f-a3a2-fccda47223d9" message="#[payload]" />
+	</flow>
+</mule>

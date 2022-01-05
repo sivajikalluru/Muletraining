@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="42f95064-a270-40b1-9fed-acea6ed37fb1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dw1labFlow" doc:id="3bbb1b43-f21a-4198-9640-c84a76ca0647" >
+		<http:listener doc:name="Listener" doc:id="6746462f-5f72-4b3a-b6cd-758061a6a2d3" config-ref="HTTP_Listener_config" path="/dw1"/>
+		<set-variable value="#[attributes.queryParams.name]" doc:name="Set Variable" doc:id="c57e3b1a-8269-4589-9668-b040b67ab476" variableName="nameChange"/>
+		<ee:transform doc:name="Transform Message" doc:id="95bb14e2-efc5-4fae-86c8-7e172d86a953" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"replaced name" : vars.nameChange replace 'iva' with ('hya')}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

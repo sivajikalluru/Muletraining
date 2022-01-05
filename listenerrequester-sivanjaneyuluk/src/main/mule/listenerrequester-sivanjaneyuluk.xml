@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="40f98f28-76b2-4e6e-b6e6-c00ee0a55b1d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="969ff9b1-9fc8-4040-b997-80d00f26c89e">
+		<http:request-connection host="sampleproject1.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="listenerrequester-sivanjaneyulukFlow" doc:id="dbc0358f-5b50-438d-b668-fea37f349568" >
+		<http:listener doc:name="Listener" doc:id="dacafc51-4970-473c-8c47-88ce34196b76" config-ref="HTTP_Listener_config" path="/listenerrequest"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="411dc7cb-ac0e-4d17-a194-8e7c94444fff" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="Displaying CoId" doc:id="41f56af5-9c1d-4076-818b-d65f2b808008" message="CorrelationId -#[vars.CorrelationId]"/>
+		<ee:transform doc:name="Transform Message" doc:id="4f2baeb2-2e61-4538-87a9-5a4cd8b072d2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"EmployeeId" : 12345,
+	"EmployeeName" : "Sivanjaneyuluk",
+	"EmployeeSalary" : 100000
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="eb96add2-6afd-4019-b534-aba52209995e" message="CorrelationId - #[vars.CorrelationId] - response recieved - #[vars.response]"/>
+		<http:request method="POST" doc:name="Request" doc:id="a1903bac-0750-4b7c-bcbc-7edfd4389f46" path="/helloworld" config-ref="HTTP_Request_configuration" target="response"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7746a45d-6bc3-455b-9fd1-cc32be6f7f24" message="CorrelationId- #[vars.CorrelationId] - response recieved - #[vars.response] - #[payload]"/>
+	</flow>
+</mule>

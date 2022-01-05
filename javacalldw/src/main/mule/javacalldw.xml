@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3942127f-f780-44ba-aa74-6bee8addfedc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="javacalldwFlow" doc:id="7d4a0df6-d0b0-4912-b3e9-cce816705d7d" >
+		<http:listener doc:name="Listener" doc:id="9d5d9953-1323-4c5a-b433-53525a3a02b4" config-ref="HTTP_Listener_config" path="/dwjava"/>
+		<ee:transform doc:name="Transform Message" doc:id="944a5945-5109-4a17-9e76-759acae5f584" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import java!mulejavaproject::mulejavasampleproject
+---
+{
+	Message: mulejavasampleproject::getWelcomeMessage(),
+	Name: "sivanjaneyuluk",
+	Age: "28",
+	Address: "Hydarabad"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="49718b21-e7f3-4b41-8720-5fa7fa67b761" message="#[payload]"/>
+	</flow>
+</mule>

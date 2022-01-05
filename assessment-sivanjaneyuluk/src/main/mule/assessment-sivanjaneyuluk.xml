@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1f855106-2bdd-4f4f-991f-bddc724ca5cc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment-sivanjaneyulukFlow" doc:id="807e4055-ef6b-4a07-bff6-d5326953c083" >
+		<http:listener doc:name="Listener" doc:id="fcedddb1-c80e-48cb-b195-1b3511179ceb" config-ref="HTTP_Listener_config" path="/assessment"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="ea64950c-e70a-4000-ba07-76d36ffc4d08" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="Logger" doc:id="360a17cd-2179-41c0-81a2-783bcc0ed70b" message="CorrelationId -#[vars.CorrelationId]"/>
+		<ee:transform doc:name="Transform Message" doc:id="727d006d-dd30-4570-a7b2-ba04d32993af" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="counter" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"count":1
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b5e3b0f9-0532-4e2f-bc11-25692383d8d2" message="CorelationId -#[payload]--CorelationId--#[vars.counter]"/>
+	</flow>
+</mule>

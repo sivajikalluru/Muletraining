@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="project3Flow" doc:id="681278d8-9c68-472c-bc55-f7ac0939104c" >
+		<http:listener doc:name="Listener" doc:id="f7388ea2-f902-449d-b7f0-8f87f31c6edf" config-ref="HTTP_Listener_config" path="/project3"/>
+		<db:insert doc:name="Insert" doc:id="8e15899a-dd59-4b45-b1b6-7b8704104944" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into bike values]]></db:sql>
+		</db:insert>
+	</flow>
+</mule>

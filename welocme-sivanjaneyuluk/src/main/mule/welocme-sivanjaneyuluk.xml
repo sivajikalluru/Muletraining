@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dcf789f4-9988-4352-9429-89bca8f18638" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="welocme-sivanjaneyulukFlow" doc:id="a4ec3ba6-6a09-43e6-91ab-64bc5b397c10" >
+		<http:listener doc:name="Listener" doc:id="ae8ccbe9-ba41-453a-82f1-79d9932de6c6" config-ref="HTTP_Listener_config" path="/welocome"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5ae5dd3d-92f1-4726-9a11-a47d9ca668c9" message="starting logger"/>
+		<ee:transform doc:name="Transform Message" doc:id="a26c2a60-e542-45e9-9068-0396b89bf578" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name": "siva"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<first-successful doc:name="First Successful" doc:id="7a36b20c-a931-4f5e-9983-d1b34eddcdd8" >
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="ab1c17d6-a186-4f34-8c6f-e506812a8f14" message="route2"/>
+				<raise-error doc:name="Raise error" doc:id="afc2a92d-e88a-48b1-a61e-163e3cf8dbb4" type="ANY"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="410c7133-bdb9-4f23-aa27-ea6f78217328" message="route1"/>
+			</route>
+		</first-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="4cf89350-610d-428c-a306-00397551f202" message="endlogger"/>
+	</flow>
+</mule>

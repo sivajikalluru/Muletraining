@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ba1c9c54-b89c-492a-80be-f12eec9ece90" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="hello-worldFlow" doc:id="dc5911eb-d826-4ad9-be4b-c2eedd64a00a" >
+		<http:listener doc:name="helloworld" doc:id="8b1230b6-a16d-495f-a16f-a2533f118a1a" config-ref="HTTP_Listener_config" path="/helloworld"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="3538cc2d-ac41-4870-b92c-08d41bc4bb02" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a38879dc-1aa6-47d5-979f-3db8244fb016" message="Correlationid -#[vars.Correlationid]"/>
+		<set-payload value="helloworld" doc:name="helloworld" doc:id="126ad19e-6018-4eb1-9956-b0b1a938d643" />
+		<logger level="INFO" doc:name="Logger" doc:id="5612a891-28a9-4872-ad31-2b56afbaaaf9" message="Correlationid -#[vars.Correlationid] -#[payload]"/>
+	</flow>
+</mule>

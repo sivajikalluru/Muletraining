@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="f990d9aa-b2b0-49ba-8404-9d4803a33be7" >
+		<file:connection workingDir="C:\Users\sivanjaneyuluk\Desktop\New folder" />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6f7f5486-1c2b-4106-b43a-8ffbecfd3d1b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment3Flow" doc:id="f7658113-39a6-4481-bde4-98ca9f07dd2b" >
+		<http:listener doc:name="Listener" doc:id="145555b6-a1bd-49e7-920a-f28e43692f85" config-ref="HTTP_Listener_config" path="/asessment3"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="b854d8f2-52d8-404f-9c89-e78f16aa4d94" variableName="CorrelationId "/>
+		<logger level="INFO" doc:name="Logger" doc:id="a36aa28f-ac2a-4eff-9d97-6ec55d81c3d6" message="CorrelationId -#[vars.CorrelationId]"/>
+		<choice doc:name="Choice" doc:id="9d2864b9-45b2-4fba-a087-e42a0484ebb1" >
+			<when expression="#[isEven(attributes.queryParams.number as Number)]">
+				<ee:transform doc:name="Transform Message" doc:id="eb8585ec-353b-4971-9ee4-e0f529535ea6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[
+%dw 2.0
+output application/json
+var test=[1,2,3,4,5,6,7,8,9,10]
+var a= attributes.queryParams.number as Number
+---
+test map ((item, index) -> a * item )
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<file:write doc:name="Write" doc:id="2c66f2c2-5e2f-4c45-958d-bfad4d5716e9" config-ref="File_Config" path="asessment.txt" mode="CREATE_NEW"/>
+			</when>
+			<otherwise >
+				<java:new doc:name="New" doc:id="80c2d310-4c4b-4b96-ad2d-102e2b86ab67" class="assessment3.asessment" constructor="asessment()" target="test"/>
+				<java:invoke doc:name="Invoke" doc:id="041be152-b225-4bf3-8635-76bfd56903cf" instance="#[vars.test]" class="assessment3.asessment" method="getMessage()"/>
+				<logger level="INFO" doc:name="Logger" doc:id="b37c58b3-61b9-4133-970d-32d47e907a79" message="#[payload]"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

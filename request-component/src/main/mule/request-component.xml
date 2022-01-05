@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4a4566cf-d29b-41b5-8de3-8bd778a633c4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="fd232230-db69-4d5e-b321-f58842ef517e" >
+		<http:request-connection host="soapchoicerouter.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="request-componentFlow" doc:id="3718fc56-d5fd-47cc-a55a-f96cc422e606" >
+		<http:listener doc:name="Listener" doc:id="88116e6c-44e0-4604-8453-e4903b1c4ec3" config-ref="HTTP_Listener_config" path="/request"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f2b859fd-fce2-4335-8f70-acf498b66263" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="d0343f4c-28b8-4da6-9162-b5627506f40e" config-ref="HTTP_Request_configuration" path="/soapwsdl"/>
+		<logger level="INFO" doc:name="Logger" doc:id="40070bea-f878-4cdf-a355-5d31000616e1" message="#[payload]"/>
+	</flow>
+</mule>

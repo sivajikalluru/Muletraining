@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c7d02257-c9fa-4f43-bbc6-0a80f2a20e59" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment2-papi-sivanjaneyulukFlow" doc:id="4ae1705f-4262-48e0-8c41-b143b428d98c" >
+		<http:listener doc:name="Listener" doc:id="8908b400-ff0b-4389-8d19-7b7ef6170fce" config-ref="HTTP_Listener_config" path="/assessment2"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="f01c22ee-0620-4d80-ab70-c8368de5301a" class="project2.sales" method="checkProduct(int)">
+			<java:args ><![CDATA[#[{
+ arg0:attributes.queryParams.number as Number
+}]]]></java:args>
+		</java:invoke-static>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="80e412c4-e867-4e6d-834d-91e101fcf799" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="displaycorrelationId" doc:id="76535d43-e1c8-41bb-9948-e29d302ed6c2" message="CorrelationId - #[vars.CorrelationId]-#[payload]"/>
+		<choice doc:name="Choice" doc:id="1e2b9397-b873-4a54-9dc4-1a773cbcb167" >
+			<when expression="#[payload == true]">
+				<logger level="INFO" doc:name="Logger" doc:id="99a536d6-64e1-4cbc-8c7a-f229cc5eab36" message="#[payload]"/>
+				<set-payload value="valid Id" doc:name="Set Payload" doc:id="979bebe5-ccb7-4383-bc6a-7ebab0893a16" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="9215e409-ef62-45da-b69a-96ff1c53fc00" message="#[payload]"/>
+				<set-payload value="invalid Id" doc:name="Set Payload" doc:id="c0d6622f-a92f-4e90-8328-36bfe88c1d1b" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="assessment2-papi-sivanjaneyulukFlow1" doc:id="c1e1d4d4-94f2-4628-8d73-050fa7bbe4da" >
+		<http:listener doc:name="Listener" doc:id="32940f44-9d4e-404d-95ff-3e60acefb4eb" config-ref="HTTP_Listener_config" path="/assessment3"/>
+		<java:new doc:name="New" doc:id="1a4c2b1f-88c4-4575-b9ea-3d6053c56984" class="project2.sales" constructor="sales()" target="newstatic"/>
+		<java:invoke method="getAmount(java.lang.String)" doc:name="Invoke" doc:id="4661bf03-3508-4e30-af2e-f51a027a1cf4" instance="#[vars.newstatic]" class="project2.sales">
+			<java:args ><![CDATA[#[{
+	arg0: payload.size as String
+}]]]></java:args>
+		</java:invoke>
+		<ee:transform doc:name="Transform Message" doc:id="c285f818-297c-4251-9be0-c4131bada507" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Total amount is": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

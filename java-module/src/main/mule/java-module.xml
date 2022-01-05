@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="24eee417-a996-4bff-8b1c-2dd90eb6fb36" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="java-moduleFlow" doc:id="0787f287-5c71-4d93-895a-f6799ef1136f" >
+		<http:listener doc:name="Listener" doc:id="cbca2197-8203-495c-bfeb-9bfecce49562" config-ref="HTTP_Listener_config" path="/javamodule"/>
+		<java:new doc:name="New" doc:id="d431e0b6-9683-4046-b07e-634c6bd9ffaf" class="com.proj.sample" constructor="sample()" target="objnonStatic"/>
+		<java:invoke doc:name="Invoke" doc:id="4f8fea68-b3ef-45dd-91b3-1a3bf2efd010" class="com.proj.sample" method="getBalance(String)" instance="#[vars.objnonStatic]">
+			<java:args ><![CDATA[#[{
+      arg0: attributes.queryparams.bankName as String
+      
+ }]]]></java:args>
+		</java:invoke>
+	</flow>
+	<flow name="java-moduleFlow1" doc:id="5f2d56f7-ebde-49f8-838d-5907ff5833ee" >
+		<http:listener doc:name="Listener" doc:id="96cfc7c6-7cd4-4db1-be62-ed18f72bf00f" config-ref="HTTP_Listener_config" path="/javamodule1"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="6883d0f0-af3e-41dd-a406-ce90dc8c3a8d" class="com.proj.sample" method="welcome(String name) (welcome(java.lang.String))">
+			<java:args ><![CDATA[#[{
+    arg0: attributes.queryparams.name
+    
+ }]]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>

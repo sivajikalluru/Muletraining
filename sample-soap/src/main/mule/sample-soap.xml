@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="0de7a7d7-c7df-400d-94d5-639a9bb1b05d" >
+		<wsc:connection wsdlLocation="wsdl\calculator.wsdl.xml" service="Calculator" port="CalculatorSoap12" address="http://dneonline.com/calculator.asmx" />
+	</wsc:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="62fa76e2-2378-4b89-8aa9-3e109e2892d0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="sample-soapFlow" doc:id="0eb86ad2-902e-450e-b807-2658f186da4b" >
+		<http:listener doc:name="Listener" doc:id="db6d8c83-1ba9-4c48-8f44-f83fd9de14ff" config-ref="HTTP_Listener_config" path="/soapwsdl"/>
+		<choice doc:name="Choice" doc:id="1d0038ad-c3a4-453d-a1ae-a3e924ef6060" >
+			<when expression='#[payload."operation" == "subtraction"]'>
+				<ee:transform doc:name="Transform Message" doc:id="d384207b-b139-4067-95f6-da5711e2d549">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Subtract: {
+		ns0#intA: payload.value1,
+		ns0#intB: payload.value2
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<wsc:consume operation="Subtract" doc:name="SubConsume" doc:id="11267ab3-ff89-4336-b5f5-3b4f10211494" config-ref="Web_Service_Consumer_Config" />
+				<ee:transform doc:name="Transform Message" doc:id="b644ba57-f3a6-4506-aeb0-7d9aae3ad44d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0ns ns0 http://tempuri.org/
+
+output application/json
+---
+{
+	"Result": payload.body
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<when expression='payload."operation" == "addition"'>
+				<ee:transform doc:name="Transform Message" doc:id="1357df68-e1d9-4401-8697-784923d1d09c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Add: {
+		ns0#intA: payload.value1,
+		ns0#intB: payload.value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume doc:name="AddConsume" doc:id="6ad94086-c2b9-4024-a0dc-ac14a26a1246" config-ref="Web_Service_Consumer_Config" operation="Add"/>
+				<ee:transform doc:name="Transform Message" doc:id="b69d9480-79ac-47ae-bce9-638329585354" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Result": payload.body
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='payload."operation" == "multiplication"'>
+				<ee:transform doc:name="Transform Message" doc:id="bc50fb29-6921-468f-8a6e-41a6124497c8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Multiply: {
+		ns0#intA: payload.value1,
+		ns0#intB: payload.value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume doc:name="MultiConsume" doc:id="ecd797f5-ff81-495e-8151-cfd76354cdd8" config-ref="Web_Service_Consumer_Config" operation="Multiply"/>
+				<ee:transform doc:name="Transform Message" doc:id="e0181264-5424-49fc-a0fb-706563a973b5" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Result": payload.body
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='payload."operation" == "division"'>
+				<ee:transform doc:name="Transform Message" doc:id="789dc855-c99a-4d4d-aeb9-cadb6d69f50e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Divide: {
+		ns0#intA: payload.value1,
+		ns0#intB: payload.value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume doc:name="DivConsume" doc:id="00a8968e-ea1c-4b99-845c-9da8715511a0" config-ref="Web_Service_Consumer_Config" operation="Divide"/>
+				<ee:transform doc:name="Transform Message" doc:id="d7691a6e-99ea-4d8b-9a39-f05ece9dcfe1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Result": payload.body
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="43d84378-25b6-47dc-8937-60e70bc5bfbb" message="first number is less than second number"/>
+				<set-payload value="first number is less than second number" doc:name="Set Payload" doc:id="9a7651f5-17a9-4df9-b58f-f4ddde5849fe" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

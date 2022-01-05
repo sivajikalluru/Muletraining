@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="daf7464e-5ebc-482f-bff9-d982a6b2467d" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="504b4d19-74d3-4022-8f7b-3a891c720c2a" >
+		<db:mssql-connection host="muletraining.database.windows.net" port="1433" user="user" databaseName="BikeStores" password="muletraining@123"/>
+	</db:config>
+	<flow name="scatterlabFlow" doc:id="10b4d51a-6a7a-4848-a1ac-c93e5dfbf604" >
+		<http:listener doc:name="Listener" doc:id="01e6f2d9-1264-46e3-b4d4-a8c1d9c1fa0e" config-ref="HTTP_Listener_config" path="/scatterlab"/>
+		<set-payload value="#[payload.querryparams.number as Number]" doc:name="Original Payload" doc:id="bc64ea29-83cf-45b6-b92d-a297aa793c29" />
+		<choice doc:name="Choice" doc:id="a28f02a0-1a46-45ef-b95a-ef67bdb89f83" >
+			<when expression="numer&gt;7">
+				<scatter-gather doc:name="Scatter-Gather" doc:id="39bc2db3-3fed-455d-be45-ce2a30a728b1" >
+					<route >
+						<file:write doc:name="Write" doc:id="94229936-8f64-4b07-94bb-fe23d179b573" />
+					</route>
+					<route >
+						<set-payload value="#[payload]" doc:name="Set Payload" doc:id="22171eb7-133f-475b-89cc-54027dd029dc" />
+					</route>
+					<route >
+						<db:insert doc:name="Insert" doc:id="268312ce-0655-4aa0-a168-43dc6dd61500" config-ref="Database_Config"/>
+					</route>
+				</scatter-gather>
+				<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Payload" doc:id="1c35644a-6e3c-4125-97ad-4975e446f46e" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="c07b0161-6496-43f9-b906-0f7e23afe36c" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

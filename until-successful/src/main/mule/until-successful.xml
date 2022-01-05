@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="04fe0c9b-a04a-44e5-849c-3378d8155b34" >
+		<http:request-connection host="assessment2-sivanjaneyuluk.us-e2.cloudhub.io" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="76fedb35-04e3-4841-89ee-d8d3859247e5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="until-successfulFlow" doc:id="212db603-6025-4f97-813e-7690654dec6b" >
+		<http:listener doc:name="Listener" doc:id="9f77d55c-4bae-421c-a5a2-8ffffab350ea" config-ref="HTTP_Listener_config" path="/untilsuccessful"/>
+		<ee:transform doc:name="Transform Message" doc:id="134d22c4-22af-4994-8372-efce86099554" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="3c023f98-cc07-4e36-9972-52f8aa094190" millisBetweenRetries="10000">
+			<http:request method="GET" doc:name="Request" doc:id="039b8051-a53d-4668-83da-463ec8071b1c" config-ref="HTTP_Request_configuration" path="/assessment3" />
+		</until-successful>
+	</flow>
+</mule>

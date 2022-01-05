@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="project1listener" doc:name="HTTP Listener config" doc:id="74d43e76-8e92-4e90-a34a-c2dc6747d4e5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="project1Database_Config" doc:name="Database Config" doc:id="59823745-5252-487a-aa5d-cc17fe21c326" >
+		<db:mssql-connection host="muletraining.database.windows.net" user="user" port="1433" password="muletraining@123" databaseName="BikeStores"/>
+	</db:config>
+	<flow name="project1Flow" doc:id="03b9b345-fa48-470f-8e67-c496a4a89b55" >
+		<http:listener doc:name="Listener" doc:id="49e2df4c-f9b1-48f5-85d1-ee08cbc2e7ea" config-ref="project1listener" path="/project1"/>
+		<db:insert doc:name="Insert" doc:id="5dacbeec-4a88-45ab-bb3c-03761d812459" config-ref="project1Database_Config">
+			<db:sql ><![CDATA[insert into bikevalues]]></db:sql>
+		</db:insert>
+	</flow>
+</mule>

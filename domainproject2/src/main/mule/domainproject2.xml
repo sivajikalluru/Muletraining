@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="domainproject2Flow" doc:id="380307fe-9188-4daf-be48-e96ba54c2f8a" >
+		<http:listener doc:name="Listener" doc:id="df4fa346-9fd4-4c25-8be2-26df9240bbf5" config-ref="HTTP_Listener_config" path="/domainproject2"/>
+		<db:select doc:name="Select" doc:id="78eba829-cee5-4805-963f-9c4d2154ccce" config-ref="Database_Config">
+			<db:sql ><![CDATA[select into BikeStores values]]></db:sql>
+		</db:select>
+	</flow>
+</mule>
