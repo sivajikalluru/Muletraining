@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5477dd87-25b5-4521-a91d-bd2ac98b42be" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c6efaa09-8ae0-4eb7-a757-2e37e26502f9" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="8092" >
+			<tls:context >
+				<tls:trust-store path="clienttruststore.jks" password="123456" type="jks" insecure="true"/>
+				<tls:key-store type="jks" path="serverkeystore.jks" alias="myserver" keyPassword="123456" password="123456" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="https_ssl_twowayFlow" doc:id="09fe97b7-7877-463d-97bb-a5a9a9e2e72d" >
+		<http:listener doc:name="Listener" doc:id="d93424d6-7ca5-4c4f-aeba-f46117f0197b" config-ref="HTTP_Listener_config" path="/two"/>
+		<http:request method="GET" doc:name="Request" doc:id="8b0c3d4f-c252-4432-8b87-f395339c8297" config-ref="HTTP_Request_configuration" path="/one"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1791aaa9-9ec3-480d-8289-b3da8cd551df" message="#[payload]"/>
+	</flow>
+</mule>

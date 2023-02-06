@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a4a473f1-a7a2-4704-9745-2e29c76d5c52" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="bda3d8a8-722a-4a55-8571-0d563efcb6c7" >
+		<s3:connection accessKey="AKIAZPQZVVFR6T66DIOC" secretKey="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" />
+	</s3:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="fd69eca5-c7be-4e7f-8205-36527204e5c9" >
+		<file:connection />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="cad63761-1117-41a7-a3f5-fe3488a556e1" >
+		<file:connection />
+	</file:config>
+	<flow name="amazon_s3bucket_creationFlow" doc:id="6f31f79a-b286-46ba-8e5d-926b9555061f" >
+		<http:listener doc:name="Listener" doc:id="97695e82-09c7-4857-8e33-9ad1a66fd028" config-ref="HTTP_Listener_config" path="/amazon"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="615e3599-1bad-413d-93d2-4dfeeb518030" variableName="init"/>
+		<s3:create-bucket doc:name="Create Bucket" doc:id="9b102162-1f81-41ab-9713-e099a9013287" config-ref="Amazon_S3_Configuration" bucketName='myfirstbucket-786'/>
+		<ee:transform doc:name="Transform Message" doc:id="462629e6-7fc9-4851-af0e-cd8eaddd0d84" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Result: "Bucket Created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[now() as String {format:"yyyy-MM-dd "}]' doc:name="Set Variable" doc:id="af001f7f-b478-4991-b131-64fcf27b29be" variableName="date"/>
+		<s3:put-object doc:name="Put Object" doc:id="69cecb2d-af18-4257-bf05-e73a7b33c817" config-ref="Amazon_S3_Configuration" bucketName="myfirstbucket-786" key="#[(vars.date++'/flig6') ++ now() as String {format:'yyy-MM-dd'} ++ '.csv']">
+			<s3:content ><![CDATA[#[vars.init]]]></s3:content>
+		</s3:put-object>
+		<ee:transform doc:name="Transform Message" doc:id="977236b4-2749-4e15-a30d-3ac89cfbf40e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Result: "Folder and file created with current date and time"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<s3:delete-object doc:name="Delete Object" doc:id="76db8662-3b90-4790-80c6-f2b18065c515" config-ref="Amazon_S3_Configuration" bucketName="myfirstbucket-786" key="flights-file12022-08-23.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="c6be0f1a-4f69-4e48-9b3d-751511c847c1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Result : "one object is deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="58439876-6064-42b9-81b9-be8d9404ea21" message="BucketLocation: #[payload]"/>
+	</flow>
+	<flow name="amazon_s3bucket_creationFlow5" doc:id="b2b03f59-cf0a-4a5b-8b9d-0243888f86e9" >
+		<http:listener doc:name="Listener" doc:id="498c45a6-3ab6-47f3-9c8f-338354ff6953" config-ref="HTTP_Listener_config" path="/bucketpolicy"/>
+		<s3:put-bucket-policy doc:name="Put Bucket Policy" doc:id="1ca6779c-1675-4f35-bbfd-557ba316fdac" config-ref="Amazon_S3_Configuration" bucket='#["myfirstbucket-786"]' policy='#[D:"\samplefiles"]' />
+		<ee:transform doc:name="Transform Message" doc:id="3e44a2c3-4e55-43dc-8afd-47c0494555ca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Result": "Policy applied that bucket"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="cf4b57c0-8d0f-499b-8cd8-1b78bf70470c" message="#[payload]"/>
+	</flow>
+	<flow name="amazon_s3bucket_creationFlow1" doc:id="cbfacc22-a177-4b4c-85fe-3de30457ee23" >
+		<http:listener doc:name="Listener" doc:id="4fe410e8-ac3f-4902-829f-135f481a2ad0" config-ref="HTTP_Listener_config" path="/get"/>
+		<s3:get-object doc:name="Get Object" doc:id="4bdb6d12-fa6d-4d5e-9744-ce673db1bd64" config-ref="Amazon_S3_Configuration" bucketName="myfirstbucket-786" key="#['2022-08-24 /flig62022-08-24.csv']" />
+		<ee:transform doc:name="Transform Message" doc:id="5dd23500-8058-491d-a5f1-8fe7cdfc907c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="fb1b9613-0259-4826-8918-b641feb2d113" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Desktop\neewww\sample.txt"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1aa89be3-fbda-46b2-b730-585ccc4cf682" message="#[payload]"/>
+	</flow>
+	<flow name="amazon_s3bucket_creationFlow2" doc:id="4c3da5c9-0e6e-4091-9b2f-889aaf5670fb" >
+		<http:listener doc:name="Listener" doc:id="f4890754-220e-459f-82fb-50854b49697b" config-ref="HTTP_Listener_config" path="/list"/>
+		<s3:list-buckets doc:name="List Buckets" doc:id="38e46c5c-6707-4b64-aaaa-2f8ec2fb9143" config-ref="Amazon_S3_Configuration" target="list"/>
+		<ee:transform doc:name="Transform Message" doc:id="58243dcc-d232-4cc7-b861-a4d0a8143343" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.list]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="amazon_s3bucket_creationFlow3" doc:id="b2558adf-5d8d-4ca4-8afb-d715baed75d8" >
+		<http:listener doc:name="Listener" doc:id="cf014da7-edb1-4f77-8797-49c4642860cd" config-ref="HTTP_Listener_config" path="/location"/>
+		<s3:get-bucket-location doc:name="Get Bucket Location" doc:id="796488a3-87b9-4f6f-bc75-6436b71fdd75" config-ref="Amazon_S3_Configuration" bucket='#["myfirstbucket-786"]' target="locations" />
+		<file:write doc:name="Write" doc:id="73dc7d4c-887a-48a8-a0df-f98a114b8d72" config-ref="File_Config1" path="C:\Users\sivanjaneyuluk\Desktop\neewww\.txt">
+			<file:content ><![CDATA[#[vars.locations]]]></file:content>
+		</file:write>
+		<ee:transform doc:name="Transform Message" doc:id="632fabf2-d1bf-46c0-8f91-880789f46192">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="amazon_s3bucket_creationFlow4" doc:id="1cbb693a-34cc-4101-98d6-1bff9c807647" >
+		<http:listener doc:name="Listener" doc:id="1cd935f2-c968-4853-bb50-497494e8a9ec" config-ref="HTTP_Listener_config" path="/copy"/>
+		<s3:copy-object doc:name="Copy Object" doc:id="1c2691df-9468-4d40-9585-fa97946f2f90" config-ref="Amazon_S3_Configuration" sourceBucketName='#["myfirstbucket-786"]' sourceKey='#["2022-08-23 /flig62022-08-23.csv"]' destinationBucketName='#["testaaf"]' destinationKey='#["code1.txt"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="a5cf4130-5340-4548-a633-62b5cac44474" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Result: "successfully copyed the object"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

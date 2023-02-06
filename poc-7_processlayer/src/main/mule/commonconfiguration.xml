@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7fe94f51-e709-4826-a2c2-82176d436a04" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="251ce7fe-e4be-4e73-9608-0c6501752f72" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="d66fa854-f212-4b5e-aabb-91b90db941c3" />
+	<configuration-properties doc:name="Configuration properties" doc:id="f1da89a8-d785-461d-9aec-34fcc568690f" file="property.yaml" />
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mule>

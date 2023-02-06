@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eb0caa10-52cb-4c07-a0c5-22c77c0f516e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="041d3a68-8c75-435e-b06a-6c02e1234243" >
+		<vm:connection >
+			<reconnection >
+				<reconnect />
+			</reconnection>
+		</vm:connection>
+		<vm:queues >
+			<vm:queue queueName="inboundQ" />
+			<vm:queue queueName="outboundQ" />
+		</vm:queues>
+	</vm:config>
+	<flow name="mule4-vm-flowFlow2" doc:id="ee1db3eb-1b33-4c0a-95af-86f9263c5c46" >
+		<http:listener doc:name="Listener" doc:id="19f3000d-6641-4a2e-aabd-e6adcd6a8494" config-ref="HTTP_Listener_config" path="/publishConsume"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8e7911b5-0c98-4573-bec7-f7d4c8c74e2c" message="FlowStarted.." />
+		<ee:transform doc:name="Transform Message" doc:id="835b04b6-4e8a-4864-acac-81405195ad4f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"FullName": payload.FirstName ++ "" ++ payload.LastName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<vm:publish-consume doc:name="Publish consume" doc:id="30b1e169-7fb0-4de7-9044-6ae15f70c88c" config-ref="VM_Config" queueName="outboundQ" timeout="10"/>
+		<logger level="INFO" doc:name="Logger" doc:id="79c9a3cc-ff9a-4100-8591-4ebd40963e66" message="end logger"/>
+	</flow>
+	<flow name="mule4-vm-flowFlow" doc:id="437f08f6-0823-442c-87c8-409bf0ec0dca" >
+		<http:listener doc:name="Listener" doc:id="87966d2b-2f44-4f97-a966-caef7d2fb448" config-ref="HTTP_Listener_config" path="/publish"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a6e9d526-f04d-491a-ad28-ab9e73403a82" message="FlowStarted.."/>
+		<ee:transform doc:name="Transform Message" doc:id="f02169b4-68e3-4e8c-9aea-ce0b4bd856be" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"FullName": payload.FirstName ++ "" ++ payload.LastName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<vm:publish doc:name="Publish" doc:id="5c21ce0c-920e-442c-919c-1fec513dce2b" config-ref="VM_Config" sendCorrelationId="ALWAYS" correlationId="#[correlationId]" queueName="inboundQ" timeout="#[10]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e91c81f1-e627-4aae-af2d-202beb7c1b1f" message="Flow ended"/>
+	</flow>
+	<flow name="mule4-vm-flowFlow1" doc:id="845772fe-85db-4446-a905-47be8c6d543f" >
+		<vm:listener queueName="outboundQ" doc:name="Listener" doc:id="256ac29d-eb90-4cc2-b030-dda9a4ef0497" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="81e92494-d9ba-42ad-b0fb-cb0aaca4a192" message="#[payload]"/>
+	</flow>
+</mule>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="777a1278-c505-4cbf-ad3b-47f498a23942" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="datawave_formatsFlow1" doc:id="c812835e-e11a-48ac-8e12-7b2ed8f9660f" >
+		<http:listener doc:name="Listener" doc:id="361cb462-e06d-444c-a78c-a819a3e5a577" config-ref="HTTP_Listener_config" path="/xml2json"/>
+		<ee:transform doc:name="Transform Message" doc:id="3ed959ac-0e7e-4449-9758-a78fb4215f14" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="datawave_formatsFlow4" doc:id="9e870d7a-665d-41a2-9343-f1a40197e115" >
+		<http:listener doc:name="Listener" doc:id="71e1a006-bc61-4800-8db9-a3a0db3141e3" config-ref="HTTP_Listener_config" path="/csv2text" outputMimeType="text/plain"/>
+		<ee:transform doc:name="Transform Message" doc:id="b7fadb66-2a73-4e57-831a-ba017e62c3e2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="datawave_formatsFlow3" doc:id="4a3c3eee-b0d9-4568-af1c-a206baed6ce6" >
+		<http:listener doc:name="Listener" doc:id="07dedf74-3a31-479e-804c-9b6060e34408" config-ref="HTTP_Listener_config" path="/json2csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="aa5b1f76-bf89-4aba-bee7-863f65721e98" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="datawave_formatsFlow2" doc:id="747945d0-8203-4840-8cc5-73cec66293a0" >
+		<http:listener doc:name="Listener" doc:id="056fb23f-05fb-4be3-8fc8-0d7d35093323" config-ref="HTTP_Listener_config" path="/csv2json"/>
+		<ee:transform doc:name="Transform Message" doc:id="b181a283-19b6-44a9-9ffe-66c58f5891e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="datawave_formatsFlow" doc:id="e8a20a16-9772-43e9-a0b6-91bd3d929914" >
+		<http:listener doc:name="Listener" doc:id="c9e32850-3856-4420-862e-f1a539311713" config-ref="HTTP_Listener_config" path="/json2xml"/>
+		<ee:transform doc:name="Transform Message" doc:id="be51ba1e-c884-46ba-b402-eaa814e4640d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+jsonDetails: payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Json-to-Java" doc:id="7a94c9bc-1471-461d-9c5d-aa0b97f11dd0" >
+		<http:listener doc:name="Listener" doc:id="c46936dd-d677-4b07-8df3-274255fbb177" config-ref="HTTP_Listener_config" path="/json2java"/>
+		<ee:transform doc:name="Transform Message" doc:id="dd329dd8-164a-429e-9a5c-cd8155384732" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

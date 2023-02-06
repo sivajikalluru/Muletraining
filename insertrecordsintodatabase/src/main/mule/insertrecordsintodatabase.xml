@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5ba4d6f1-b582-4b11-94ae-de96d4d308ad" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="8745da3a-00ed-466f-a7a7-69f461142253" >
+		<file:connection workingDir="C:\Users\sivanjaneyuluk\Desktop\NoSleep"/>
+	</file:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="2e45c549-d18f-4e27-932d-d0c14ef47802" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="records_insert" />
+	</db:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="52a3916a-6973-4386-a3a1-b6d130d96d1d" maxEntries="10" entryTtl="1" />
+	<flow name="insertrecordsintodatabaseFlow" doc:id="7d9330ca-e590-42b5-bc5f-b77b9419fbdb" >
+		<http:listener doc:name="Listener" doc:id="ea98f6f2-8282-4f3a-81b5-c8e6dfb79540" config-ref="HTTP_Listener_config" path="/process"/>
+		<ee:transform doc:name="Transform Message" doc:id="6f9c9e82-9ad2-4d7e-b8a4-83217cebea75" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="84ea0d11-f0a2-4aed-9f24-abe29261958b" message="#[payload]"/>
+		<try doc:name="Try" doc:id="3372c367-11c2-4b3b-9551-e1e8757e119d" >
+			<foreach doc:name="For Each" doc:id="1fb06226-6c59-460b-8630-ef364a546ca3">
+			<logger level="INFO" doc:name="Logger" doc:id="724cae47-e6f6-4ff9-a5f2-3675e28c16a3" message="#[payload]" />
+			<ee:transform doc:name="Transform Message" doc:id="e5740f91-214b-4599-b56f-746a519ecd1f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"SNO": payload.SNO as Number,
+	"Name": payload.Name default "",
+	"Branch": payload.Branch default ""
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<db:insert doc:name="Insert" doc:id="92c58e01-dd13-47d4-af34-f83c1cd17e98" config-ref="Database_Config">
+			<db:sql><![CDATA[Insert into records_insert.records(SNO,Name,Branch) values(:SNO,:Name,:Branch);]]></db:sql>
+				<db:input-parameters><![CDATA[#[{
+	SNO:payload.SNO,
+	Name:payload.Name,
+	Branch:payload.Branch
+}]]]></db:input-parameters>
+		</db:insert>
+		</foreach>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ed8eae12-1a2e-45e3-8c18-091203916aaf" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="60f51b14-6d90-4960-b47f-df860dd94d4e" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+						</ee:variables>
+					</ee:transform>
+					<ee:transform doc:name="Transform Message" doc:id="765840c9-bd54-41fd-9a31-8351b0125fbe" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[payload] map{
+	"SNO": if($.SNO == "") 0 else null,
+	"Name": $.Name default "",
+	"Branch":$.Branch default ""
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<flow-ref doc:name="Flow Reference" doc:id="883bd6e0-4c44-4104-a59a-5a87774f6e8b" name="insertrecordsintodatabaseFlow" target="target"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="1987abf9-36ad-4905-a145-a69ef053a45d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="80601903-b086-45d0-8bec-5a042329a2c2" message="payload"/>
+	</flow>
+</mule>

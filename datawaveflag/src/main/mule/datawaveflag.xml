@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6bec0190-6e92-46da-bc75-24be67bd6a99" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="84d4234c-ad8d-4992-a97d-6dd5fc506536" >
+		<file:connection workingDir="C:\Users\sivanjaneyuluk\Desktop\Flag== Collection" />
+	</file:config>
+	<flow name="datawaveflagFlow1" doc:id="fd1819f0-8a4a-467a-a58b-1d2d5cc2c2be" >
+		<http:listener doc:name="Listener" doc:id="f99db570-3313-462d-9f9e-74e37a824c97" config-ref="HTTP_Listener_config" path="/flag"/>
+		<ee:transform doc:name="Transform Message" doc:id="cdad4c6c-0a65-432d-96cb-989c4c3f2e7d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="datawaveflagBatch_Job" doc:id="406a9922-3b7a-4d30-9e7a-b23e6f63aa51" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="e7c97b38-d358-4da6-9f37-2f991b169fc8" acceptExpression='#[payload.d.flag == "Collection" or payload.Flag == "POSTING" ]'>
+					<ee:transform doc:name="Transform Message" doc:id="bddab861-d033-45db-bdbb-56fd388746f9" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="92dd55a9-f7ec-46ca-a5aa-cf818c5c727b" streaming="true">
+						<try doc:name="Try" doc:id="c7f634a0-b8ce-4d89-a07d-95e05fda24cb" >
+							<ee:transform doc:name="Transform Message" doc:id="aeb24a0b-4fee-41b3-9270-f1c9aa89de3a">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+							<file:write doc:name="Write" doc:id="18e05086-a6b5-483a-9bfe-c264465e28e3" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Desktop\Flag== Collection\posting-data"/>
+							<error-handler >
+								<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6ff1563b-66b1-4847-88a3-1400bfcaa56e" type="ANY">
+									<ee:transform doc:name="Transform Message" doc:id="68a9b5d1-d566-4012-9485-3bd86cf1404d" >
+										<ee:message >
+											<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+										</ee:message>
+									</ee:transform>
+								</on-error-continue>
+							</error-handler>
+						</try>
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="15c8bfc0-1cbe-45ec-b6c8-55498b5babbf" acceptExpression='#[payload.d.flag == "Collection" or payload.Flag == "REVERSAL" ]'>
+					<ee:transform doc:name="Transform Message" doc:id="091fee88-abd5-4e81-a2b1-a95dba93d4b9" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="c32bc9dc-3c4f-4bd3-b390-f9265eebbd91" streaming="true">
+						<try doc:name="Try" doc:id="a2037976-fb9d-4a4a-9ad1-036a27ac5514" >
+							<ee:transform doc:name="Transform Message" doc:id="e6a7400c-5fbd-4218-9e1e-3e89da038226">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+							<file:write doc:name="Write" doc:id="6f52afd4-5d9f-4a0b-b27d-b6b51cea7b43" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Desktop\Flag== Collection\reversal-data"/>
+							<error-handler >
+								<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0999841e-792d-4ef5-a71d-b1c350a87ff9" type="ANY">
+									<ee:transform doc:name="Transform Message" doc:id="27ebd58a-16ed-4d43-b1ec-199f3a65cb61" >
+										<ee:message >
+											<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+										</ee:message>
+									</ee:transform>
+								</on-error-propagate>
+							</error-handler>
+						</try>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+		<logger level="INFO" doc:name="Logger" doc:id="950b5df0-e648-45c0-ba46-5a6c20b30fb9" message="#[payload]"/>
+	</flow>
+</mule>

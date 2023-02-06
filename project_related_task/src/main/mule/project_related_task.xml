@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e100a99f-9ba6-453b-a53e-7808e983652f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="fde788a5-d1b8-4865-b41a-17167c54b828" />
+	<flow name="project_related_taskFlow" doc:id="d181c29c-511d-4e56-ad22-b962c192d95e" >
+		<http:listener doc:name="Listener" doc:id="ae0b80ef-4190-46a4-90a9-739703b693c7" config-ref="HTTP_Listener_config" path="/sample"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="e11a233b-e190-42f2-acff-f1e5e887eeac" variableName="UUID"/>
+		<os:retrieve doc:name="Retrieve" doc:id="23106ce4-a30c-47c1-8a9a-4238ac4f133e" key="objectStore" objectStore="Object_store" target="object">
+			<os:default-value ><![CDATA[#["Active"]]]></os:default-value>
+		</os:retrieve>
+		<choice doc:name="Choice" doc:id="2c0e8b66-d34d-4dae-8068-985e3abf72af" >
+			<when expression='#[vars.object == "Active"]'>
+				<os:store doc:name="Store" doc:id="de6720ed-c3e6-4420-95c8-71e65239b37b" key="objectStore" objectStore="Object_store">
+					<os:value ><![CDATA[#["InActive"]]]></os:value>
+				</os:store>
+				<logger level="INFO" doc:name="Logger" doc:id="50473b7f-1420-4bda-9268-fa3f0bee42cf" message="uuid::#[vars.UUID]afterStore::#[payload]"/>
+				<logger level="INFO" doc:name="Logger" doc:id="fe8e3c83-ee8c-45c4-84c6-1c73d1a074d6" message="uuid::#[vars.UUID] and after Activated::#[vars.object]"/>
+				<os:store doc:name="Store" doc:id="516b7ad3-95fe-4c9f-8a9d-edf778d66ff0" key="objectStore" objectStore="Object_store">
+					<os:value><![CDATA[#["Active"]]]></os:value>
+				</os:store>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="1dafb779-3274-4aa8-b7a7-1d9f14927156" message="#[payload]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="6db63742-ce37-45c2-8dee-f00433763fb2" message="info::#[vars.UUID]afterComplete::#[payload]"/>
+	</flow>
+</mule>

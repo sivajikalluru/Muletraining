@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/AcceptedResponse",
+  "definitions": {"AcceptedResponse": {
+    "additionalProperties": true,
+    "type": "object",
+    "required": ["accepted"],
+    "properties": {"accepted": {"type": "boolean"}},
+    "example": {"accepted": true}
+  }}
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="50bd767b-4541-4d2c-b274-6cf41553dfc0" >
+		<http:listener-connection host="0.0.0.0" port="8088" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="ca8961e4-b450-43b8-9789-a51d160e543e" >
+		<file:connection />
+	</file:config>
+	
+	<flow name="reef-sys-api-ukg-republicFlow" doc:id="d0e3cdc1-534a-4a3d-a96f-8300ab161de7" >
+		<http:listener doc:name="Listener" doc:id="289725f9-4aef-4075-888b-421893dd50f6" config-ref="HTTP_Listener_config" path="/create"/>
+		<file:read doc:name="Read" doc:id="f4d10c9c-89bc-44b0-b157-2071e1170246" config-ref="File_Config" path="D:\REEF_PROJECTS\REEF_UKG_REPUBLIC\AllInputFiles\Rep-sample-DB.csv" outputMimeType="application/csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="8a96a4f4-ed8c-44ba-99f5-311673cbbd30" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="cfe3d110-c607-4ae4-b1e7-b63037e74c2a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) ->{
+    "Type__c": item.Type,
+    "Type_Desc__c": item.Type_Desc,
+    "Earnings_Code__c": item.Earnings_Code,
+    "Earnings_Code_Desc__c": item.Earnings_Code_Desc,
+    "Limestone_GL_Account__c": item.Limestone_GL_Account as Number,
+    "Limestone_GL_Desc__c": item.Limestone_GL_Desc,
+    "RPS_GL_Account__c": item.RPS_GL_Account as Number
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="36f1e6c7-6650-48bf-bdcc-ad4fa92106be" config-ref="Salesforce_Config" type="reef_republic__c" />
+		<ee:transform doc:name="Transform Message" doc:id="4d59d2c8-9364-4127-b7fd-7535e31dfe28" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="reef-sys-api-ukg-republicFlow1" doc:id="17f345c8-ec1e-49c4-a3f8-bc2a5f8f8ace" >
+		<http:listener doc:name="Listener" doc:id="41ebed12-0202-460c-9499-dcaa325ab1e4" config-ref="HTTP_Listener_config" path="/retrieve"/>
+		<salesforce:query doc:name="retrieveTheRecordsFromSalesforce" doc:id="974f7533-e513-49a6-a8b4-4dbebc8c848f" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT Earnings_Code_Desc__c,Earnings_Code__c,Limestone_GL_Account__c,Limestone_GL_Desc__c,RPS_GL_Account__c,Type_Desc__c,Type__c FROM reef_republic__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="convertJson" doc:id="33079fd7-c498-4114-acf9-3d76fc7722e5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="endLogger" doc:id="02c547ef-5416-4877-ae31-28c4435269cf" message="#[payload]"/>
+	</flow>
+</mule>

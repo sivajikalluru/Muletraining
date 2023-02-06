@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="Implementation-poc4-process-test-suite.xml" />
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="08359054-9286-41fa-8061-7d5f45653185" >
+		<http:request-connection host="localhost" port="8081"/>
+	</http:request-config>
+	<munit:test name="Implementation-poc4-process-test-suite-Implementation-poc4-processFlowTest1" doc:id="da16e1dd-d9ac-4f5b-9c9e-9e5a22067a3a" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b3cf60f6-6d96-4646-a437-48e22f5ab44c" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="1906cbd2-eba0-4a3f-8f32-4f3555b7156f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="bea7b3a0-1c6e-4b13-9a73-6beebf752212">
+				<munit:attributes value="#[{queryParams :{'destination': 'LAX'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to Implementation-poc4-processFlow" doc:id="c5b1c68a-f87c-4cac-915e-482841ab64a9" name="Implementation-poc4-processFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6edd7568-42ec-4866-91b0-bc8004084bd4" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

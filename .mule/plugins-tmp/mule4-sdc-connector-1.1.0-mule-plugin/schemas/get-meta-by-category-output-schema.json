@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/MetadataResult",
+  "definitions": {"MetadataResult": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {"metadata": {
+      "type": "array",
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    }},
+    "example": {"metadata": [{
+      "relationships": [{
+        "toEntity": "ssot__Individual__dlm",
+        "fromEntity": "ssot__ContactPointEmail__dlm",
+        "fromEntityAttribute": "ssot__PartyId__c",
+        "toEntityAttribute": "ssot__Id__c",
+        "cardinality": "NTOONE"
+      }],
+      "primaryKeys": [{
+        "displayName": "Individual Id",
+        "name": "ssot__Id__c",
+        "indexOrder": "1"
+      }],
+      "indexes": [{"fields": [{
+        "displayName": "Individual Id",
+        "name": "ssot__Id__c",
+        "type": "STRING"
+      }]}],
+      "displayName": "Individual",
+      "name": "ssot__Individual__dlm",
+      "fields": [
+        {
+          "displayName": "Data Source",
+          "name": "ssot__DataSourceId__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "Data Source Object",
+          "name": "ssot__DataSourceObjectId__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "First Name",
+          "name": "ssot__FirstName__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "Gender",
+          "name": "ssot__GenderId__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "Individual Id",
+          "name": "ssot__Id__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "Last Name",
+          "name": "ssot__LastName__c",
+          "type": "STRING"
+        }
+      ],
+      "category": "Profile"
+    }]}
+  }}
+}

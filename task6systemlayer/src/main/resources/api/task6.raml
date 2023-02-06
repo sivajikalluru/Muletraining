@@ -1,0 +1,27 @@
+#%RAML 1.0
+title: Task6
+mediaType: 
+- application/json
+
+/Soap:
+  get:
+    queryParameters:
+      destination?: 
+        type: string
+        required: false
+    responses:
+      200:
+        body:
+          example: !include example.raml
+      400:
+          body:
+              example: {
+                "status code": "400",
+                "message": "bad request"
+              }
+      404:
+          body:
+              example: {
+                "status code": "404",
+                "message": "Resouse not found"
+              }

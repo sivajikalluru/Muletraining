@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="8de717f3-d2e9-416a-a54f-a3f21a4304f1" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="poctask10Flow" doc:id="09338783-baca-4d0c-b651-be56ac2d90b0" >
+		<ee:transform doc:name="Transform Message" doc:id="313af0b4-17e8-4a73-bb3c-0cc0938ddcc7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload pluck ((value, key, index) -> key ++ "=" ++  value  ) orderBy ((item, index) -> item) joinBy  "&"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="def17756-14ab-45e2-9000-074dccefaf3b" message="#[payload]"/>
+	</flow>
+</mule>

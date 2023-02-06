@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="3224bed7-2beb-4b41-a211-775451476189" >
+		<http:request-connection host="mu.mulesoft-training.com" port="80"/>
+	</http:request-config>
+	 <http:listener-config name="task1-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="8f18c963-c8d9-46e8-8e7f-7412d4c009f4" file="security.yaml" />
+	<configuration doc:name="Configuration" doc:id="8bc6ddc0-c933-47ce-87b5-1132989cbb66" defaultErrorHandler-ref="Main_Error_Handler" />	
+	
+	
+	
+	
+	
+	
+	
+</mule>

@@ -1,0 +1,11 @@
+
+{
+    "caseType": "ACN",
+    "subject": "ACN case creation New",
+    "description": "Case Creation",
+    "priority": "High",
+    "caseOrigin": "Web",
+    "status" : "Escalated",
+    "accountId": "0017g00001TzqbaAAB"
+}
+

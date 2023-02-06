@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ef54f901-52bd-4408-b218-d6098ea190cf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="73db452a-3cdb-4bef-9c15-1b66478f95a5" >
+		<file:connection workingDir="D:\csv files" />
+	</file:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="64068fb7-a113-46dd-904f-d659d4bdd719" />
+	<flow name="fileprocessing-23-6-22Flow" doc:id="93acdee2-0212-418f-abbb-ccd641c8065d" >
+		<http:listener doc:name="Listener" doc:id="cebc669d-2fa4-4820-a0a9-5bed5bc76380" config-ref="HTTP_Listener_config" path="/file"/>
+		<file:list doc:name="List" doc:id="2976699a-0f87-4ddc-834c-c65a885dd865" config-ref="File_Config" directoryPath="D:\csv files"/>
+		<ee:transform doc:name="Transform Message" doc:id="06225105-8b2a-4041-b7ac-8de49005e511" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.typedAttributes.name]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="efb627c0-7b8f-44f1-943b-46f80ff42c04" >
+			<os:retrieve doc:name="Retrieve" doc:id="79df6764-7155-4b39-9d24-01a37c9a481a" target="value" key="#[payload]" objectStore="Object_store">
+				<os:default-value ><![CDATA[null]]></os:default-value>
+			</os:retrieve>
+			<choice doc:name="Choice" doc:id="774b70a0-8cbd-453a-a297-dd347d5f3bb4" >
+				<when expression="#[vars.value != null]">
+					<file:read doc:name="Read" doc:id="bd5db914-ff56-419c-9014-c4f9a66c93af" config-ref="File_Config" target="value1" path="D:\csv files\Book123.csv"/>
+					<logger level="INFO" doc:name="Logger" doc:id="306b900c-c4ce-4f59-bd12-eb7b65c024bc" message="#[payload]"/>
+					<os:store doc:name="Store" doc:id="2a636d6a-74b8-41b7-a720-cb0675a5dc54" objectStore="Object_store" key="#[payload]">
+						<os:value ><![CDATA[#[vars.value]]]></os:value>
+					</os:store>
+					<ee:transform doc:name="Transform Message" doc:id="7a575c9b-540e-4617-bfad-d215b94751a4">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="5e09ecbd-ad5f-44b7-82d2-a0720dfbd9b6" message='#["files are empty"]'/>
+				</otherwise>
+			</choice>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="d007e732-1cdb-4490-838d-1621a844b6c1">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</flow>
+</mule>

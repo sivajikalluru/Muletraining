@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/NestedProfileWithCalculatedInsightsResult",
+  "definitions": {"NestedProfileWithCalculatedInsightsResult": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "array",
+        "items": {
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "done": {
+        "description": "If the flag is set to true then there are no more records to be queried.",
+        "type": "boolean",
+        "example": true
+      }
+    },
+    "example": {
+      "data": [
+        {
+          "GenderId__c": "Male",
+          "DataSourceId__c": "Customers",
+          "Sales_And_Discounts_By_Customer__cio": {
+            "TotalDiscounts__c": "0.600000000000000100",
+            "Product": "Multi grain bread",
+            "Id__c": "233280554"
+          },
+          "MaritalStatusId__c": "Widowed",
+          "LastName__c": "Kathman",
+          "ChildrenCount__c": "1",
+          "Id__c": "233280554",
+          "BirthDate__c": "1962-08-08T00:00:00",
+          "DataSourceObjectId__c": "Individual_Id",
+          "InternalOrganizationId__c": "",
+          "FirstName__c": "Angel"
+        },
+        {
+          "GenderId__c": "Male",
+          "DataSourceId__c": "Customers",
+          "Sales_And_Discounts_By_Customer__cio": {
+            "TotalDiscounts__c": "0.600000000000000100",
+            "Product": "Yogurt",
+            "Id__c": "233280554"
+          },
+          "MaritalStatusId__c": "Widowed",
+          "LastName__c": "Kathman",
+          "ChildrenCount__c": "1",
+          "Id__c": "233280554",
+          "BirthDate__c": "1962-08-08T00:00:00",
+          "DataSourceObjectId__c": "Individual_Id",
+          "InternalOrganizationId__c": "",
+          "FirstName__c": "Angel"
+        }
+      ],
+      "done": false
+    }
+  }}
+}

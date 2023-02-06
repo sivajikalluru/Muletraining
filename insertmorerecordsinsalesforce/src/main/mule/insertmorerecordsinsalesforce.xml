@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="878fd0b7-461a-43ae-b43a-de9707205b69" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="3bbc8ac4-3461-4718-bd93-5873fb24d69e" >
+		<file:connection />
+	</file:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="8082d1ff-4c1d-4a2d-98d3-2385614c68c9" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO" />
+	</salesforce:sfdc-config>
+	<flow name="insertmorerecordsinsalesforceFlow" doc:id="4b9dbac2-3251-411a-8d0e-ffa39b85ea97" >
+		<http:listener doc:name="Listener" doc:id="a7148a36-864f-4d0e-8cce-851592c5b495" config-ref="HTTP_Listener_config" path="/inserts"/>
+		<file:read doc:name="Read" doc:id="4f17f125-97aa-4868-b3d3-446de14558ad" config-ref="File_Config" path="D:\REEF_CLH(Project)\INPUT\gl-accounts (5).xlsx" outputMimeType="application/xlsx"/>
+		<ee:transform doc:name="Transform Message" doc:id="c3efa88f-8468-4b07-af00-79abc0189326" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="insertmorerecordsinsalesforceBatch_Job" doc:id="3a18e1c4-ec70-4d71-92ea-35d4ac9a2900" maxFailedRecords="-1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="8236339e-37ea-42af-ad0d-eff5c1b2fbd7">
+					<ee:transform doc:name="Transform Message" doc:id="4c47789a-adb5-4025-bcc3-417ecb0790b3" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="66b57f4e-39f7-4423-8f77-79448ca68357" size="199">
+						<ee:transform doc:name="Transform Message" doc:id="30254916-47c6-43e2-981f-0e0777c35758" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map((item,index)->{
+		    Type__c                            : item."Type",
+			Earnings_Code__c                   : item."Earnings Code",
+			Description__c                     : item."Description",
+			Levels__c                          : item."Levels",
+			Limestone_GL_account__c            : item."Limestone GL account",
+			Limestone_GL_account_Description__c: item."Limestone GL account Description",
+			LAN_GL_Account__c                  : item."LAN GL Account",
+			CLH_GL_Description__c              : item."CLH GL Description"
+			
+			
+})]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<salesforce:create doc:name="Create" doc:id="5869674b-ca74-4f2d-9d10-20cbb4219c97" config-ref="Salesforce_Config" type="Gl__c"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="edf9873e-d07c-4972-a9a9-b6cc136bfa26" message='#[payload]'/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="Transform Message" doc:id="5bd9569f-299b-44ba-a7be-36063afb9a6b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

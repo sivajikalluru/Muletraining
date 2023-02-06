@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="poc5Flow" doc:id="4b2846c4-2a45-4e99-af14-defa2b413f25" >
+		<ee:transform doc:name="Transform Message" doc:id="0ce42243-795c-47ae-93c7-8f5f5b655062" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights map(a,b)->
+{
+    code: upper(a.code),
+    price: if(a.price == 400)"fourhundred" else "",
+    departureDate: a.departureDate as Date{format: "yyyy/MM/dd"} as String{format: "yyyy-MM-dd"},
+    planeType: trim(a.planeType),
+    origin: lower(a.origin)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

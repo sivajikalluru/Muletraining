@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="a8d6dfc7-b7ff-434e-9aad-7fe0fcc65ab9" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce:sfdc-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="2536f8fd-8ee0-42d4-b666-b51e346df38f" >
+		<file:connection />
+	</file:config>
+	<flow name="Insert_Gl_Account_salesforce" doc:id="0e6d5172-43fe-48bc-823b-3893b5a03b83" >
+		<http:listener doc:name="Listener" doc:id="3da77e9e-9108-4719-a9d1-ffba10d6ba2b" config-ref="test_job_codes_reef-httpListenerConfig" path="/records"/>
+		<file:read doc:id="9c88ab46-96e3-46bd-a033-7c759fafcb2d" config-ref="File_Config" path="D:\REEF_CLH(Project)\ReefInputs(gl_account&amp;Job_codes)\test_Job_codes (5).xlsx" outputMimeType="application/xlsx" doc:name="Gl_account" />
+		<ee:transform doc:name="Transform Message" doc:id="1371557e-f858-4d93-9f10-0731c2171b68" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Sheet1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="984a5f2f-25f5-4c99-b316-b4aec98494de" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map((item,index)->{
+		    Type__c                            : item."Type",
+			Earnings_Code__c                   : item."Earnings Code",
+			Description__c                     : item."Description",
+			Levels__c                          : item."Levels",
+			Limestone_GL_account__c            : item."Limestone GL account",
+			Limestone_GL_account_Description__c: item."Limestone GL account Description",
+			LAN_GL_Account__c                  : item."LAN GL Account",
+			CLH_GL_Description__c              : item."CLH GL Description"
+			
+			
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="Gl__c" doc:id="122fd7e9-218c-4d76-9ea5-c787eeaeeb34" config-ref="Salesforce_Config" doc:name="Create" />
+	</flow>
+	<flow name="Insert_Job_codes_salesforce" doc:id="d4443c43-5165-4aa0-94ef-1263caaa95ba" >
+		<http:listener doc:name="Listener" doc:id="d30b4217-4c38-438d-8ef4-6107f4fca376" config-ref="test_job_codes_reef-httpListenerConfig" path="/testcodes"/>
+		<file:read doc:name="Read" doc:id="45125ba2-5983-4ee7-8e5c-edf5bc068d69" config-ref="File_Config" path="D:\REEF_CLH(Project)\ReefInputs(gl_account&amp;Job_codes)\gl-accounts (5).xlsx" outputMimeType="application/xlsx"/>
+		<ee:transform doc:name="Transform Message" doc:id="a6948b01-e662-4d7f-a3ed-c03f3978071f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Sheet1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="d6398245-ce95-4108-b85a-e46ef335a97e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(item,index)->{
+	Job_Code__c: item."Job Code",
+	Job_Description__c: item."Job Description",
+	GLCode_SGA__c: item.GLCode_SGA as String,
+	GLCode_Others__c: item.GLCode_Others as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="Job_codes__c" doc:id="4a7e1c98-0353-4f18-be61-a322a26eb427" config-ref="Salesforce_Config" doc:name="Create" />
+		<ee:transform doc:name="Transform Message" doc:id="e6ba7a32-df34-4a61-8ba8-2e0986c5122a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e3f3109c-ddb4-4bd2-b23e-6efeb919c5b0" message="#[payload]" />
+	</flow>
+	<flow name="Gl_AccountRetrieve" doc:id="14b0f118-fd84-455b-9c1c-45be0f9d6458" >
+		<logger level="INFO" doc:name="infoLogger" doc:id="94476dd1-f0f8-49cf-989b-4fc7b168542c" message="#[payload]" />
+		<ee:transform doc:name="covertToSingleCotation" doc:id="90b8d3f7-2e91-407a-bf8c-3bdbef56b787" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+    "Type":((payload map ("'" ++ $."GL Code Type"++"'")) joinBy ","),
+"Level":((payload map ("'" ++ $."Financial Level Description" ++"'")) joinBy ","),
+"EarningsCode":((payload map ("'" ++ $."GL/Pay Account Code" ++ "'")) joinBy ","),
+"LimestoneGlAccount":((payload map ("'" ++ $.GLCode ++ "'")) joinBy ",")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:id="c1285f08-b525-4af2-b4ca-b895c2aa319f" config-ref="Salesforce_Config" doc:name="retrieveDataUsingIN_Function" >
+			<salesforce:salesforce-query ><![CDATA[SELECT CLH_GL_Description__c,Description__c,Earnings_Code__c,LAN_GL_Account__c,Levels__c,Limestone_GL_account_Description__c,Limestone_GL_account__c,Type__c FROM Gl__c WHERE Type__c IN(:Type) and Levels__c IN(:Level) and Earnings_Code__c IN(:EarningsCode) and Limestone_GL_account__c IN(:LimestoneGlAccount)  ]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	
+"Type":payload."Type",
+"Level":payload."Level",                                               
+"EarningsCode":payload."EarningsCode",
+"LimestoneGlAccount":payload."LimestoneGlAccount"
+
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="toJson" doc:id="c67d2813-1a6e-43c2-b3f5-cdd41f8f27fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="endLogger" doc:id="b5875c00-adbc-4453-8bc2-b680607523d4" message="#[payload]" />
+	</flow>
+	<flow name="retrieveJobCode" doc:id="0bf79689-22af-43b9-a6d7-cb19b7d0724a" >
+		<logger level="INFO" doc:name="infoLogger" doc:id="7b01c27b-0898-4d5f-946d-f5dedca077e8" message="#[payload]" />
+		<salesforce:query doc:id="c85f1bc3-9883-457e-b0cd-e2e06b53f124" config-ref="Salesforce_Config" doc:name="retrieveDataFromSalesforceQuery" >
+			<salesforce:salesforce-query ><![CDATA[SELECT GLCode_Others__c,GLCode_SGA__c,Job_Code__c,Job_Description__c FROM Job_codes__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="toJson" doc:id="7d2e4c24-c148-4eed-b061-ca4a1fe57c25" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="endLogger" doc:id="0ae9e98d-3572-4366-a6d7-2da78d1b759c" message="#[payload]" />
+	</flow>
+</mule>

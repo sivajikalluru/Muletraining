@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a4aaa963-b45a-42a2-a48e-351761a96a28" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="9c93136d-529d-4c6f-b85a-6a314ec8b1fa" />
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="df0b496a-b76b-431d-b10c-ad2cfaae654f" maxEntries="100" entryTtl="20" expirationInterval="10" config-ref="ObjectStore_Config" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="454e5930-0583-4458-abee-11868b2a1c9a" >
+		<http:request-connection protocol="HTTPS" host="ap16.salesforce.com" />
+	</http:request-config>
+	<flow name="request_connector_oath_retrievedata_sfFlow1" doc:id="0dfbc960-327e-4edd-9c10-88a54c688be1" initialState="started">
+		<http:listener doc:name="Listener" doc:id="fa4a3b63-c945-4fe7-84a4-8ea9eb33fda1" config-ref="HTTP_Listener_config" path="/auth"/>
+		<os:retrieve doc:name="callAccessTokenFromStore" doc:id="3c2b630d-5cf2-4965-8260-bcd079a8209d" key="vAccessToken" objectStore="Object_store" target="token">
+			<os:default-value ><![CDATA[#[payload]]]></os:default-value>
+		</os:retrieve>
+		<http:request method="GET" doc:name="sendRequestForQueryRecordsFromSalesforce" doc:id="8e9d7545-9395-42dc-aca6-a0479c11b11c" config-ref="HTTP_Request_configuration" path="/services/data/v42.0/query">
+			<http:headers ><![CDATA[#[output application/json
+---
+{
+	"Authorization" : "Bearer " ++ vars.token
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/json
+---
+{
+	"q" : "SELECT Country__c,Id,Limestone_Project_ID__c FROM serviceId__c limit 10"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="RecordsFromSalesforce" doc:id="19f0fb5a-d87f-44db-8705-f20f127b4f44" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="endLogger" doc:id="049d2ea2-d9db-4a9a-a5be-a72d3232a52c" message="#[payload]"/>
+	</flow>
+	<flow name="request_connector_oath_retrievedata_sfFlow" doc:id="458ff55c-b38f-4e31-8458-bc16c5a1d595" initialState="started">
+		<scheduler doc:name="Scheduler" doc:id="11583b40-8f2e-4c7d-8219-cd90c8a3cb61" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="POST" doc:name="sendRequestForGenerateAccess-token" doc:id="59902e7c-b962-4b78-8d3e-cad27f1d3725" config-ref="HTTP_Request_configuration" path="/services/oauth2/token">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/x-www-form-urlencoded"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"grant_type" : "password",
+	"client_id" :"3MVG9n_HvETGhr3CsOjZs4w6Pe0xVpchKkrglAdnChJ9UHocexw9h30PbT5vyRPdPYwqoAVlcVybqEmiyzUDK",
+	"client_secret": "8D6E441561B41590B31842CCC9BDD7A4D7F2753C8747B72033854B6E0EE9B6F4",
+	"username":"sivajikalluru123@gmail.com",
+	"password": "Siva@78654321mOhEIjU3q4WDFN5mVpHqkXAsD"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="startLogger" doc:id="62c5bade-4fa8-4602-9031-20c9dddc1fe7" message="#[payload]"/>
+		<os:store doc:name="storeTheAccess-Token" doc:id="c0f83b2b-bd5a-4475-9327-e0cdd31c8dc1" key="vAccessToken" objectStore="Object_store">
+			<os:value ><![CDATA[#[payload.access_token]]]></os:value>
+		</os:store>
+		<logger level="INFO" doc:name="endLogger" doc:id="42751a43-55a6-4997-961f-6e0562e3f2c8" message="#[payload]"/>
+	</flow>
+</mule>

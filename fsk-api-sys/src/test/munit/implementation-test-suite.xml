@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="munit-caseCreateTest" doc:id="22ba4fd3-f68c-421c-a42b-c6ece9dfe676" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="fsk-sys-api-main" />
+			<munit:enable-flow-source value="implementationFlow_caseCreate" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="SalesforceComponentRequest" doc:id="75bd5933-d16c-41d9-aca9-b786606ac398" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b0b08774-0935-4582-9aea-ff96ea09948d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('caseCreateFinalResponseData.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="CaseCreateRequestData" doc:id="f22a3596-2e0c-4633-96f2-daf3a704c6da" >
+				<munit:payload value="#[MunitTools::getResourceAsString('caseCreateRequestData.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to implementationFlow_caseCreate" doc:id="5337310c-4896-47b3-8198-61a23aff4873" name="implementationFlow_caseCreate"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="CaseCreateFinalResponseData" doc:id="ce94d1b3-9025-496f-906f-769416c858e0" is='#[MunitTools::equalTo((readUrl("classpath://caseCreateResponseData.json", "application/json")))]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="munit-caseUpdateTest" doc:id="1b5f080b-a3f5-4c6e-bfb4-42926ea50dde" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="fsk-sys-api-main" />
+			<munit:enable-flow-source value="implementationFlow_caseUpdate" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="SalesforceComponentRequest" doc:id="6a5f758a-268f-4515-8683-54858f680f2c" processor="salesforce:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ec8b8d07-a4fb-431e-b6ec-29ac450887d7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('caseUpdateFinalResponse.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="CaseUpdateRequestData" doc:id="fbd9bc84-b953-44f5-87b9-0dfde7e5c02b" >
+				<munit:payload value="#[MunitTools::getResourceAsString('caseUpdateRequest.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to implementationFlow_caseUpdate" doc:id="e74efccd-777f-4e5e-9d43-25def865c0d2" name="implementationFlow_caseUpdate"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="CaseUpdateFinalResponseData" doc:id="795d348e-3f6a-4336-a630-38acd90b82fb" is='#[MunitTools::equalTo((readUrl("classpath://caseUpdateResponse.json", "application/json")))]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

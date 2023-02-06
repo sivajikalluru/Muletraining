@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6b4037a1-d643-4d5f-a21d-13789b976a0e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="2d3ba74f-4464-4cf5-ac5b-29523d23e573" >
+		<salesforce:saml-connection consumerKey="3MVG9wt4IL4O5wvKb0RLhzexXZyDmRAmOikcRivIlYASs3y6uDScI0LBqbS72n1ltvolc.knn68jkgYLndIji" keyStore="C:\Users\sivanjaneyuluk\Downloads\00D5i000002R3FL.jks" storePassword="Siva@7865432" certificateAlias="querycert" principal="sivajikalluru786@gmail.com" />
+	</salesforce:sfdc-config>
+	<salesforce-composite:composite-config name="Salesforce_Composite_Config" doc:name="Salesforce Composite Config" doc:id="8195ba39-2088-47c9-9d6f-322adeef0072" >
+		<salesforce-composite:config-with-oauth-connection >
+			<salesforce-composite:oauth-authorization-code consumerKey="3MVG9wt4IL4O5wvKb0RLhzexXZyDmRAmOikcRivIlYASs3y6uDScI0LBqbS72n1ltvolc.knn68jkgYLndIji" consumerSecret="1FED855FA37DC0C47C5605C481B91B5542F85711734E37BF75CEB4DE198B95A3" />
+			<salesforce-composite:oauth-callback-config listenerConfig="HTTP_Listener_config" callbackPath="/callback" authorizePath="/authorize" externalCallbackUrl="http://localhost:8081/callback" />
+		</salesforce-composite:config-with-oauth-connection>
+	</salesforce-composite:composite-config>
+	<flow name="salesforce_oauthv2_policyFlow" doc:id="d538c22d-11d2-46e0-baec-c6a4c21b8116" >
+		<http:listener doc:name="Listener" doc:id="f5182f29-d781-40b1-99af-d2167e3e3c9a" config-ref="HTTP_Listener_config" path="/salesforce"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c3cedd24-12b7-481f-a982-f3cc5610ef2b" message="fetching the details.....................!"/>
+		<salesforce:query doc:name="Query" doc:id="5cfc1ac9-55c9-438c-8e5d-d7985b35328f" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT code__c,origin__c FROM flightsdata__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="6e423373-70c1-4f5f-ba19-3d381e2b8516" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="05f6672e-1099-4762-bc87-c1f4f4a11730" message="#[payload]"/>
+	</flow>
+	<flow name="salesforce_oauthv2_policyFlow1" doc:id="3e7ece1a-4e71-4a3c-bac8-781567104558" >
+		<http:listener doc:name="Listener" doc:id="b36dc5a1-8ac3-44a8-bef5-8f884c0cdaf3" config-ref="HTTP_Listener_config" path="/execute"/>
+		<ee:transform doc:name="Transform Message" doc:id="a47a7b03-41eb-416e-8d69-1bf96c79c811" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce-composite:execute-composite-request doc:name="Execute composite request" doc:id="c69bf39f-83e4-466c-9c71-32ef1a11c00a" config-ref="Salesforce_Composite_Config"/>
+	</flow>
+</mule>

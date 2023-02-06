@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="532bf465-adbf-4251-9fbc-4f4e55b5afdf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="4cd6ec8f-c7f3-4afc-9692-f9f6a058ab17" >
+		<http:request-connection host="mu.mulesoft-training.com" port="80"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="18033012-4891-44bc-ab32-6659ce265178" >
+		<http:request-connection host="mu.mulesoft-training.com" port="80"/>
+	</http:request-config>
+	<flow name="task1Flow" doc:id="e8169907-84b9-4547-ac7a-40142e945b24" >
+		<http:listener doc:name="Listener" doc:id="520c2be5-1fd7-4216-a960-a7baad141580" config-ref="HTTP_Listener_config" path="/task"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="1db975e9-96b1-40b5-ad4e-40af61ae8c46" variableName="Destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="c8c9b45c-3bf3-4a1a-b92b-f0c92cb158ea" config-ref="HTTP_Request_configuration1" path='/essentials/united/flights'>
+		</http:request>
+		<choice doc:name="Choice" doc:id="b4a689b8-3e2c-4b3c-9f3a-11903acdceb1" >
+			<when expression="#[vars.Destination !=null]">
+				<ee:transform doc:name="Transform Message" doc:id="33cc7b06-c1e8-46cf-b9a1-68b8bd01b4f2">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights filter ($.destination == vars.Destination)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="3b17759d-df85-4334-9dba-e72ef30274e1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

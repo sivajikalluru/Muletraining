@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<apikit:config name="poc5-raml-config" api="poc5-raml.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />	
+<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="32ffb9ce-623c-4adb-a61f-7548ea4b4b9a" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration doc:name="Configuration" doc:id="f80929c2-ac2d-4cbf-9d0f-bbde3e9f6c1f" defaultErrorHandler-ref="Main_Error_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="02a53047-cca5-4858-bc22-7d18c579b896" file="property.yaml" />	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mule>

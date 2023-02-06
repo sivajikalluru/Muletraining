@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="68fc864b-dc6e-459e-b3bd-518d19c61557" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8081" >
+			<tls:context >
+				<tls:key-store type="jks" path="mule.jks" keyPassword="sample" password="sample" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<flow name="my_https_servicesFlow" doc:id="c665c50f-7dd5-4468-a662-2b3efa67afea" >
+		<http:listener doc:name="Listener" doc:id="c3814a9c-3f87-4b4c-8af2-05abacaa00ab" config-ref="HTTP_Listener_config" path="/sample"/>
+		<ee:transform doc:name="Transform Message" doc:id="f1a70d13-8860-47c1-b805-cd060d73b43d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "successfully created https service"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

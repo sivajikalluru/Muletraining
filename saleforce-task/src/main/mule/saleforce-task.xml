@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c5582ab1-e793-4f5f-b0fa-30e84be723cf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="e5fabbc8-30f8-478a-aa89-0eb3e2df8c98" >
+		<salesforce:basic-connection username="sivanjaneyuluk.in@mouritech.com" password="Siva@7865432" securityToken="Cl93UDR7UYyokP2yla5Ks55m" />
+	</salesforce:sfdc-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="d9a0dbf5-dabd-42df-b2b1-0be6ce59ebdb" >
+		<file:connection workingDir="C:\Users\sivanjaneyuluk\Desktop" />
+	</file:config>
+	<flow name="saleforce-taskFlow" doc:id="8a48f8f7-1b7e-4d56-8427-c37940ffcb2c" >
+		<http:listener doc:name="Listener" doc:id="b54a5f81-85e8-4345-a6eb-f48d063e7cea" config-ref="HTTP_Listener_config" path="/create"/>
+		<ee:transform doc:name="Transform Message" doc:id="14690761-6004-4526-aaaa-669481f2728d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map(item,index)->{
+	Name:item."name",
+	Phone__c:item."Phone",
+	email__c:item."email",
+	address__c: item."address"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="Train__c" doc:name="Create" doc:id="5b83c6f2-3784-4303-9ff1-283de17142f0" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="a8c70e51-0ce1-4a32-9183-94a6dd7708e4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow4" doc:id="bb3cbf45-7ba0-40f5-87bb-d3ab83930861" >
+		<http:listener doc:name="Listener" doc:id="640ba4cf-61f7-46ff-80f3-fccfbc74348c" config-ref="HTTP_Listener_config" path="/delete"/>
+		<salesforce:query doc:name="Query" doc:id="83fb6569-8064-4784-bdc1-8ae3e7cb5fb9" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id,phone__c FROM Train__c where 	phone__c = '4444444']]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="a3b689c3-f071-4264-9d92-ba165e3f688e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map{
+	"Id": $.Id,
+	"phone__c" : $.Phone__c
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:delete doc:name="Delete" doc:id="e28a0dda-6d6a-489f-9767-60f7ec540624" config-ref="Salesforce_Config">
+			<salesforce:ids ><![CDATA[#[payload.Id]]]></salesforce:ids>
+		</salesforce:delete>
+		<ee:transform doc:name="Transform Message" doc:id="2c4201f0-7562-4fb2-a59a-f8d5dd42bd33" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow6" doc:id="483d2c6c-a926-43f1-9bb1-aec24fe727e0" >
+		<http:listener doc:name="Listener" doc:id="4a93966c-6d33-4a83-9be5-9aae83300e48" config-ref="HTTP_Listener_config" path="/queryid"/>
+		<salesforce:query doc:name="Query" doc:id="41721469-79b7-4860-9eb5-85e7df529005" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Fname__c FROM Work__c ]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="4de0480d-f53a-4569-8812-72f4ff17ae5e" >
+			<route >
+				<ee:transform doc:name="Fetch the Record Ids as csv file" doc:id="d31f367b-1e2f-4f02-93e7-d6fd588ed371" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload map ((item,index)->{
+	Fname__c: item.Fname__c,
+	Lname__c: item.Lname__c,
+	PhoneNumber__c: item.PhoneNumber
+})]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<file:write doc:name="Write" doc:id="ca35e555-a6a7-417b-8d41-2c5c9347f3ce" config-ref="File_Config" path="Idfiles.csv"/>
+			</route>
+			<route >
+				<ee:transform doc:name="Fetch the Record Ids as json" doc:id="448d5c6b-8882-4137-8c7d-55a40bae2d52" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Fname__c]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<file:write doc:name="Write" doc:id="52ec48f1-abb2-49c7-bd9f-54def32e2df3" config-ref="File_Config" path="Idfiles.json"/>
+			</route>
+		</scatter-gather>
+	</flow>
+	<flow name="saleforce-taskFlow1" doc:id="5d8459c6-10a1-4668-a7cd-aa87cefa30c5" >
+		<http:listener doc:name="Listener" doc:id="67e2cf69-3f0d-45b8-97e8-c07fc7bb5915" config-ref="HTTP_Listener_config" path="/insert"/>
+		<salesforce:create-job-bulk-api-v2 objectType="Contact" doc:name="Create job bulk api v 2" doc:id="6af583e6-e55e-4728-972e-a4331ad3e5d2" config-ref="Salesforce_Config" operation="insert" lineEnding="CRLF"/>
+		<ee:transform doc:name="Transform Message" doc:id="27b4cc70-a36e-41bc-b9e5-5808f302032d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow7" doc:id="65fa4ecf-528a-422b-b9c1-21d695d1eed2" >
+		<http:listener doc:name="Listener" doc:id="5ee9a149-a0a9-486d-8157-7336288f1c75" config-ref="HTTP_Listener_config" path="/deletebulk"/>
+		<salesforce:create-job-bulk-api-v2 doc:name="Create job bulk api v 2" doc:id="4c00fefa-64dd-40fd-a17a-76fdc1cb6a40" config-ref="Salesforce_Config" objectType="Work__c" operation="delete" lineEnding="CRLF"/>
+		<ee:transform doc:name="Transform Message" doc:id="ffbf3502-6e5c-40ec-8a89-fb1c1aaabc8a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9bee26ea-25bd-462a-a185-3bdf0552c0f2" message="#[payload]"/>
+	</flow>
+	<flow name="saleforce-taskFlow5" doc:id="0bd45e60-68b4-453f-a3e5-8b0657639286" >
+		<http:listener doc:name="Listener" doc:id="0e77bd8d-aa31-4d17-a22c-c4130a96808b" config-ref="HTTP_Listener_config" path="updates"/>
+		<ee:transform doc:name="Transform Message" doc:id="bda2994f-bc2b-423f-b8c2-8b10353d26e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	"Id": payload.Id,
+	"Phone__c": payload.phone,
+	email__c: payload.email
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="Train__c" doc:name="Update" doc:id="4dc085a7-46a4-407e-ba5a-edb1198ce2c6" config-ref="Salesforce_Config" />
+		<ee:transform doc:name="Transform Message" doc:id="cb2b0336-c809-401c-bfb7-0fd9bbd0f8a9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow2" doc:id="b3c10162-af72-477f-9a27-8a2696bd4d57" >
+		<http:listener doc:name="Listener" doc:id="8aebacd1-4401-42d4-b56a-d347d128fe8a" config-ref="HTTP_Listener_config" path="/Queryall"/>
+		<salesforce:query-all doc:name="Query all" doc:id="00f4e419-edaf-48dc-a8d3-bce0d3b8b0a9" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT Id, Name,Phone__c,email__c,address__c FROM Train__c]]></salesforce:salesforce-query>
+		</salesforce:query-all>
+		<ee:transform doc:name="Transform Message" doc:id="5510bfe5-767f-4193-bbaf-ea73d3707d7e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow3" doc:id="83cef339-1a5e-48e3-9fe0-e56067e013dd" >
+		<http:listener doc:name="Listener" doc:id="b442dfc0-d7cf-430e-903c-c92fd478bbb7" config-ref="HTTP_Listener_config" path="/Query"/>
+		<salesforce:query doc:name="Query" doc:id="476efc3d-d8ed-4095-8cd8-6627056d692b" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Name,address__c FROM Train__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="f3578d86-d33b-42e7-a30d-fe3a7bf6dc9c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="saleforce-taskFlow8" doc:id="e0050497-5f78-49da-9735-7e3191ff5cc5" >
+		<http:listener doc:name="Listener" doc:id="1c5b8a2e-78fd-4a52-a1a3-83814c79cab6" config-ref="HTTP_Listener_config" path="/deleteone"/>
+		<ee:transform doc:name="Transform Message" doc:id="b9f1f4d6-f833-4573-9347-a864834b806c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	"Id": "7515i000002tyBCAAY"
+}]
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:delete-job-bulk-api-v2 doc:name="Delete job bulk api v 2" doc:id="8483f391-c37b-436c-9e2a-61e6bedffdf7" config-ref="Salesforce_Config" id="#[payload.Id[0]]"/>
+		<ee:transform doc:name="Transform Message" doc:id="bba5e852-e3b4-4acc-9bae-c281f19f822e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cbf0b10f-aa2a-40a1-9c3d-dc804a84d71c" responseStreamingMode="AUTO" outputMimeType="" primaryNodeOnly="false" path="/client" outputEncoding="" config-ref="HTTP_Listener_config" allowedMethods="">
+		<http:listener-connection host="0.0.0.0" port="8081" >
+		</http:listener-connection>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="fe5851f9-ffd3-4d3c-ab0f-e5af22504f55" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="8092" >
+			<tls:context >
+				<tls:trust-store path="clienttruststore.jks" password="123456" type="jks" insecure="true"/>
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="twoway-ssl-clientFlow" doc:id="5c27e08b-8cb8-49b5-b860-f60e3dc87954" >
+		<http:listener doc:name="Listener" doc:id="3a08aedf-6771-47d6-8598-3ea70186f09c" config-ref="HTTP_Listener_config" path="/proc"/>
+		<http:request method="POST" doc:name="Request" doc:id="17b0c563-4258-473e-a6fc-bfbd2b75734f" config-ref="HTTP_Request_configuration" path="/server"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b9a7c958-5b7c-4b73-8677-bdbf995a115e" message="#[payload]" />
+	</flow>
+</mule>

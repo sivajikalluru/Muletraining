@@ -1,0 +1,14 @@
+#%RAML 1.0
+title: POC6-RAML
+mediaType: 
+- application/json
+/flights:
+  get:
+    queryParameters:
+      destination:
+        required: false
+    responses:
+      200:
+        body:
+           application/json:
+             example: !include /Example/poc6.example.raml

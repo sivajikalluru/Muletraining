@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="17d2ca20-76c8-46db-8933-75cf3cf1395c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="9b0523ae-e24f-456e-a782-301ecd37f83a" >
+		<file:connection workingDir="C:\Users\sivanjaneyuluk\Downloads" />
+	</file:config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="86236120-7749-4de5-8206-cf5bbc30d4a1" />
+	<validation:config name="Validation_Config1" doc:name="Validation Config" doc:id="0681a7a0-c24a-4168-97ef-234b58d11de0" />
+	<flow name="poctask20Flow" doc:id="e382c7eb-9c77-4eaa-a6df-fd90fc8e1feb" >
+		<http:listener doc:name="Listener" doc:id="a1ce45f8-a555-4933-9972-c17a6ff588f6" config-ref="HTTP_Listener_config" path="/poc20"/>
+		<file:read doc:name="Read" doc:id="6107228a-32cf-42aa-a97a-dd9609db03da" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Downloads\locations (1).csv" />
+		<ee:transform doc:name="Transform Message" doc:id="24342242-4bc9-4d13-acf0-7d49ff56ff1f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="poctask20Batch_Job" doc:id="4a623158-87ba-4cb8-8d26-75bf258badcc" maxFailedRecords="-1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="79ce9718-8705-4b0b-9b27-fd80f5c2eb45" acceptExpression='payload.Country == "CA"'>
+					<ee:transform doc:name="Transform Message" doc:id="9deffa7f-418c-4161-b2fb-e06020dc0e48">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="b684ee39-c9fc-47c7-add7-b578cc06f47d" message="#[payload]" />
+					<validation:is-not-null doc:name="Is not null" doc:id="4cead124-e70f-4ac3-bbfb-efa327ea45f6" config-ref="Validation_Config1" value="#[payload]"/>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="0d006e00-63fd-49f8-aac7-c9fc084f78f1" streaming="true">
+						<logger level="INFO" doc:name="Logger" doc:id="fbefafde-d491-46b9-aebe-b98ea40f71cb" message="#[payload]" />
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="7e353fc9-6fd3-4a98-a627-4105d8be667e" acceptPolicy="ALL">
+					<ee:transform doc:name="Transform Message" doc:id="23ff51e8-d62d-4740-b4a0-56d573057bf5">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<try doc:name="Try" doc:id="180ea6c8-784d-46f6-b47e-a83061b07f5f">
+						<error-handler>
+							<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bcaa1e7c-73d9-499a-a286-ab5607a18bb5" type="ANY">
+								<ee:transform doc:name="Transform Message" doc:id="8dc07b08-b46f-4717-af31-82e8c0a4b5c4">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<logger level="INFO" doc:name="Logger" doc:id="9e49a8c8-f98d-40e2-a32e-7eb5c7dfbd54" message="#[payload]" />
+								<file:write doc:name="Write" doc:id="ed161a76-c5b0-4e3e-8702-2eee8cad7618" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Desktop\ErrorHandlingfile1.csv" mode="APPEND"/>
+							</on-error-continue>
+						</error-handler>
+					</try>
+					<logger level="INFO" doc:name="Logger" doc:id="fcc17a3b-ed2c-4681-931e-4d4a84dffc60" message="#[payload]" />
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete>
+				<logger level="INFO" doc:name="Logger" doc:id="8664c9ef-7432-445d-86f7-c25015607456" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>

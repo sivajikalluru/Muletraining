@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="system_implementationFlow" doc:id="e54f1c2e-26e4-4120-a7c0-a14904428c37" >
+		<logger level="INFO" doc:name="Logger" doc:id="c1476098-80d4-4d67-be6b-86401898cf7a" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="b4ca0cc4-0788-4ed7-b5c3-02fb9db8dce1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Hi this is system layer"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ef214d89-6175-4960-a543-9da8ce98c63e" message="#[payload]"/>
+	</flow>
+</mule>

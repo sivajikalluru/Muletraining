@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="50b6d2f6-de1c-4203-a174-fc8d2b3ea061" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="task7-implementationFlow" doc:id="82db81e6-90c0-489d-9a88-2add8ac20910" >
+		<logger level="INFO" doc:name="Logger" doc:id="1e3f9cc1-9aaa-4abd-9218-eb5ea56458da" message="#[payload]"/>
+		<http:request method="GET" doc:name="Request" doc:id="ded14858-543f-46f5-82b8-bf081c5a1623" config-ref="HTTP_Request_configuration" path="/api/flights" responseTimeout="#[300000]"/>
+		<ee:transform doc:name="Transform Message" doc:id="563cab35-a709-406c-b841-c34d42e31112" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

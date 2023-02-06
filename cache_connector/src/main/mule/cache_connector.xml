@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d067a2ea-87e7-42cb-b609-a45c876cd264" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="af36eee8-fc13-4f1e-b58b-00bcd2b176fc" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="mOhEIjU3q4WDFN5mVpHqkXAsD"/>
+	</salesforce:sfdc-config>
+	<ee:object-store-caching-strategy name="Caching_Strategy" doc:name="Caching Strategy" doc:id="4f4a4acd-1258-4fce-b3cd-357ec4324841" objectStore="Object_store" keyGenerationExpression="#[payload.Id]"/>
+	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="0ce9fea7-551c-4a30-82d0-2eb97d2e9e4e" />
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="c8167a90-966b-4f0f-a5ce-ba16a2ffd4bc" maxEntries="100" entryTtl="20" expirationInterval="60" expirationIntervalUnit="SECONDS" config-ref="ObjectStore_Config" />
+	<flow name="cache_connectorFlow1" doc:id="605dccf4-aa5c-4571-ba27-1c12e33443f2" initialState="started">
+		<scheduler doc:name="Scheduler" doc:id="dd16d135-148e-4f46-8d6f-3e531a24d9ce" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<ee:invalidate-cache doc:name="Invalidate Cache" doc:id="1b077c1d-c1c9-4348-b942-fd637e6a021a" cachingStrategy-ref="Caching_Strategy"/>
+		<logger level="INFO" doc:name="Logger" doc:id="dc23555c-ff33-4ee6-9ca1-bc9d75bea216" message="retrieve lagger"/>
+	</flow>
+	<flow name="cache_connectorFlow" doc:id="c48713cb-0b41-4282-8e3b-f0dbb6a11cbb" >
+		<http:listener doc:name="Listener" doc:id="9f38ae6b-d793-4a67-a0cb-936b825a2d1d" config-ref="HTTP_Listener_config" path="/cache"/>
+		<logger level="INFO" doc:name="Log started" doc:id="fa941cd5-6016-46c1-8be3-b61808402064" message="#[payload]"/>
+		<ee:cache doc:name="Cache" doc:id="2332f98a-a32e-45de-b972-4a25d240e2d6" cachingStrategy-ref="Caching_Strategy">
+			<logger level="INFO" doc:name="Logger" doc:id="42ad6762-3aa7-4ab1-9bf2-ce1b02108fad" message="before query logger"/>
+			<salesforce:query doc:name="Query" doc:id="2628bd26-0e77-4320-8599-edb73496c36a" config-ref="Salesforce_Config">
+				<salesforce:salesforce-query><![CDATA[SELECT Limestone_Project_ID__c,Name,UKG_Project_Id__c FROM serviceId__c where Id= ':Recordid']]></salesforce:salesforce-query>
+				<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"Recordid" : payload.Id
+}]]]></salesforce:parameters>
+			</salesforce:query>
+			<logger level="INFO" doc:name="Logger" doc:id="f9a0d37e-fc42-4442-827a-de8db05845f9" message="End logger after query"/>
+		</ee:cache>
+		<ee:transform doc:name="Transform Message" doc:id="327b5bdb-c696-413a-a186-378223b0e0b9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4b52aab1-a50e-4d15-8eaf-abfbb06f0057" message="Final logger"/>
+	</flow>
+	<flow name="cache_connectorFlow2" doc:id="30823439-38e5-4234-ba08-fdebafca7356" >
+		<http:listener doc:name="Listener" doc:id="7c8c3757-2e56-458f-a576-b42d3dd595b3" config-ref="HTTP_Listener_config" path="/key"/>
+		<ee:invalidate-cache doc:name="Invalidate Cache" doc:id="bcb67dd3-326d-4a06-870f-8af4196f9ad8" cachingStrategy-ref="Caching_Strategy"/>
+	</flow>
+</mule>

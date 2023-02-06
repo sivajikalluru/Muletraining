@@ -1,0 +1,10 @@
+%dw 2.0
+
+type auto_6a92fec3_8075_47dc_8acf_13f6b7b2a83a_Input_Payload = Array<object1__c>
+type object1__c = {|
+  Id__c?: String {"typeId": "Id__c"}, 
+  Name__c?: String {"typeId": "Name__c"}
+|} {"typeId": "object1__c"}
+
+
+

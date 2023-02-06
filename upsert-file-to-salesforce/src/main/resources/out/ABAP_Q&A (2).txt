@@ -1,0 +1,611 @@
+				Q&A
+
+1) What are the different resources in ERP
+2) what is SAP.
+   SAP --- Systems,applications and products in Data processing
+   SAP --- Ess-ay-ap.
+
+3) What are the landscape of SAP?
+4) what is R/3 architecture?
+5) what are the different types of services in SAP?
+6) What is Application server?
+7) what is dispatcher?
+8) what is workprocess?
+9) Who are the different types of SAP consultants?
+10) what is OSS Note ---- Online Support System.
+11) What are the ticketing tools that are used for tickets in ABAP?
+12) what is SAP ECC --- Enterprise Core / Central Component
+13) what is EHP --- Enhancement Package.
+14) What is workbench organizer?
+15) What is a session and how many sessions can be created at a time?
+16) what is the following?
+      /n
+      /nex
+      F3
+      CTRL + F2
+      CTRL + F3
+      /o
+      CTRL + F6
+17) What are the workbench tools that are frequently used in ABAP.
+18) What is ABAP and what are the features of ABAP
+19) what is Open SQL and Native SQL?
+20) What is ABAP Dictionary?
+21) What are the different objects in ABAP Dictionary?
+22) What are tables and what are the different types of database tables?
+23) What is domain?
+24) what is data element?
+25) what is delivery class and what are the different options in delivery class
+    ACLGESW
+26) what is data class and different options in Data class:APPL0,APPL1
+27) what is size category?
+28) what is table maintanance generator?
+29) what is check table?
+30) what is value table?
+31) what is foreign key relationship?
+32) what is cardinality?
+33) what is single record buffering?
+34) what is generic buffering?
+35) what is buffering not allowed,buffering switched on and buffering allowed?
+36) what are display view maintanance?
+37) what is authorization group?
+38) what is fixed value append?
+39) what is enhancement category?
+40) what is text table?
+41) what is table description generator?
+42) what is a structure and different ways of adding the structure to the table?
+43) what is append structure?
+44) what is a view and what are the different types of views?
+45) what is the maintanance status of DBView,Projection view,maintanance view?
+46) what are the events in table maintanance generator?
+47) what is function group in TMG?
+48) what is maintanance type (one step and two step)
+49) what is a search help and what are the different types of search helps?
+50) what are indexes and how many types of indexes?
+51) what is database utilities? SE14.
+52) what is SE11,SE14,SE16N,SE16 and SM30?
+53) what are pooled table and cluster tables and do we create pooled and cluster
+   tables?
+54)  what is append search help?
+55) what is selection method in a search help?
+56) what is a search help exit?
+    a Search help exit is an exit which retreives the information of a related
+    value of one search help to another.it is a custom defined search help
+57) what are units and currencies?
+58) what is a type group?
+59) can custom type groups be created?
+60) what is a lock object ?
+61) different types of function modules created in lock objects?
+62) what is the naming convention while creating a lock object?
+63) what is a match code object and how the match code is called in the program?
+64) what are unique and non unique database system in abap dictionary?
+65) what are storage parameters?
+66) what are the important parameters for creating an ABAP Program?
+67) what is the importance of 5 radiobuttons while creating an ABAP Program?
+68) what is a variable?
+69) how a variable can be created in ABAP?
+70) what are the rules of creating an ABAP Program?
+71) what are the different types of ABAP Editors?
+72) what is pretty printer?
+73) what is the function used to suppress the title of the program in Editor?
+74) what is the maximum length while creating an ABAP Program?
+75) what is the maximum length for creating a table?
+76) what is master data and transaction data in database tables?
+77) what is customizing tables?
+78) what is the search mechanism for linear and binary search?
+79) what is the full syntax of report function?
+      report zdemo message-id ZMESS line-size 255 line-count 30(3).
+80) what are the different types of write statements?
+81) what is uline and different types of uline?
+82) what is skip?
+83) what is the difference between format color and color in a statement?
+84) what are the different types of string functions?
+     concatenate,translate,condense,strlen,find,search,replace and split.
+85) what are the system table name for all the system fields in SAP
+      current time,current date,host name,database server name,user name
+      database count,sy-vline,uline.
+86) what is a package?
+87) what is a local object and how the local object can be converted into a package?
+88) what is a request no and what are the different types of request nos?
+89) transaction codes to see the details of Transport organizer?
+90) what is transport organizer?
+91) what is a data type?
+92) what are the different data types in ABAP?
+93) what is pre-defined type?
+94) what are the 2 ways of creating a table?
+    pre-defined type and data element(top-down and bottom up approach)
+95) what are the different input elements in a report?
+     single value --- parameters
+     range of values --- select options
+     radiobuttons
+     check boxes
+     
+96) what is a line type and table type?
+97) can we create and call structures created in SE11 in a program?
+     yes
+98) what is a field string or a structure in a report?
+99) what is an internal table?
+     an internal table is a dataset located in the working memory space of ABAP.
+     it is temporary storage of data in the program.
+100) what are the 2 types of memory---SAP memory and ABAP memory.
+101) what is repid and CPROG?
+102) what is the difference between types and data?
+103) what is the keyword used for declaring a variable in ABAP?
+104) what are the different types of internal tables?
+      standard ,sorted and hashed?
+105) what is sorting?
+106) what are the different operations of internal table?
+      read,append,read table,loop...endloop,move,move-corresponding,
+      insert,modify,delete,delete adjacent duplicates
+      describe table.
+107) what are the different SQL queries?
+     select---different versions in sql queries---
+     insert
+     update
+     modify
+     delete
+108) what is the difference between select single * and select up to 1 rows?
+109) what are the different events in a classical reports?
+110) what is the difference between at selection screen and at selection screen
+     on?
+111) what is at selection-screen output?
+112) what is a report and what are the different types of reports?
+113) what are the different sections of an ABAP Program?
+114) what is a selection screen in abap and what are the selection screens in abap?
+115) what is a select options and what are the different options of select options
+      select-options:match code object
+                     obligatory-mandatory
+                     no-intervals
+                     no-extensions?
+                     default?
+116) what is parameter id? 
+     parameter id is a ID passed for a field to export the data from one memory
+     to another memory
+117) what is set parameter id and get parameter id?
+118) what is initialization,at selection-screen,at selection-screen on,
+     at selection-screen output,at selection-screen on value-request and help
+     request?
+119) what is an inner join and different types of joins?
+      inner join----common data and common fiels
+      left outer join ---- common field but data retreives even if the data
+      present in one table and not in the other table.
+
+      right outer join---records in table b retreived even if the records are
+      not present in table a.
+
+120) what are control break statements?
+     at first,at new ,at end of and at last
+     on change---on change and at new are same.
+
+    at new vbeln.
+      write:/
+    endat.
+      write:/
+
+    on change vbeln.
+     write:/ 
+    
+    on change vstel.
+
+    EQ101---EQ102---same 
+
+121) what is for all entries and what are the advantages of using for all entries
+    over joins?
+    
+
+121) what is interactive reports and differences between interactive reports and
+     classical reports?
+
+122) what at sy-lsind,lisel?
+123) what is set pf-status,at user-command,at line-selection and top-of-page 
+     during line-selection?
+124) how many screens can be navigated in interactiver reports?20+1.
+125) what is hot spot?
+126) what is hide and get cursor method?
+127) what is the system field for index,loop index?
+128) what is check,stop,continue and exit functions in ABAP?
+129) what is the syntax of call transaction method?
+130) what is call transaction and skip first screen?
+131) what is variant?
+132) what is logical database and what is the transaction code for LDB?
+133) what is editor lock?
+134) what is fixed point arithmetic?
+135) what is start using variant?
+136) what is different program types?
+136) how to find the current application server name in the system?
+137) what are the different modularization techniques in ABAP?
+137) what are the different types of sub routines?
+138) what is pass by value and pass by reference?
+139) what are includes and how an include is called in the program?
+140) what are types of function modules and different parameters in a function
+     module?
+141) how to create an exception in a function module?
+142) what is ALV,When ALv must be used and what are the advantages of alv over
+     classical and interactive reports?
+143) what is a field catalog?
+144) what are the different parameters in field catalog?
+145) what are the different parameters in a layout?
+146) what are the parameters in a sort in alv?
+147) what is a filter in ALV?
+148) what are the important function modules in alv
+     reuse_alv_list_Display,grid_display,hierseq_list_display
+     reuse_alv_block_list_append,display_init
+     conversion_Exit_alpha_input
+149) what are the events in ALV?
+150) transcation code for Business document navigator?
+151) what is cprog and sy-repid?
+152) what is slis_keyinfo_alv?
+153) what is a layout variant in ALV and what are the function modules
+     that are used for variant?
+154) what is list header in alv?
+155) what are the parameters of alv list header?
+156) what is conversion_Exit_alpha_input and output?
+157) what is pack and unpack?
+158) what are the differences betweeen report programs and dialog programs?
+159) what are the events in a dialog program?
+160) what is screen painter and what are the components of it?
+161) what is a table control with wizard and without wizard?
+162) what is set screen?
+163) what is call screen?
+164) what is leave screen and leave to screen?
+165) what is a tab strip control?
+166) what is chain...endchain?
+167) what is leave to list-processing?
+168) what are the different file formats in SAP?
+169) what is AL11?
+170) what is open dataset,transfer and close dataset?
+171) what is the default directory in AL11?
+172) what is read dataset.
+173) what is encoding default?
+174) what is difference between read table and read table with binary search?
+175) what is bdc?
+176) what are the different methods used in BDC?
+177) what are the differences between call transaction method and session method?
+178) what are the updates in BDC?
+179) what are the different modes in BDC?
+180) can multiple transactions be done in CTM?
+181) how to handle message handling,error handling,background execution
+     in bdc in call transaction method?
+182) how to handle error handling in session method?
+183) what is recording in SAP and what is the tcode for that?
+184) can we handle multiple transactions using session method?
+185) what is bdcdata?
+186) important parameters for bdc_open_group and bdc_insert.
+187) what is lsmw?
+188) what is ok_code?
+189) what is SM35?
+190) what is a project,sub project and object in LSMW?
+191) can we create a transaction code for a table or a view?
+192) what is transaction code?
+193) what is a message class and what is the table name for a message class?
+194) what are place holders in a message class and how the message class 
+     is called in the program?
+195) what is sy-subrc = 0 ?
+196) What is sy-subrc <> 0.
+197) what is a screen structure and the parameters of screen structure?
+198) what is PICK in interactive reports?
+199) what is the path to find the list of all buttons in ALV?
+200) what are mass printing tools?
+201) what are the differences between smartforms and sap scripts?
+202) what is the tablename for output types in sap scripts and smartforms?
+203) what is the transaction code for output types?
+204) program names for uploading TIFF Files,Copy from client,source script,
+     debugging a script,converting a script to PDF4.
+205) what are the different function modules used in SAP Scripts?
+206) what is a box in sap script?
+207) what is program lines,alternative window,loop?
+208) what are the different types of windows?
+209) what are the differences between table and template?
+210) what the components of a smartform?
+211) what is smartform interface,layout and print program?
+212) how to provide the background image for the smartform?
+213) what is duplex printing?
+214) can we print the form in two sides of the page?
+215) what is the transaction code for administration of form graphics?
+216) what is smartstyles?
+217) what is Print Program and print preview?
+218) how to perform calculations in smartforms?
+219) what is READ_TEXT in SAP Scripts?
+220) what is a sub routine in SAP Scripts?
+221) when a smartform is to be transported to different clients what is the 
+     standard function module that is used?
+222) what is translation in smartforms?
+223) how can we migrate a script to a smartform?
+**224) what is command in smartforms?
+225) what is  control_form in sap scripts?
+226) can we create a smartform without a main window?
+227) can we create a script without a main window?
+228) how can we send the smartform to a pdf format using a command?
+229) what are the function modules used for sending the smartform or script
+     to PDF format?
+       CONVERT_TO_OTF AND GUI_DOWNLOAD
+
+230) can we debug a smartform? INITIALIZATION----PROGRAM LINES---BREAK-POINT.
+231) what is the difference between Print preview and print preview and print?
+232) what is the importance of initialization in smartforms?
+233) how do you call the smartstyle in the smartform?
+234) what is the system fields structure used in smartforms?
+235) can we print multiple pages in smartforms?
+236) how to suppress a particular window in a smartform if the form is going
+     to multiple pages? Ans:Condition tab:ONLY IN FIRST PAGE.
+
+237) what is a command window in a smartform?
+238) how to suppress the Print preview screen in a smartform?
+239) can we download and upload the smartforms?
+240) what is the transaction code for creating standard text?
+241) how to call the standard text in the smartform or in script?
+242) how is a bar code called in the smartform or script?
+243) what is PERFORM %INIT in smartforms?
+244) what are the calculated functions in smartforms? --SUM,AVG AND COUNT
+245) what is copies window and what is the system field that prints the text
+     in different windows(system fields for count)?---COPYCOUNT.
+246) what is alternative window in smartforms?
+247) some examples for standard script 
+         PURCHASE ORDER ---MEDRUCK
+         DELIVERY NOTE  ---RVDELNOTE
+         INVOICE        ---RVINVOICE01
+248) what are the table control components in a smartform?
+         HEADER,MAIN AREA AND FOOTER.
+249) what are the two types of form painters?
+250) what is a folder in smartforms?
+251) what is page protection in smartform ans:New Page check box in smartforms
+
+251) what are the differences between procedural programming and Object oriented
+    programming?
+252) when OOPS must be used?
+253) what is a local class?
+254) what is data encapsulation?
+255) what are the different options while creating a class in SE24(Types of
+     classes)?
+256) what is persistent class? GUID ---- Global unique identifier.
+257) what are attributes in Global class?
+256) what are instance and static attributes?
+257) what are field symbols?
+258) what are the access specifiers in a class?
+259) can we convert a local class into a global class?
+260) what is abstraction and redefinition?
+261) what is the difference between an interface and a class?
+262) what is polymorphism?
+263) what is exception and some examples in exception classes?
+264) what is narrow casting?
+       assigning an object of the sub class to a super class --- narrow casting
+265) what is wide casting?
+       assigning an object of the super class to a sub class --- wide casting.
+266) what is a custom container class?
+267) what is a custom control in oops alv?
+268) what is a constructor?
+269) what is a class constructor?
+270) what is class-methods?
+271) can we pass the parameters to a method in the class?
+272) what is the line type and table type for field catalog
+                 line type --- for layout
+                 line type and table type for sorting?
+273) what is CL_SALV_TABLE?
+274) what is event handling in OOPS?
+275) what is the transaction code for Dump analysis?
+276) runtime analysis--Code inspector---Extended syntax check.
+277) what is a final class?
+278) what is a friends class?
+279) what are different types of field symbols?
+280) what is a signature in a class?
+281) what are enhancements?
+282) what are procedural oriented enhancements?
+283) differences between object oriented enhancements and Procedural oriented
+     enhancements?
+284) differences between the user exit and BADI?
+285) what are function exits?
+286) what are user exits?
+287) what are field exits?
+288) what are customer exits?
+289) what are the different types of customer exits?
+290) what is SMOD and CMOD?
+291) how can we change the standard description of the field in enhancements?
+292) what is SPRO IMG?
+293) what are the two ways of finding the BADI name for a transaction?
+294) what is BADI definition and BADI implementation?
+295) How an user exit is implemented?
+296) what is implicit enhancement?
+297) what is class enhancement?
+298) what is function module enhancement?
+299) what is source code enhancement?
+300) what is kernel BADI enhancement?
+      creating a custom BADI with the implementation of an interface is
+      a kernel badi enhancement
+301) what is explicit enhancement?
+302) what is enhancement framework?
+303) what is enhancement spot?
+304) what is enhancement section?
+305) what is BAPI?
+306) what are the advantages of BAPI over BDC?
+307) what is BAPI Explorer?
+308) what are the differences between BAPI and RFC?
+309) why is Pass by Value mandatory in BAPI?
+310) what are the two structures that are used for return the messages 
+     in BAPI? 
+       1) BAPIRETURN 2) BAPIRET2
+311) what are the two types of BAPI?
+312) what are BAPIExtensions? 
+     there are situations in an interface which are defined as BAPIEXTENSION_IN
+     and BAPIEXTENSION_OUT Where the interface has to be extended.
+313) what is ALE?---application linking and enabling is used for transfering
+     application data across clients or servers.
+314) what is IDOC? IDOC is intermediate document is a unique number generated by the
+   the SAP systems when an application is transfered across clients or servers.
+315) what are the different parts of IDOC?
+     idoc contains 3 parts
+      1) Control record --- EDIDC
+      2) Data    record --- EDIDD--- structure 
+      3) Status  record --- EDIDS
+316) what is a message type?
+      a message type is a container where all the standard applications are 
+      stored .they are defined in segments.
+317) can we create custom segments in idoc?
+         yes..using WE31.
+318) examples of standard message types in IDOCs.
+          MATMAS ---- MATERIAL MASTER
+          CREMAS ---- VENDOR MASTER
+          COSMAS ---- COST CENTER
+          DEBMAS ---- CUSTOMER MASTER 
+
+319) what is outbound system?
+        outbound system is called as sending system.
+
+320) what is inbound system?
+        inbound system is called as receiving system.
+
+321) what is the transaction code where all the steps are performed in ALE?
+        ans:SALE
+
+322) important transaction codes that are used in IDOCs
+
+       
+
+1)	Create logical systems ---- BD54
+2)	Assign Logical systems to client ---- SCC4.
+3)	Create RFC Destination ---- SM59.
+4)	Create Port ---- WE21--BASIS
+5)	Create Partner Profile --- WE20---ABAP Consultant
+6)	Create Distribution Model --- BD64.
+7)	Create material master ---- MM01.
+8)	Send Material --- BD10
+9)	Check the IDOC Status --- WE02.
+
+ Send material --- BD10
+ Get Material --- BD11
+ Send Customers  --- BD12
+ Get  customer  --- BD13
+ Send vendor  --- BD14 
+ Get Vendor  --- BD15 
+
+
+
+
+
+
+
+				Conversions 
+
+1) BDC --- Transaction Processing 
+2) BAPI ---- Business Application Programming interface 
+
+3) IDOC ---- Intermediate Document
+
+Sales-->Purchase-->Manufacturing-->Finance Department
+SD------>MM------->PP------------->FI/CO
+
+1) Raw material---Scrap for Sulphur---100 KGS.
+
+
+Swami---->Purchase-->MM01---9:45 ---M101 is created-300
+Prasad---->Manufacturing--->MM01---10:30---PP---M101-420
+Ashok----->Finance--------->FICO---11:00---FICO---M101-340
+Phani----->Sales----------->SD-----12:00---SD---M101-290
+
+This is not a file Transfer---Application Transfer.
+				ALE & IDOCS
+
+ALE Stands for Application Linking and Enabling where the Application is transfered
+across different systems or clients within the organization.
+When an application is transfered,the system creates an new notification or number
+which is called as Intermediate Document.
+
+Every IDOC is a system defined unique number which is automatically generated when an application is transfered across systems or clients.
+
+Sender System --- Outbound System
+Receiver System --- Inbound system
+
+Every IDOC has 3 parts:
+
+1) Control Record ---- Control record will store the information of the technical
+details like RFC Destination,Partner Profile,Port No --- It is stored in the
+table EDIDC.
+
+2) Data Record ---- Data record will store the information of the data that is
+transfered across clients or servers.
+
+   Message Type ---- Structure --- EDIDD.
+
+The data is stored in the form of Segments in IDOCs.
+The transactions that are performed in SAP are transfered or mapped in IDOCS as 
+Message Types.
+
+Message Type is a collection of several fields in the table.Each tables data
+is defined as Segment in IDOCs.
+
+  Some important Message Types that are frequently used:
+
+ 1) MATMAS ---- MATERIAL MASTER ---- MM01
+    MARA ------ IDOCS----E1MARA
+    MAKT ------      ----E1MAKT
+    MARC ------ E1MARC
+    MARM ------ E1MARM
+
+2) COSMAS ---- COST CENTER ---- KS01
+3) CREMAS ---- VENDOR MASTER ---- XK01   
+4) DEBMAS ---- CUSTOMER MASTER --- XD01
+5) GLMAST ---- GL ACCOUNT MASTER ---- FS00
+
+3) Status Record --- Status record will store the information whether the data
+that is send has been received successfully or not.It is stored in the table
+-EDIDS.
+
+The Steps that are involved in ALE 
+
+Steps in the Outbound system(Sending System)
+
+1)	Create logical systems ---- BD54
+2)	Assign Logical systems to client ---- SCC4.
+3)	Create RFC Destination ---- SM59.
+4)	Create Port ---- WE21--BASIS
+5)	Create Partner Profile --- WE20---ABAP Consultant
+6)	Create Distribution Model --- BD64.
+7)	Create material master ---- MM01.
+8)	Send Material --- BD10
+9)	Check the IDOC Status --- WE02.
+
+ Send material --- BD10
+ Get Material --- BD11
+ Send Customers  --- BD12
+ Get  customer  --- BD13
+ Send vendor  --- BD14 
+ Get Vendor  --- BD15 
+
+Steps in the Inbound sytems(Receiver system)
+
+1)	Create Partner Profile --- WE20
+2)	Get Material --- BD11
+3)	Check the IDOC status --- WE02.
+
+If you receive any Errors ,then WE19 --- IDOC 
+Testing tool where it is to be processed further.
+
+Reprocess the IDOC ----  BD87
+
+				Custom IDOCS 
+
+1)	WE30 – Assigning the segment to IDOC type
+2)	WE31 – Development of custom segments
+3)	BD82 – Create custom Message Type
+4)	BD81 – Assign the message to IDOC type.
+
+ For all the custom idocs ---- Processing   program.
+
+   CALL FUNCTION ‘MASTER_IDOC_DISTRIBUTE’
+
+
+
+
+
+
+
+
+   
+
+
+----------------------------------------------------------------------
+
+event handling,narrow casting and exception classes---left over topic
+
+----------------------------------------------------------------------
+
+
+

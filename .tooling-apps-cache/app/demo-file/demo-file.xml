@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="d0339be8-0e59-4b7f-b296-c096ae6f13eb" >
+		<file:connection />
+	</file:config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="9759ccc7-d024-431b-9f4e-e78e1618283b" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="sivakalluru46@gmail.com" password="Siva@78654321">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="demo-fileFlow" doc:id="b5cde984-d88e-4f9a-8a83-7bbe763dc008" >
+		<scheduler doc:name="Scheduler" doc:id="7e4f4e93-4e53-49ff-8749-2d3b85ae70b6" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:list doc:name="List" doc:id="7c445b93-d16b-4449-93e9-63d142a108e9" config-ref="File_Config" directoryPath="D:\samplefiles\sample-file-connector"/>
+		<ee:transform doc:name="Transform Message" doc:id="cf6fa402-ad6c-4eb5-819b-89a7a585876a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="572c10f7-33d6-4159-a9fc-304fc9ef2976" >
+			<when expression="#[payload != []]">
+				<logger level="INFO" doc:name="Logger" doc:id="7f89a061-314f-4b4c-86bd-68002abd2463" message="#[payload]"/>
+				<file:move doc:name="Move" doc:id="7bcebc44-8c70-4656-8f2c-d1503b0faf1f" config-ref="File_Config" sourcePath="D:\samplefiles\sample-file-connector" targetPath="D:\samplefiles\delete"/>
+				<logger level="INFO" doc:name="Logger" doc:id="9718f3c6-554c-409c-ad1f-fe136a4145d8" message="aftermove payload #[payload]"/>
+			</when>
+			<when expression="#[payload == []]">
+				<logger level="INFO" doc:name="Logger" doc:id="9856ac26-496b-4931-8bac-c5ef1a2f4527" message="#[payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="d8a35446-2895-4448-8365-4dcef9fb48f0">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+	payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="error"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "After wait 30 mins there are no files found in that folder "
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<email:send doc:name="Send" doc:id="7d6cc603-4c1d-4bcf-b096-90ee3f7c143b" config-ref="Email_SMTP" fromAddress='#["sivakalluru46"]' subject="[File not found]">
+					<email:to-addresses>
+						<email:to-address value='"sivajikalluru786@gmail.com"' />
+					</email:to-addresses>
+					<email:body contentType="text/plain">
+						<email:content><![CDATA[#[vars.error]]]></email:content>
+					</email:body>
+					<email:attachments><![CDATA[#[{
+     "hello.txt": "Hello"
+}]]]></email:attachments>
+				</email:send>
+				<logger level="INFO" doc:name="Logger" doc:id="59e6388c-8d87-4290-8012-79bcc9422b76" message="asuccessfully send error message in mail " />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="6460c4a3-8ec9-4894-a599-ddab2e5e0fac" message="#[payload]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="e99733a6-0f9b-4c1f-b356-d45e0332cd02" message="#[payload]" />
+	</flow>
+</mule>

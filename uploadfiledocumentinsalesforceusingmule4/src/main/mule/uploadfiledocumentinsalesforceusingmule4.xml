@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="450ca0cb-14cd-4f07-b0e0-265c2a453ac8" >
+		<file:connection/>
+	</file:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="5b34707d-9f45-4a5e-9a08-7a5ab28e908c" >
+		<salesforce:basic-connection username="sivajikalluru786@gmail.com" password="Siva@123456789" securityToken="PkAXKlo7ZpgwPenssRV6OUGRH" />
+	</salesforce:sfdc-config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="ad5c96c6-ec26-45a7-976d-f652c0d21c5f" >
+		<file:connection workingDir="D:\example" />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="259942ad-c9c3-47bb-b067-9566e5ee3c46" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="uploadfiledocumentinsalesforceusingmule4Flow" doc:id="1e498b05-7397-42d6-b14b-b989f3b65a49" >
+		<http:listener doc:name="Listener" doc:id="e7ea3373-eb85-433b-90c1-cd3868d76260" config-ref="HTTP_Listener_config" path="/upload"/>
+		<set-variable value="#[%dw 2.0&#10;import * from dw::core::Binaries&#10;---&#10;payload]" doc:name="Set initialPayload" doc:id="b60821c9-3b8a-4fe5-bc40-8ab8a4b7dbf5" variableName="initialpayload"/>
+		<ee:transform doc:name="Transform Message" doc:id="6427988e-fd07-45a3-84fd-266ee48b3f0a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="payloadForContentVersion" ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/json
+input payload multipart/form-data
+---
+[{
+    PathOnClient: payload.parts.file.headers.'Content-Disposition'.filename	as String,
+    VersionData: toBase64(write(vars.initialpayload,"application/json"))as Binary {
+        class: "byte[]"
+    }
+}]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="528746a2-8872-426f-b855-baab0d9a0c5b" config-ref="Salesforce_Config" objectType="ContentVersion" externalIdFieldName="Id" target="contentVersion">
+			<salesforce:records ><![CDATA[#[vars.payloadForContentVersion]]]></salesforce:records>
+		</salesforce:upsert>
+		<salesforce:query doc:name="Query" doc:id="c500a580-4103-4ce5-8ff8-1c559696fe16" config-ref="Salesforce_Config" target="contentDocument">
+			<salesforce:salesforce-query><![CDATA[SELECT ContentDocumentId FROM ContentVersion WHERE Id = ':Id']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"Id" : vars.contentVersion.items[0].id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="005ab143-d4ae-43be-b4d1-1fb0bdafe02d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="object_id"><![CDATA[%dw 2.0
+output application/json
+---
+vars.contentDocument]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="811f2230-768a-4155-8ce2-1b2781fa906b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="payloadForContentDocumentLink"><![CDATA[%dw 2.0
+output application/json
+---
+vars.contentDocument map(payload01 ,indexOfpayload01)->{
+	LinkedEntityId:vars.object_id,
+	ContentDocumentId:payload01.ContentDocumentId
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="03f722ab-ce9c-45a8-8d2f-9e14b8bf0d5c" config-ref="Salesforce_Config" objectType="ContentDocumentLink" externalIdFieldName="Id" target="contentDocumentLink">
+			<salesforce:records><![CDATA[#[vars.payloadForContentDocumentLink]]]></salesforce:records>
+		</salesforce:upsert>
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;vars.contentDocumentLink.items.payload[0] filterObject((value,key,index)-&gt; !(key  ~= "errors"))]' doc:name="Set Payload" doc:id="36b391e1-ddde-421d-9391-ac03cab1ad81" />
+	</flow>
+	<flow name="uploadfiledocumentinsalesforceusingmule4Flow1" doc:id="0b44540f-f8ae-41c5-a59d-8daf01fe9231" >
+		<file:listener doc:name="On New or Updated File" doc:id="272cbcd9-eb4f-4153-bff8-7b7b1aa1cee2" config-ref="File_Config" directory="C:\Users\sivanjaneyuluk\AnypointStudio\studio-workspace\uploadfiledocumentinsalesforceusingmule4\src\main\resources\in" moveToDirectory="C:\Users\sivanjaneyuluk\AnypointStudio\studio-workspace\uploadfiledocumentinsalesforceusingmule4\src\main\resources\out">
+			<scheduling-strategy>
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="Transform Message" doc:id="560ccb9c-a053-4c37-a9e1-7df3401e0a50">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/java
+---
+[{
+    PathOnClient: attributes.fileName,
+    VersionData: payload as Binary {
+        class: "byte[]"
+    }
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="f7d14b51-df63-4f1f-a464-83174fc36a33" config-ref="Salesforce_Config" objectType="ContentVersion" externalIdFieldName="Id"/>
+		<salesforce:query doc:name="Query" doc:id="8ef3a511-11c4-4238-86c3-fa9b71a72da4" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[	
+SELECT ContentDocumentId FROM ContentVersion WHERE Id = ':cvId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"cvId" : payload.items[0].id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="309616c2-3d29-4ba5-88fb-4005f3aa0227" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+    LinkedEntityId: "a045i000006pNlyAAE",
+    ContentDocumentId: payload01.ContentDocumentId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="9c709139-e445-4281-ad73-4d9e7f6fd758" config-ref="Salesforce_Config" objectType="ContentDocumentLink" externalIdFieldName="Id"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8932cc8c-7f48-4fd8-ba5d-eb9e514d9f95" message="#[output application/json --- payload]"/>
+	</flow>
+</mule>

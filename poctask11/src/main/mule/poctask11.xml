@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="02a2a35b-7567-4abc-b48a-bca61526c77e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="poctask11Flow" doc:id="bfcf3bda-b9a4-4915-bb56-ff5833478c74" >
+		<http:listener doc:name="Listener" doc:id="1c8a37e7-f0d4-453e-a981-0a4903f28d17" config-ref="HTTP_Listener_config" path="/poc11"/>
+		<ee:transform doc:name="Transform Message" doc:id="a3315d50-3ba5-4f3f-af87-2cdca349a05a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+//var a = Address:"Mouritech Private Limited,Huda Techno Enclave,Survey No. 64,4th Floor,SBR Surya Pearl Sector III,IT Park,Madhapur,Hitech City Main Rd,Phase 2,Opposite to Mindspace,Top of Karachi Bakery and Burger king,HITEC City,Hyderabad,Telangana 500081"
+ 
+ var result = sizeOf(payload)
+
+---
+if(result<=200)
+{
+"Address": payload
+}
+	else
+{
+	"Address1":payload[0 to 200],
+	"Address2":payload[201 to result-1]
+}
+	
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="29c7c075-49a3-457f-a2ee-c15ad0892666" message="#[payload]"/>
+	</flow>
+</mule>

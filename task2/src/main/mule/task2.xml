@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="task2Flow" doc:id="d81e83aa-b608-42f0-a6f3-99d2eb9220b5" >
+		<http:listener doc:name="Listener" doc:id="baf32dfc-1672-47c5-ae17-962d5ef5e925" config-ref="HTTP_Listener_config" path="/task2"/>
+		<ee:transform doc:name="Transform Message" doc:id="8ff733ce-9fff-4be6-8f3f-00b73ce89252" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload filter($ != "A" and $ != "E" and $ != "I" and $ != "O" and $ != "U") joinBy ""]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="91134a49-c88d-466f-9af9-b9ec19a71390" message="#[payload]"/>
+	</flow>
+</mule>

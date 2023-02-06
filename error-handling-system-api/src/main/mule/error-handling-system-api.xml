@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c344a37c-ba17-4530-8048-9c39e03447ec" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="error-handling-system-apiFlow" doc:id="36031b8f-bc6d-4154-af59-92a453772155" >
+		<http:listener doc:name="Listener" doc:id="57cd2414-bb91-402b-abfd-048e1e41b420" config-ref="HTTP_Listener_config" path="/system-api"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c8ea0d02-9a1f-419a-8b09-2ca5642153d1" message="API Successful"/>
+		<ee:transform doc:name="Transform Message" doc:id="6d0e5805-c28f-4a7d-92f6-a1b96750b35f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status : "sucess",
+	results : payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="178e1924-d171-471b-87b6-524deef99502" >
+				<logger level="INFO" doc:name="Logger" doc:id="64285a5a-2cc6-4f2f-b4c5-d71c61a2b087" message="error accured"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

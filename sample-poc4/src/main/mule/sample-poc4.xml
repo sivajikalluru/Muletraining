@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6f6e6273-a33f-4820-a9ac-bab1b88e5c88" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c84aacdc-8405-47ae-a1ad-8153610a7ea6" >
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	<flow name="sample-poc4Flow" doc:id="474289de-1ad7-4c9a-918b-cb83af4f21a9" >
+		<http:listener doc:name="Listener" doc:id="07f2476d-e639-4de0-aabc-e0dfd362c7dd" config-ref="HTTP_Listener_config" path="/poc4"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="e15f81e0-200e-4e96-830e-497f80c859ad" variableName="destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="145224b0-65ff-431f-b249-7d6ea8b4cd27" config-ref="HTTP_Request_configuration" path="#['/essentials/united/flights/' ++ vars.destination]">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"destination" : "attributes.queryParams.destination"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="24446b07-1ce3-4e4c-815d-4eb2cadb1ca4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

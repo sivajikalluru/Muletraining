@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="596c85e6-5914-49e0-a307-78c7d21f325a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="f6c8ab2f-c0b5-4117-8f3c-3b2f34b09551" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="15d20e7f-7e6b-4e17-8f6c-94fae7ccb7a4" >
+		<file:connection workingDir="D:\testingggggggggg"/>
+	</file:config>
+	<flow name="flightsdata-basedonfiltercondition-createfilesFlow" doc:id="ee24c141-f36e-4619-bf44-d4d1d91ba535" >
+		<http:listener doc:name="Listener" doc:id="ec725b69-c4b6-4207-ad82-1c2e2f702329" config-ref="HTTP_Listener_config" path="/flights"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="280d4833-e798-4f06-ad70-49a3d86dd378" variableName="dest" mimeType="application/json"/>
+		<http:request method="GET" doc:name="Request" doc:id="8d11c724-cf98-4285-96a3-28c6f03b3a73" config-ref="HTTP_Request_configuration" path="/essentials/united/flights" outputMimeType="application/json"/>
+		<ee:transform doc:name="Transform Message" doc:id="327cef62-bbe8-4abc-8332-1484e4b821b2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="0c5c34b2-7a9b-4c40-b123-31be61f0692c">
+			<when expression="#[vars.dest != null]">
+				<ee:transform doc:name="Transform Message" doc:id="a8bef0da-eba4-4e4e-89cb-4e03e61359ab">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights filter ((item, index) -> item.destination == vars.dest)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<foreach doc:name="For Each" doc:id="497e8ab8-8bd0-4c3a-a045-43be3b9dc6cb">
+					<ee:transform doc:name="Transform Message" doc:id="91240e35-41a3-4474-bcf5-d3d9dea5420d" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<file:write doc:name="Write" doc:id="ff5aaa57-6532-4c2b-8d61-53ed3b710e60" config-ref="File_Config" path="#['flights' ++ now() as String {format:&quot;yyyy-MM-dd'T'HH-mm-ss&quot;}  ++ '.json']" mode="APPEND">
+					</file:write>
+				</foreach>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="236438b8-fd56-4348-b68f-94aad117aff2">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="fefc4021-f590-494c-9aab-2a874fe64cf7" message="#[payload]"/>
+	</flow>
+</mule>

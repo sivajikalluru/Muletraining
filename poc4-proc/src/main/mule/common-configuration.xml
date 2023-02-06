@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+ <http:listener-config name="myfirst-poc-raml-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="myfirst-poc-raml-config" api="myfirst-poc-raml.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />	
+<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1483849b-a38c-411d-b81e-f5ae6639b0d0" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<configuration doc:name="Configuration" doc:id="76ca24c9-f17e-494b-b350-af2bbb1e8767" defaultErrorHandler-ref="Main_Error_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="6c4b4100-374e-47a3-91f6-38a076282f05" file="property.yaml" />	
+	
+	
+	
+	
+</mule>

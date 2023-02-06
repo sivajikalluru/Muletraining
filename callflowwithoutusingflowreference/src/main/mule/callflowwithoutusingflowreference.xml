@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="34502da8-8abe-4b98-bb97-0f6e8ef01416" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="33577344-26d5-4a8c-bdb7-d407b0c1d067" >
+		<salesforce:basic-connection username="sivajikalluru786@gmail.com" password="Siva@78654321" securityToken="hnDcJYu9A2h27cGIArdbJfGa" />
+	</salesforce:sfdc-config>
+	<flow name="callflowwithoutusingflowreferenceFlow" doc:id="b667f6e2-e440-4034-a9fa-fe52c00a3808" >
+		<http:listener doc:name="Listener" doc:id="dc11d02f-d94f-46f4-b453-0c2a3446254e" config-ref="HTTP_Listener_config" path="/object1"/>
+		<salesforce:query doc:name="Query" doc:id="1ed79dee-475f-4870-8238-6033d968f960" config-ref="Salesforce_Config" target="data1">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id__c,Name__c FROM object1__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="4704cfae-890a-413c-8405-1b204961008b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.data1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="cd1dffd7-f85d-4d4d-bd96-ba844a016ee6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.data1 map ( data1 , indexOfData1 ) -> {
+	Id: data1.Id__c,
+	Name: data1.Name__c
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="87888542-b677-469b-8b56-07c50d355dc3" name="callflowwithoutusingflowreferenceSub_Flow"/>
+	</flow>
+	<sub-flow name="callflowwithoutusingflowreferenceSub_Flow" doc:id="6a92fec3-8075-47dc-8acf-13f6b7b2a83a" >
+		<salesforce:query doc:name="Query" doc:id="ae8929d7-3634-4e34-8141-536668692a7c" config-ref="Salesforce_Config" target="data">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id__c,Name__c FROM object2__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="662c2a51-036d-4d3c-9f7d-4460d4011b73" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="91b9f86f-e36b-4720-9db9-95d9d7d8fca4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="613262d0-e40e-4116-9d46-9762c6e57ed1" message="#[payload]"/>
+	</sub-flow>
+</mule>

@@ -1,0 +1,11 @@
+{
+    "caseType": "ACN",
+    "subject": "ACN case creation New",
+    "description": "Case Creation",
+    "collisionTime":"2022-06-16T17:00:00",
+    "priority": "High",
+    "caseOrigin": "Web",
+    "status" : "Escalated",
+    "accountId": "0017g00001TzqbaAAB"
+}
+

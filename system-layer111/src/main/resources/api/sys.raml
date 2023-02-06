@@ -1,0 +1,19 @@
+#%RAML 1.0
+title: sys
+/sys:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "message": "sucess"
+              }
+      400:
+        body:
+          application/json:
+            example:
+              {
+                "message": "Bad Request"
+              }

@@ -1,0 +1,7 @@
+http:
+ host: "localhost"
+ port: "8081"
+salesforce:
+ username: "eshwarnagaram93@gmail.com"
+ password: "8142886255#Eshwar"
+ securitytoken: "E2jd6UjyqkCna0KjoR3lqQpvT"

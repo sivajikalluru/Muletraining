@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Jhon",
+    "country": "India",
+    "state": "Telangana",
+    "phone": "987653490",
+    "email": "jhon@gmail.com"
+  },
+  {
+    "name": "David",
+    "country": "India",
+    "state": "AP",
+    "phone": "987653491",
+    "email": "david@gmail.com"
+  },
+  {
+    "name": "Rebeca",
+    "country": "India",
+    "state": "MP",
+    "phone": "987653492",
+    "email": "rebeca@gmail.com"
+  },
+  {
+    "name": "ALP",
+    "country": "US\t",
+    "state": "Newyork",
+    "phone": "987653493",
+    "email": "alp@gmail.com"
+  },
+  {
+    "name": "Stephean\t",
+    "country": "US",
+    "state": "New Jerssy",
+    "phone": "987653494",
+    "email": "stephean@gmail.com"
+  },
+  {
+    "name": "Manikanta",
+    "country": "France\t",
+    "state": "Paris",
+    "phone": "987653495",
+    "email": "mani@gmail.com"
+  },
+  {
+    "name": "Harshitha\t",
+    "country": "CA",
+    "state": "Ca1",
+    "phone": "987653496",
+    "email": "harshitha@gmail.com"
+  },
+  {
+    "name": "Santhosh\t",
+    "country": "CA",
+    "state": "CA2",
+    "phone": "987653497",
+    "email": "santhosh@gmail.com"
+  },
+  {
+    "name": "Sindhu",
+    "country": "US",
+    "state": "US1",
+    "phone": "987653498",
+    "email": "sindhu@gmail.com"
+  },
+  {
+    "name": "Ramanaidu",
+    "country": "UK",
+    "state": "london",
+    "phone": "987653499",
+    "email": "rama@gmail.com"
+  }
+]

@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension-documentation>
+    <configs>
+        <config name="sdc-config">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="name">
+                    <description><![CDATA[The identifier of this element used to reference it in other components]]></description>
+                </parameter>
+                <parameter name="expirationPolicy">
+                    <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
+                </parameter>
+            </parameters>
+        </config>
+        <config name="sdc-webhook-config">
+            <description><![CDATA[Configuration element for a WebhookSource.]]></description>
+            <parameters>
+                <parameter name="basePath">
+                    <description><![CDATA[Base path to use for all requests that reference this config.]]></description>
+                </parameter>
+                <parameter name="name">
+                    <description><![CDATA[The identifier of this element used to reference it in other components]]></description>
+                </parameter>
+            </parameters>
+        </config>
+    </configs>
+    <connections>
+        <connection name="oauth-jwt">
+            <description><![CDATA[Custom connection provider for OAuth JWT flow]]></description>
+            <parameters>
+                <parameter name="defaultHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="defaultQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="usePersistentConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionIdleTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionIdleTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyConfig">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamResponse">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseBufferSize">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="consumerKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="keyStorePath">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="storePassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="keyAlias">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="subject">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="audienceUrl">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="protocol">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="oauth-user-pass">
+            <description><![CDATA[Custom connection provider for username &amp; password flow]]></description>
+            <parameters>
+                <parameter name="defaultHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="defaultQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="usePersistentConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionIdleTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionIdleTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyConfig">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamResponse">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseBufferSize">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="clientId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="clientSecret">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="username">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="password">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="audienceUrl">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="protocol">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="listener">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="tlsContext">
+                    <description><![CDATA[Reference to a TLS config element. This will enable HTTPS for this config.]]></description>
+                </parameter>
+                <parameter name="protocol">
+                    <description><![CDATA[Protocol to use for communication. Valid values are HTTP and HTTPS. Default value is HTTP. When using HTTPS the HTTP communication is going to be secured using TLS / SSL. If HTTPS was configured as protocol then the user needs to configure at least the keystore in the tls:context child element of this listener-config.]]></description>
+                </parameter>
+                <parameter name="host">
+                    <description><![CDATA[Host where the requests will be sent.]]></description>
+                </parameter>
+                <parameter name="port">
+                    <description><![CDATA[Port where the requests will be received.]]></description>
+                </parameter>
+                <parameter name="usePersistentConnections">
+                    <description><![CDATA[If false, each connection will be closed after the first request is completed.]]></description>
+                </parameter>
+                <parameter name="connectionIdleTimeout">
+                    <description><![CDATA[The number of milliseconds that a connection can remain idle before it is closed. The value of this attribute is only used when persistent connections are enabled. The listener default timeout is bigger than our requester default timeout to avoid 'Remotely closed' exception when you start sending a request on an existing connection just before the timeout occurs.]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+    </connections>
+    <extension name="Salesforce CDP">
+        <description><![CDATA[]]></description>
+        <parameters/>
+    </extension>
+    <operations>
+        <operation name="createBulkJob">
+            <description><![CDATA[Creates a job representing a bulk operation that for sending data to Salesforce CDP for asynchronous processing This operation makes an HTTP POST request to the /ingest/jobs endpoint]]></description>
+            <parameters>
+                <parameter name="sourceNameUriParam">
+                    <description><![CDATA[Name of Ingestion source API to work with]]></description>
+                </parameter>
+                <parameter name="objectNameUriParam">
+                    <description><![CDATA[Name of object to work with]]></description>
+                </parameter>
+                <parameter name="operationUriParam">
+                    <description><![CDATA[Operation to be executed]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteBulkJob">
+            <description><![CDATA[Deletes the job for the specified Job ID This operation makes an HTTP DELETE request to the /ingest/jobs/{id} endpoint]]></description>
+            <parameters>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The Job ID returned in the response body from the Create Job request]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteObjects">
+            <description><![CDATA[Deletes one or more records from Salesforce CDP This operation makes an HTTP DELETE request to the /ingest/sources/{source-name}/{object-name} endpoint]]></description>
+            <parameters>
+                <parameter name="sourceNameUriParam">
+                    <description><![CDATA[Name of Ingestion API source to work with]]></description>
+                </parameter>
+                <parameter name="objectNameUriParam">
+                    <description><![CDATA[Name of object to work with]]></description>
+                </parameter>
+                <parameter name="idsQueryParams">
+                    <description><![CDATA[A comma separated list of IDs to be deleted]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getAllCalculatedInsightMetadata">
+            <description><![CDATA[The metadata all calculated insights including the dimension and measure that are part of the calculated insight. This operation makes an HTTP GET request to the /insight/metadata endpoint]]></description>
+            <parameters>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getBulkJob">
+            <description><![CDATA[Retrieves detailed information about a job given its ID This operation makes an HTTP GET request to the /ingest/jobs/{id} endpoint]]></description>
+            <parameters>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The Job ID returned in the response body from the Create Job request]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getCalculatedInsightMetadata">
+            <description><![CDATA[The metadata includes the dimension and measure that are part of the calculated insight. This operation makes an HTTP GET request to the /insight/metadata/{ci-name} endpoint]]></description>
+            <parameters>
+                <parameter name="ciNameUriParam">
+                    <description><![CDATA[The calculated insight name.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getCalculatedInsightWithFiltersFieldsAndLimit">
+            <description><![CDATA[Use this API to query the calculated insights. Users can slice, dice, and filter by selecting different dimensions, measures and filters. This operation makes an HTTP GET request to the /insight/calculated-insights/{ci-name} endpoint]]></description>
+            <parameters>
+                <parameter name="ciNameUriParam">
+                    <description><![CDATA[The calculated insight name.]]></description>
+                </parameter>
+                <parameter name="dimensionsQueryParam">
+                    <description><![CDATA[Comma separated list of dimensions to be projected. By default, this parameter includes all of the available dimensions.]]></description>
+                </parameter>
+                <parameter name="measuresQueryParam">
+                    <description><![CDATA[Comma separated list of measures to be projected. By default, this parameter includes all of the available measures.]]></description>
+                </parameter>
+                <parameter name="limitQueryParam">
+                    <description><![CDATA[The number of items to return. By default, the maximum number, 4999 items are returned.]]></description>
+                </parameter>
+                <parameter name="offsetQueryParam">
+                    <description><![CDATA[Number of rows to skip before starting to return.]]></description>
+                </parameter>
+                <parameter name="filtersQueryParam">
+                    <description><![CDATA[This parameter is added to a select query to select results of only a specific type.]]></description>
+                </parameter>
+                <parameter name="orderbyQueryParam">
+                    <description><![CDATA[Comma seperated values to sort the result-set in ascending or descending order.]]></description>
+                </parameter>
+                <parameter name="timeGranularityQueryParam">
+                    <description><![CDATA[User specified granularity if ci has one or more time dimensions available.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getComputedViewForProfile">
+            <description><![CDATA[Returns data model objects and a computed view based on indexes and search filters. This operation makes an HTTP GET request to the /profile/{dataModelName}/{id}/calculated-insights/{ci_name} endpoint]]></description>
+            <parameters>
+                <parameter name="dataModelNameUriParam">
+                    <description><![CDATA[Data model object API name.]]></description>
+                </parameter>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The value of an indexed column.]]></description>
+                </parameter>
+                <parameter name="ciNameUriParam">
+                    <description><![CDATA[The calculated insight name.]]></description>
+                </parameter>
+                <parameter name="searchKeyQueryParam">
+                    <description><![CDATA[Index name if object's ID is different from primary key.]]></description>
+                </parameter>
+                <parameter name="dimensionsQueryParam">
+                    <description><![CDATA[Comma separated name of the dimensions to be part of result from the computed view. By default includes all the dimensions.]]></description>
+                </parameter>
+                <parameter name="measuresQueryParam">
+                    <description><![CDATA[Comma separated name of the measures to be part of result from the computed view. By default includes all the measures.]]></description>
+                </parameter>
+                <parameter name="limitQueryParam">
+                    <description><![CDATA[The numbers of items to return.]]></description>
+                </parameter>
+                <parameter name="filtersQueryParam">
+                    <description><![CDATA[Filters are applied only on the parent object.]]></description>
+                </parameter>
+                <parameter name="offsetQueryParam">
+                    <description><![CDATA[Number of rows to skip before starting to return.]]></description>
+                </parameter>
+                <parameter name="orderbyQueryParam">
+                    <description><![CDATA[Comma separated values to sort the result-set in ascending or descending order.]]></description>
+                </parameter>
+                <parameter name="timeGranularityQueryParam">
+                    <description><![CDATA[User specified granularity if ci has one or more time dimensions available.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getMeta">
+            <description><![CDATA[Returns the metadata for the data model object. Metadata includes the list of fields, data types and indexes available for lookup. This operation makes an HTTP GET request to the /profile/metadata/{dataModelName} endpoint]]></description>
+            <parameters>
+                <parameter name="dataModelNameUriParam">
+                    <description><![CDATA[Data model object API name.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getMetaByCategory">
+            <description><![CDATA[Returns the list of data model objects, their fields, and category. This operation makes an HTTP GET request to the /profile/metadata endpoint]]></description>
+            <parameters>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getParent">
+            <description><![CDATA[Returns data model objects based on search indexes and filters. Use this API call to retrieve the object record based on the primary key or secondary keys. Returns an empty list when records are not found. This operation makes an HTTP GET request to the /profile/{dataModelName}/{id} endpoint]]></description>
+            <parameters>
+                <parameter name="dataModelNameUriParam">
+                    <description><![CDATA[Data model object API name.]]></description>
+                </parameter>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The value of the primary/secondary key field. Defaults to primary key when not specified.]]></description>
+                </parameter>
+                <parameter name="searchKeyQueryParam">
+                    <description><![CDATA[The name of the key field, if a field other than the primary key is used.]]></description>
+                </parameter>
+                <parameter name="fieldsQueryParam">
+                    <description><![CDATA[Distinct comma-separated name of fields that you want to include in the result. Not specifying this parameter will return an arbitrary set of fields.]]></description>
+                </parameter>
+                <parameter name="filtersQueryParam">
+                    <description><![CDATA[A set of comma-separated equality expressions, within square brackets.]]></description>
+                </parameter>
+                <parameter name="limitQueryParam">
+                    <description><![CDATA[The numbers of records to be returned.]]></description>
+                </parameter>
+                <parameter name="orderbyQueryParam">
+                    <description><![CDATA[Comma separated values to sort the result-set in ascending or descending order. This field is available in API version 52.0 and later.]]></description>
+                </parameter>
+                <parameter name="offsetQueryParam">
+                    <description><![CDATA[Number of rows to skip before starting to return. This field is available in API version 52.0 and later.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getParentAndChild">
+            <description><![CDATA[Returns data model objects and child objects based on indexes and search filters. This operation makes an HTTP GET request to the /profile/{dataModelName}/{id}/{childDataModelName} endpoint]]></description>
+            <parameters>
+                <parameter name="dataModelNameUriParam">
+                    <description><![CDATA[Data model object API name.]]></description>
+                </parameter>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The value of an indexed column.]]></description>
+                </parameter>
+                <parameter name="childDataModelNameUriParam">
+                    <description><![CDATA[Child data model object API name.]]></description>
+                </parameter>
+                <parameter name="searchKeyQueryParam">
+                    <description><![CDATA[Index name if object's ID is different from primary key.]]></description>
+                </parameter>
+                <parameter name="fieldsQueryParam">
+                    <description><![CDATA[Comma separated name of the fields to be part of result from the child entity. Not specifying will give the first 10 alphabetically sorted fields.]]></description>
+                </parameter>
+                <parameter name="limitQueryParam">
+                    <description><![CDATA[The numbers of items to return.]]></description>
+                </parameter>
+                <parameter name="filtersQueryParam">
+                    <description><![CDATA[Filters are applied only on the parent object.]]></description>
+                </parameter>
+                <parameter name="offsetQueryParam">
+                    <description><![CDATA[Number of rows to skip before starting to return.]]></description>
+                </parameter>
+                <parameter name="orderbyQueryParam">
+                    <description><![CDATA[Comma separated values to sort the result-set in ascending or descending order.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getParentWithFilters">
+            <description><![CDATA[Returns data model objects based on search filters. Use this API call to retrieve the object records after applying the selected filter(s). This operation makes an HTTP GET request to the /profile/{dataModelName} endpoint]]></description>
+            <parameters>
+                <parameter name="dataModelNameUriParam">
+                    <description><![CDATA[Data model object API name.]]></description>
+                </parameter>
+                <parameter name="filtersQueryParam">
+                    <description><![CDATA[A set of comma-separated equality expressions, within square brackets.]]></description>
+                </parameter>
+                <parameter name="fieldsQueryParam">
+                    <description><![CDATA[Distinct comma-separated name of fields that you want to include in the result. Not specifying this parameter will return an arbitrary set of fields.]]></description>
+                </parameter>
+                <parameter name="limitQueryParam">
+                    <description><![CDATA[The numbers of records to be returned.]]></description>
+                </parameter>
+                <parameter name="orderbyQueryParam">
+                    <description><![CDATA[Comma separated values to sort the result-set in ascending or descending order. This field is available in API version 52.0 and later.]]></description>
+                </parameter>
+                <parameter name="offsetQueryParam">
+                    <description><![CDATA[Number of rows to skip before starting to return. This field is available in API version 52.0 and later.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="insertObjects">
+            <description><![CDATA[Creates new records or updates existing records in Salesforce CDP This operation makes an HTTP POST request to the /ingest/sources/{source-name}/{object-name} endpoint]]></description>
+            <parameters>
+                <parameter name="sourceNameUriParam">
+                    <description><![CDATA[Name of Ingestion API source to work with]]></description>
+                </parameter>
+                <parameter name="objectNameUriParam">
+                    <description><![CDATA[Name of object to work with]]></description>
+                </parameter>
+                <parameter name="insertObjectsBody">
+                    <description><![CDATA[the content to use]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="query">
+            <description><![CDATA[Executes a query against the specified object and returns data that matches the specified criteria This operation makes an HTTP POST request to the /query endpoint]]></description>
+            <parameters>
+                <parameter name="queryBody">
+                    <description><![CDATA[the content to use]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="updateBulkOperationJob">
+            <description><![CDATA[Closes or aborts a job given its ID This operation makes an HTTP PATCH request to the /ingest/jobs/{id} endpoint]]></description>
+            <parameters>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The Job ID returned in the response body from the Create Job request]]></description>
+                </parameter>
+                <parameter name="state">
+                    <description><![CDATA[The new state for the job]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="uploadDataBulkJob">
+            <description><![CDATA[Uploads data for a job using CSV data you provide This operation makes an HTTP PUT request to the /ingest/jobs/{id}/batches endpoint]]></description>
+            <parameters>
+                <parameter name="idUriParam">
+                    <description><![CDATA[The Job ID returned in the response body from the Create Job request]]></description>
+                </parameter>
+                <parameter name="uploadDataBulkJobBody">
+                    <description><![CDATA[the content to use]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="customQueryParams">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customHeaders">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="responseTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="streamingType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+    </operations>
+    <sources>
+        <source name="webhook-listener">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="path">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="signingKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="signingAlgorithm">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="outputMimeType">
+                    <description><![CDATA[The mime type of the payload that this operation outputs.]]></description>
+                </parameter>
+                <parameter name="config-ref">
+                    <description><![CDATA[The name of the configuration to be used to execute this component]]></description>
+                </parameter>
+                <parameter name="onCapacityOverload">
+                    <description><![CDATA[Strategy that the runtime will apply when the flow receives more messages than it has the capacity to handle]]></description>
+                </parameter>
+                <parameter name="redeliveryPolicy">
+                    <description><![CDATA[Defines a policy for processing the redelivery of the same message]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </source>
+    </sources>
+    <types>
+        <type name="com.mulesoft.connectivity.rest.commons.api.operation.HttpResponseAttributes">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="statusCode">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="headers">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reasonPhrase">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="com.mulesoft.connectivity.rest.commons.api.proxy.HttpProxyConfig">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="host">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="port">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="username">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="password">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="nonProxyHosts">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="com.mulesoft.connectivity.rest.commons.api.request.QueryParam">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="key">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="value">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="com.mulesoft.connectivity.rest.commons.api.request.RequestHeader">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="key">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="value">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+    </types>
+</extension-documentation>

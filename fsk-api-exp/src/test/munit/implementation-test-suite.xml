@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-caseCreateTest" doc:id="8eff72be-fa37-416f-9040-e117a298206b" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="fsk-exp-api-main" />
+			<munit:enable-flow-source value="implementationFlow_caseCreate" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="caseCreateFinalResponseFromRequest" doc:id="566526fb-8357-4e24-bcff-a6dbc3e88ffb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="2805025b-d133-41b8-a0d1-1d0efb27d732" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('caseCreateFinalResponseData.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="caseCreateRequestData" doc:id="b3bb28e9-af8b-4ed6-92ef-0d474b81ae8c" >
+				<munit:payload value="#[MunitTools::getResourceAsString('caseCreateRequestData.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to implementationFlow_caseCreate" doc:id="98a97bc8-eaea-481b-812a-045cc4c34121" name="implementationFlow_caseCreate"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="caseCreateResponseData" doc:id="8d60977a-e506-4281-a55c-923ff63faf71" is='#[MunitTools::equalTo((readUrl("classpath://caseCreateResponseData.json", "application/json")))]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-caseUpdateTest" doc:id="17506762-d6db-49f1-83da-c4edbf2780cc" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="fsk-exp-api-main" />
+			<munit:enable-flow-source value="implementationFlow_caseUpdate" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="caseUpdateFinalResponseDataFromRequest" doc:id="2597814c-2f33-412d-8321-f5d8b66c1478" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="caseUpdateRequest" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="4f14f3be-cdf7-4f44-aa56-49046b607f64" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('caseUpdateFinalResponse.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="caseUpdateRequestData" doc:id="6368da5b-4b66-4d2a-9d8a-6287f4a54939" >
+				<munit:payload value="#[MunitTools::getResourceAsString('caseUpdateRequest.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to implementationFlow_caseUpdate" doc:id="5b77bfd8-2705-4630-92ed-92fe04a1a8f4" name="implementationFlow_caseUpdate"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="caseUpdateResponseData" doc:id="42905eb5-511e-45d0-a860-28a8fe56846d" is='#[MunitTools::equalTo((readUrl("classpath://caseUpdateResponse.json", "application/json")))]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

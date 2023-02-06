@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="242b2a5f-d024-43df-890a-3a8c5124e640" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="4837eb45-7eb8-4c39-826b-d98cf7754082" >
+		<file:connection workingDir="C:\Users\sivavardhanreddyr\Desktop\input" />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="1523cb42-b21a-4f96-89fa-065220f85c49" >
+		<file:connection workingDir="C:\Users\sivavardhanreddyr\Desktop\input" />
+	</file:config>
+	<flow name="poctask13Flow" doc:id="85e06c86-05b9-4443-b7c0-aded5e8df4c1" >
+		<http:listener doc:name="Listener" doc:id="f73518a5-e68b-4e05-8911-8a8e09d51561" config-ref="HTTP_Listener_config" path="read"/>
+		<set-variable value="#[attributes.queryParams.country]" doc:name="Set Variable" doc:id="6cc03fc3-ec65-4a47-87e5-fb4b653bd9cd" variableName="country"/>
+		<file:read doc:name="Read" doc:id="d47963f4-ab11-445f-9ee2-5d76d0fb551d" path="C:\Users\sivavardhanreddyr\Desktop\input\readfile.csv" config-ref="File_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="5c99afc7-c859-433f-887a-a4d7a8c0597c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload filter ($.country ==vars.country)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="02bc3153-7232-4bde-97f4-75ea0fdd551b" config-ref="File_Config1" path="datafile.csv"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f535fc41-25bd-4dc2-b15a-a5982dbfa41a" message="#[payload]"/>
+	</flow>
+</mule>

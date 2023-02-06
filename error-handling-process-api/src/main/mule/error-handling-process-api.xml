@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="07eb52fd-0d7d-43ef-a2ca-20336650a6c3" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="bde58bc4-44e6-4425-97a5-175d43dc3a8a" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="error-handling-process-apiFlow" doc:id="57bcff85-3a74-4f91-828d-e4f0a939a989" >
+		<http:listener doc:name="Listener" doc:id="77f87a2d-0532-4643-8aae-25597cf52458" config-ref="HTTP_Listener_config" path="/process-api"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bfa9595f-f466-4964-93a8-dcc1e4e932e3" message="API invocation successful"/>
+		<http:request method="GET" doc:name="Request" doc:id="e0d7c7af-3751-4a66-b78e-9f8e4c696399" config-ref="HTTP_Request_configuration" path="/system-api"/>
+	</flow>
+</mule>

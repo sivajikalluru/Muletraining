@@ -1,0 +1,1113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension-documentation>
+    <configs>
+        <config name="config">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="expirationPolicy">
+                    <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
+                </parameter>
+            </parameters>
+        </config>
+    </configs>
+    <connections>
+        <connection name="basic">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="role">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="roleARN">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+    </connections>
+    <extension name="Amazon S3 Glacier">
+        <description><![CDATA[]]></description>
+        <parameters/>
+    </extension>
+    <operations>
+        <operation name="abortMultipartUpload">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="abortVaultLock">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="addTagsToVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tags">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="completeMultipartUpload">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveSize">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="checksum">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="completeVaultLock">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="lockId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="createVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteArchive">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteVaultAccessPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteVaultNotifications">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="describeJob">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="describeVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getDataRetrievalPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getJobOutput">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="range">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getVaultAccessPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getVaultLock">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getVaultNotifications">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="initiateJob">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobParameters">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="initiateMultipartUpload">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveDescription">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="partSize">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="initiateVaultLock">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="policy">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listJobs">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="limit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="statusCode">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="completed">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listMultipartUploads">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="limit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadIdMarker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listParts">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="limit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listProvisionedCapacity">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listTagsForVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listVaults">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="limit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="purchaseProvisionedCapacity">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="removeTagsFromVault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tagKeys">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setDataRetrievalPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="policy">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setVaultAccessPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="policy">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setVaultNotifications">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultNotificationConfig">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="uploadArchive">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveDescription">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="checksum">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="body">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="contentLength">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="uploadMultipartPart">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="accountId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="checksum">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="range">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="body">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+    </operations>
+    <sources/>
+    <types>
+        <type name="org.mule.extension.s3glacier.api.model.Archive">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="archiveId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="checksum">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="location">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.DataRetrievalPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="rules">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.Multipart">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="location">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.Multipart2">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="archiveDescription">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="creationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="multipartUploadId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="partSizeInBytes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="parts">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultARN">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.Multipart4">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="uploadsList">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.ProvisionedCapacityDescription">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="capacityId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="expirationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="startDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.Vault">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="creationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="lastInventoryDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="numberOfArchives">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="sizeInBytes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultARN">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultName">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.VaultAccessPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="policy">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.VaultList">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="list">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.VaultLockPolicy">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="creationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="expirationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="policy">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="state">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.VaultNotificationConfig">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="events">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="snsTopic">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.job.GetJobOutputResult">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="acceptRanges">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveDescription">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="body">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="checksum">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="contentRange">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="contentType">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="status">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.job.InitiateJobResult">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="jobId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobOutputPath">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="location">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.job.JobDescription">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="action">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveSHA256TreeHash">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="archiveSizeInBytes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="completed">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="completionDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="creationDate">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="description">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="inventoryRetrievalParameters">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="inventorySizeInBytes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="jobOutputPath">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="outputLocation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="retrievalByteRange">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="sHA256TreeHash">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="selectParameters">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="snsTopic">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="statusCode">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="statusMessage">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tier">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="vaultARN">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.job.JobParameters">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="archiveId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="description">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="format">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="inventoryRetrievalParameters">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="outputLocation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="retrievalByteRange">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="selectParameters">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="snsTopic">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tier">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="type">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.s3glacier.api.model.job.ListJobsResult">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="jobList">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="marker">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+    </types>
+</extension-documentation>

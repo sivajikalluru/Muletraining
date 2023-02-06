@@ -1,0 +1,254 @@
+[
+    {
+        "flights": [
+            {
+                "code": "ER38sd",
+                "price": 400,
+                "origin": "MUA",
+                "destination": "SFO",
+                "departureDate": "2015/03/20",
+                "planeType": "Boeing 737",
+                "airlineName": "United",
+                "emptySeats": 0
+            },
+            {
+                "code": "ER45if",
+                "price": 345.99,
+                "origin": "MUA",
+                "destination": "LAX",
+                "departureDate": "2015/02/11",
+                "planeType": "Boeing 737",
+                "airlineName": "United",
+                "emptySeats": 52
+            },
+            {
+                "code": "ER45jd",
+                "price": 346,
+                "origin": "MUA",
+                "destination": "LAX",
+                "departureDate": "2015/04/11",
+                "planeType": "Boeing 777",
+                "airlineName": "United",
+                "emptySeats": 12
+            },
+            {
+                "code": "ER0945",
+                "price": 423,
+                "origin": "MUA",
+                "destination": "LAX",
+                "departureDate": "2015/06/11",
+                "planeType": "Boeing 707",
+                "airlineName": "United",
+                "emptySeats": 0
+            },
+            {
+                "code": "ER9fje",
+                "price": 845,
+                "origin": "MUA",
+                "destination": "CLE",
+                "departureDate": "2015/07/11",
+                "planeType": "Boeing 727",
+                "airlineName": "United",
+                "emptySeats": 32
+            },
+            {
+                "code": "ER3kfd",
+                "price": 245,
+                "origin": "MUA",
+                "destination": "CLE",
+                "departureDate": "2015/08/11",
+                "planeType": "Boeing 747",
+                "airlineName": "United",
+                "emptySeats": 13
+            },
+            {
+                "code": "ER39rk",
+                "price": 945,
+                "origin": "MUA",
+                "destination": "SFO",
+                "departureDate": "2015/09/11",
+                "planeType": "Boeing 757",
+                "airlineName": "United",
+                "emptySeats": 54
+            },
+            {
+                "code": "ER39rj",
+                "price": 954,
+                "origin": "MUA",
+                "destination": "SFO",
+                "departureDate": "2015/02/12",
+                "planeType": "Boeing 777",
+                "airlineName": "United",
+                "emptySeats": 23
+            },
+            {
+                "code": "ER95jf",
+                "price": 234,
+                "origin": "MUA",
+                "destination": "PDF",
+                "departureDate": "2015/02/12",
+                "planeType": "Boeing 787",
+                "airlineName": "United",
+                "emptySeats": 23
+            },
+            {
+                "code": "ER49fd",
+                "price": 853,
+                "origin": "MUA",
+                "destination": "PDX",
+                "departureDate": "2015/02/13",
+                "planeType": "Boeing 777",
+                "airlineName": "United",
+                "emptySeats": 0
+            },
+            {
+                "code": "ER95jf",
+                "price": 483,
+                "origin": "MUA",
+                "destination": "PDX",
+                "departureDate": "2015/02/20",
+                "planeType": "Boeing 777",
+                "airlineName": "United",
+                "emptySeats": 95
+            },
+            {
+                "code": "ER04kf",
+                "price": 532,
+                "origin": "MUA",
+                "destination": "PDX",
+                "departureDate": "2015/02/12",
+                "planeType": "Boeing 777",
+                "airlineName": "United",
+                "emptySeats": 30
+            }
+        ]
+    },
+    {
+        "headers": {},
+        "attachments": {},
+        "body": {
+            "listAllFlightsResponse": {
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1B2C3",
+                    "departureDate": "2015/03/20",
+                    "destination": "SFO",
+                    "emptySeats": "40",
+                    "origin": "MUA",
+                    "planeType": "Boing 737",
+                    "price": "400.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1B2C4",
+                    "departureDate": "2015/02/11",
+                    "destination": "LAX",
+                    "emptySeats": "10",
+                    "origin": "MUA",
+                    "planeType": "Boing 737",
+                    "price": "199.99"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A134DS",
+                    "departureDate": "2015/04/11",
+                    "destination": "LAX",
+                    "emptySeats": "40",
+                    "origin": "MUA",
+                    "planeType": "Boing 777",
+                    "price": "750.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1B34S",
+                    "departureDate": "2015/06/11",
+                    "destination": "CLE",
+                    "emptySeats": "50",
+                    "origin": "MUA",
+                    "planeType": "Boing 707",
+                    "price": "420.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A12342",
+                    "departureDate": "2015/07/11",
+                    "destination": "CLE",
+                    "emptySeats": "17",
+                    "origin": "MUA",
+                    "planeType": "Boing 727",
+                    "price": "308.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1QWER",
+                    "departureDate": "2015/08/11",
+                    "destination": "LAX",
+                    "emptySeats": "18",
+                    "origin": "MUA",
+                    "planeType": "Boing 747",
+                    "price": "496.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1ASD4",
+                    "departureDate": "2015/09/11",
+                    "destination": "CLE",
+                    "emptySeats": "40",
+                    "origin": "MUA",
+                    "planeType": "Boing 757",
+                    "price": "736.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1BTT4",
+                    "departureDate": "2015/02/12",
+                    "destination": "SFO",
+                    "emptySeats": "30",
+                    "origin": "MUA",
+                    "planeType": "Boing 777",
+                    "price": "593.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A14244",
+                    "departureDate": "2015/02/12",
+                    "destination": "SFO",
+                    "emptySeats": "10",
+                    "origin": "MUA",
+                    "planeType": "Boing 787",
+                    "price": "294.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1FGF4",
+                    "departureDate": "2015/02/13",
+                    "destination": "PDX",
+                    "emptySeats": "80",
+                    "origin": "MUA",
+                    "planeType": "Boing 777",
+                    "price": "958.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "AFFFC4",
+                    "departureDate": "2015/02/20",
+                    "destination": "PDX",
+                    "emptySeats": "30",
+                    "origin": "MUA",
+                    "planeType": "Boing 777",
+                    "price": "283.0"
+                },
+                "return": {
+                    "airlineName": "Delta",
+                    "code": "A1B3D4",
+                    "departureDate": "2015/02/12",
+                    "destination": "PDX",
+                    "emptySeats": "10",
+                    "origin": "MUA",
+                    "planeType": "Boing 777",
+                    "price": "385.0"
+                }
+            }
+        }
+    }
+]

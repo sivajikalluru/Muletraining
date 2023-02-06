@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="4b5e862b-b737-45ed-b705-efd541016888" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce:sfdc-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="80e572b3-5d1f-44f9-9fdf-00260d26ca3b" >
+		<http:listener-connection host="0.0.0.0" port="8086" />
+	</http:listener-config>
+	<flow name="salesforce-streaming-channel-appFlow1" doc:id="a70e5f53-ffdf-4aa0-9aeb-6d4a12133d56" >
+		<salesforce:replay-channel-listener doc:name="Replay channel listener" doc:id="ed6fb90d-521a-42af-84ba-a3f7b566ea9e" config-ref="Salesforce_Config" streamingChannel="/u/SampleChannel" replayOption="ALL"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0af7f2c7-a141-452b-ba48-6ad06e58c62b" message="#[payload]"/>
+	</flow>
+	<flow name="salesforce-streaming-channel-appFlow" doc:id="4aa267da-3c8b-4796-b78e-ee08fdb45b7c" >
+		<salesforce:subscribe-channel-listener doc:name="Subscribe channel listener" doc:id="e1c60667-25b0-4403-b9ef-91fc4d989699" config-ref="Salesforce_Config" streamingChannel="/u/SampleChannel"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f04c9a20-8512-4a88-8f56-96914773e7ad" message='#[output application/json&#10;---&#10;{&#10;     "when": now(),&#10;     "where": "after subscribe channel",&#10;     "what": payload	&#10;}]'/>
+	</flow>
+</mule>

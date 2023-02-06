@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b0aea8b4-29d3-4da6-984e-155e9d2b8f4f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="poctask18Flow" doc:id="8aa992a1-4417-491b-b5cd-0131b026f34e" >
+		<http:listener doc:name="Listener" doc:id="3fcbd85e-63ca-4066-ab9b-93fe415c811c" config-ref="HTTP_Listener_config" path="/poc18"/>
+		<set-variable value="#[attributes.queryParams.name]" doc:name="Set Variable" doc:id="2303ce3e-4081-4a09-96f0-5182dce78819" variableName="name"/>
+		<foreach doc:name="For Each" doc:id="6aa0c381-a2b6-46b2-9547-a41bf45d5a71" >
+			<choice doc:name="Choice" doc:id="a0861138-1761-485b-b0c4-8d3b90d45dc6">
+			<when expression="#[vars.name == payload.name]">
+				<set-variable value="#[payload]" doc:name="Set Variable" doc:id="6fa1f2b4-60bc-4143-87b9-d379c16f1f86" variableName="endpoint" />
+			</when>
+			<otherwise>
+				<set-payload value="#[payload]" doc:name="Set Payload" doc:id="d18bbbd0-6754-48b3-965e-cce59c7e0cd9" />
+			</otherwise>
+		</choice>
+		</foreach>
+		<set-payload value="#[vars.endpoint]" doc:name="Set Payload" doc:id="5c2f906d-601f-4379-9be2-15837b65e63d" />
+		<logger level="INFO" doc:name="Logger" doc:id="8fd70fb1-ac19-4af3-ba31-8dc9c34052ac" message="#[payload]"/>
+	</flow>
+</mule>

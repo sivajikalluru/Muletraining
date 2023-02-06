@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e713046b-c702-4efc-9a74-bf564a0af103" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="errorhandling-proc-apiFlow" doc:id="6cd3478e-230f-4888-9256-0c4be470d7d0" >
+		<http:listener doc:name="Listener" doc:id="ecf71579-ed0d-4417-b2e8-cf438955935d" config-ref="HTTP_Listener_config" path="/proc">
+			<http:error-response statusCode="#[vars.httpStatus]">
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="1fc71b5a-4144-4fb0-b8fc-86c42563e66a" url="http://localhost:8081/sy" responseTimeout="#[30000]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a11cd162-4b53-4a44-8e1f-24f880d5ddb8" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="26b30bb7-c17f-44e6-91eb-968ee224cab3" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"errorCode":(if(error.exception.errorMessage.typedAttributes.statusCode != null) (error.exception.errorMessage.typedAttributes.statusCode) else error.errorMessage.typedAttributes.statusCode),
+"errorType": error.errorType.asString,
+"message": if(typeOf(error.muleMessage.typedValue) ~= "Object") error.muleMessage.typedValue."error"."errorMessage"."message" else error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[error.muleMessage.typedAttributes.statusCode]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

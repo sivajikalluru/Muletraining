@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c92a334c-34df-4ccc-8e95-968a0062fff8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="datawaveFlow" doc:id="2c1425ca-d6ad-436c-b60f-74b735af0e50" >
+		<http:listener doc:name="Listener" doc:id="c29738b1-945d-4340-b898-6a80336a9dcc" config-ref="HTTP_Listener_config" path="/datawave"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="90b42268-b15e-4702-9150-fa1a97d35bba" >
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="46827f98-d0bb-4c40-9945-46b434a71701" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+
+  "glossary": {
+
+    "title": "example glossary",
+
+    "GlossDiv": {
+
+      "title": "S",
+
+      "GlossList": {
+
+        "GlossEntry": {
+
+          "ID": "SGML",
+
+          "SortAs": "SGML",
+
+          "GlossTerm": "Standard Generalized Markup Language",
+
+          "Acronym": "SGML",
+
+          "Abbrev": "ISO 8879:1986",
+
+          "GlossDef": {
+
+            "para": "A meta-markup language, used to create markup languages such as DocBook.",
+
+            "GlossSeeAlso": [
+
+              "GML",
+
+              "XML"
+
+            ]
+
+          },
+
+          "GlossSee": "markup"
+
+        }
+
+      }
+
+    }
+
+  }
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="92546c17-6f55-473e-9040-d77ad5746fe0" message="#[payload]"/>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="ac263db0-0330-43be-ba45-fe3201d80ce4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "widget": {
+    "debug": "on",
+    "window": [
+      {
+        "title": "Sample Konfabulator Widget",
+        "name": "main_window",
+        "width": 500,
+        "height": 500
+      },
+      {
+        "title": "Sample second",
+        "name": "second_window",
+        "width": 400,
+        "height": 400
+      },
+      {
+        "title": "Sample first",
+        "name": "first_window",
+        "width": 600,
+        "height": 600
+      },
+      {
+        "title": "Sample middle",
+        "name": "middle_window",
+        "width": 300,
+        "height": 300
+      },
+      {
+        "title": "Sample",
+        "name": "last_window",
+        "width": 700,
+        "height": 700
+      }
+    ],
+    "image": {
+      "src": "Images/Sun.png",
+      "name": "sun1",
+      "hOffset": 250,
+      "vOffset": 250,
+      "alignment": "center"
+    },
+    "text": {
+      "data": "Click Here",
+      "size": 36,
+      "style": "bold",
+      "name": "text1",
+      "hOffset": 250,
+      "vOffset": 100,
+      "alignment": "center",
+      "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
+    }
+  }
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="dab8b769-61a8-413e-a5d0-76f5e9711646" message="#[payload]"/>
+			</route>
+		</scatter-gather>
+		<logger level="INFO" doc:name="Logger" doc:id="7e926d09-86bc-4032-aed1-3e815bf2fd29" />
+		<ee:transform doc:name="Transform Message" doc:id="6ec3e833-5cca-4573-b732-3f3558dda7ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+  payload[1].typedValue.widget.window map ((item, index) ->{
+    title: item.title,
+    name: item.name,
+    width: item.width,
+    height: item.height,
+    "id": payload[0].typedValue.glossary.GlossDiv.GlossList.GlossEntry.ID,
+    "SortAs": payload[0].typedValue.glossary.GlossDiv.GlossList.GlossEntry.SortAs
+   
+    
+    } )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a0ecafd7-c5b1-43cf-951e-0af6c92333cc" />
+	</flow>
+</mule>

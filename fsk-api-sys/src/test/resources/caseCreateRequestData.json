@@ -1,0 +1,9 @@
+{
+"caseType": "ACN",
+"subject":"ACN case creation",
+"description":"Sample ACN Case",
+"priority":"High",
+"collisionTime":"2022-06-16T17:00:00",
+"caseOrigin":"Web",
+"accountId":"5007g00000AeSiUAAV"
+}

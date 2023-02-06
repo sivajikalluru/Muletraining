@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+ <http:listener-config name="poc3-raml-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" />
+    </http:listener-config>
+ <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c09075ff-5944-408a-b5e2-6627b7c8d165" >
+		<http:request-connection host="mu.mulesoft-training.com"/>
+	</http:request-config>
+	<configuration doc:name="Configuration" doc:id="bdb3a81b-2e13-4b66-9707-e10f3297e227" defaultErrorHandler-ref="main_Error_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="5a32c703-0c94-4045-ae81-61d8e1dd91d7" file="property.yaml" />   	
+	
+	
+	
+	
+	
+	
+</mule>

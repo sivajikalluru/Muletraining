@@ -1,0 +1,6 @@
+Dear #[payload.name]
+
+ we have processed your profile, please check your name #[payload.name]
+ 
+ Thanks,
+ Mouritech.

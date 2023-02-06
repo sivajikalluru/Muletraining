@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c024155b-4f2e-406b-8283-dd33329f21fc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scateFlow" doc:id="8623b17f-f24a-4fdd-9c68-1e9c84524b92" >
+		<http:listener doc:name="Listener" doc:id="05f3c3f9-5d1b-459a-b435-3aef6eb3e177" config-ref="HTTP_Listener_config" path="/path"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="dbf2d225-6b4c-4804-b56b-0bea875b7590" >
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="a599b2ac-dc1f-4018-b97e-8f549e3c9ac9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "hello"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<raise-error doc:name="Raise error" doc:id="1c3bc25e-d0ea-4a35-8ab7-5b1685b61320" type="MULE:CONNECTIVITY"/>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="976a88dd-905a-490f-a46d-38b0c29f17f6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	message: "hi"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+		</scatter-gather>
+	</flow>
+</mule>

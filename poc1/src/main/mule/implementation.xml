@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="implementationFlow" doc:id="cfc9976f-9608-4310-bc50-432404a564eb" >
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="4a06c615-897e-40d5-b103-03f984e101a5" variableName="destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="e63dd18c-7a09-49dd-9a56-8c7995913d17" config-ref="HTTP_Request_configuration" path="/essentials/united/flights">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	destination : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="ece9c747-bf35-4420-9487-eac85695debf" >
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="793a944e-c792-4852-89b9-5740067643d1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

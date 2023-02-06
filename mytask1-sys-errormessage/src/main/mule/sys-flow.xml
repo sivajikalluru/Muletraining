@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="28e7713f-19bb-4a7d-b477-0ae67c69dfbe" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<flow name="sys-flowFlow" doc:id="57f1ae4a-ec26-4437-81a0-402ad4c1e1b6" >
+		<http:request method="GET" doc:name="Request" doc:id="331fe1d7-8ba5-441d-8bcd-dd7748b68c45" config-ref="HTTP_Request_configuration" path="/essentials/united/flights"/>
+		<ee:transform doc:name="Transform Message" doc:id="aee48dd0-e2d2-4e5e-b02f-60f74580894e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

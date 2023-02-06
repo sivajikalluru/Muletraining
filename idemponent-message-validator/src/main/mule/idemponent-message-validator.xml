@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="be3cf2aa-78ea-4dd5-921f-54fe34c53134" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="idemponent-message-validatorFlow" doc:id="40c54004-31a1-4e3f-8745-a2d995121f70" >
+		<http:listener doc:name="Listener" doc:id="ba126020-8b04-42a2-8416-70716281d552" config-ref="HTTP_Listener_config" path="/validator">
+			<http:error-response >
+				<http:body ><![CDATA[#[vars.error]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="6bd4848a-7828-4513-a9b7-abd7894fef85" message="#[payload]"/>
+		<try doc:name="Try" doc:id="9f44a9a7-80c1-409f-b764-14658b408320" >
+			<idempotent-message-validator doc:name="Idempotent Message Validator" doc:id="3193beb9-7225-4983-b1d2-81d500cf5eb5" idExpression="#[attributes.queryParams.empid]" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3250e78b-1d6d-4348-a1af-f65e82a909f8" type="ANY">
+					<ee:transform doc:name="Transform Message" doc:id="c6fcc77f-6255-4ced-a36b-a7a4ac21a590">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="error" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+"message":"This empid  is already created"
+
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="666b3223-d4c8-4668-a9ad-12d9b6241c73" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7ddbad25-599e-4b7e-af11-fc15e5a059ca" message="#[payload]"/>
+	</flow>
+</mule>

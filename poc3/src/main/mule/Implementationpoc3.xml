@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="Implementationpoc3Flow" doc:id="cd59d4a6-9aa3-4d4e-bc73-3d4462612b51" >
+		<set-variable value='#[attributes.queryParams.price as Number]' doc:name="Set Variable" doc:id="5c455a18-be78-4049-9fd2-b7a11913fa1e" variableName="price"/>
+		<http:request method="GET" doc:name="Request" doc:id="a6c4db5b-564c-49a2-ac47-37633dbac117" config-ref="HTTP_Request_configuration" path="/essentials/united/flights">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"price" : "attributes.queryParams.price"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="2f6d769b-840a-4384-a805-bac8810239a3">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights filter($.price == vars.price)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+	</flow>
+</mule>

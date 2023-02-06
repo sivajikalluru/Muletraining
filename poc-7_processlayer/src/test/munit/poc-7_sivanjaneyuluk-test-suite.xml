@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="poc-7_sivanjaneyuluk-test-suite.xml" />
+	<munit:test name="poc-7_sivanjaneyuluk-test-suite-poc-7_sivanjaneyulukFlowTest" doc:id="e6e2d53a-1314-4e47-82d4-b3f6f39ba73c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9dae3304-103f-45cd-9f7b-64b3a13d163e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7c842264-1d5b-42a0-8e33-34d3bc07389b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cfc1e8dc-1712-47fa-809b-5efc2e2154d1" >
+				<munit:payload encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[{queryParams :{'destination': 'SFO'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to poc-7_sivanjaneyulukFlow" doc:id="8c786b22-c3dd-4613-91b7-9fda6004ca2b" name="poc-7_sivanjaneyulukFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2e49b039-c1f2-4148-97da-d518777da0c4" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="poc-7_sivanjaneyuluk-test-suite-poc-7_sivanjaneyulukFlowTest1" doc:id="2b8cd83e-b1b5-449c-80ec-d29301cc5fcc" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5d8dc7bc-9489-45b6-9fdb-e436f84dcabf" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="41c056d5-cbd5-420d-803f-80b1e9cb2663" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to poc-7_sivanjaneyulukFlow" doc:id="c4270b8a-bae7-4925-928f-5e720d310a29" name="poc-7_sivanjaneyulukFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c1bd4cb8-860c-402a-bb63-859cddff00ac" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

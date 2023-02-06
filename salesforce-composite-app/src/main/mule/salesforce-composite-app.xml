@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<salesforce-composite:composite-config name="Salesforce_Composite_Config" doc:name="Salesforce Composite Config" doc:id="c04c67b9-2c8d-4470-827e-b45ccb48be19" >
+		<salesforce-composite:oauth-user-pass-connection consumerKey="3MVG9n_HvETGhr3CsOjZs4w6Pe0xVpchKkrglAdnChJ9UHocexw9h30PbT5vyRPdPYwqoAVlcVybqEmiyzUDK" consumerSecret="8D6E441561B41590B31842CCC9BDD7A4D7F2753C8747B72033854B6E0EE9B6F4" username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce-composite:composite-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="08d4223f-2898-4c91-96b5-e7ce4f166c11" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="bdcc8f57-b8c1-4723-8c26-b40c4c40639d" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce:sfdc-config>
+	<flow name="salesforce-composite-appFlow" doc:id="46202f37-e775-4b21-8603-0fd1a812579a" >
+		<http:listener doc:name="Listener" doc:id="85f6cd66-d295-4386-8144-7d1ceb9bd47c" config-ref="HTTP_Listener_config" path="/sf">
+			<http:response statusCode='#[vars.httpStatus default 200]' />
+		</http:listener>
+		<ee:transform doc:name="Transform Message" doc:id="ace932d6-3450-4170-aa2c-56226e4ebb29" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce-composite:execute-composite-request doc:name="Execute composite request" doc:id="ad0fdf75-e9dc-47df-9686-debc2d2a2a88" config-ref="Salesforce_Composite_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="b390a458-1324-4c76-bf21-07b2dbdd16c9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="6068978b-7405-4195-9652-f76fd6abf07a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"compositeResponse":(payload.compositeResponse map ((item, index) ->{
+
+ (item filterObject ((value, key, index) -> key as String != "httpHeaders" and  key as String != "httpStatusCode" ) )
+
+ } ))]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[payload."compositeResponse"."httpStatusCode"[0]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="87ed6f1e-069c-4132-b85d-ac77a4ace247" message="payload"/>
+	</flow>
+</mule>

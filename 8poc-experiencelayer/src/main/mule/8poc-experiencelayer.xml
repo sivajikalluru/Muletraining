@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="19c485c0-f33a-47c5-b61b-b29fcfed0764" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="58f06bb9-4533-43b3-be9f-662e0ecf7af3" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="8poc-experiencelayerFlow" doc:id="1eb055b9-34c6-4d20-b5df-00a7085b2cf8" >
+		<http:listener doc:name="Listener" doc:id="6e6801b7-8fac-47ed-b18a-90440ac90e2f" config-ref="HTTP_Listener_config" path="/8poc"/>
+		<logger level="INFO" doc:name="Logger" doc:id="eb439c0b-6c4d-4e91-bdd4-2685da273fe7" message="#[payload]"/>
+		<http:request method="GET" doc:name="Request" doc:id="fb9fc413-9431-4279-baa4-c36c6e01916f" config-ref="HTTP_Request_configuration" path="/pocc8" responseTimeout="#[300000]"/>
+		<ee:transform doc:name="Transform Message" doc:id="54f88821-d740-4629-80fc-bf9d465618e0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

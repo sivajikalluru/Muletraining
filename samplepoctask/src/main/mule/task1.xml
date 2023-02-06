@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+    <http:listener-config name="task1-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="task1-config" api="task1.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="aa7d357d-4737-439c-9795-f2728e635438" file="secure.yaml" key="sivanjaneyuluk12" />
+	<flow name="task1-main" doc:id="67eb92ea-89fc-4593-ab2b-c391f36c4870">
+        <http:listener config-ref="task1-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="task1-config" />
+       
+    </flow>
+    <flow name="task1-console" doc:id="692ae261-7eae-484d-bfa2-de59fe64f305">
+        <http:listener config-ref="task1-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="task1-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\essentials\united\flights:task1-config" doc:id="e5147c26-4693-4bf8-8bc5-4bd62da54658">
+		<flow-ref doc:name="Flow Reference" doc:id="2e2d33a6-235f-41e9-8a38-01d303536a66" name="get:\essentials\united\flights:task1-config"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  task1example: {
+    flights: [
+      {
+        code: "ER38sd",
+        price: 400,
+        origin: "MUA",
+        destination: "SFO",
+        departureDate: "2015/03/20",
+        airlineName: "United",
+        planeType: "Boeing 737",
+        emptySeats: 0
+      }, 
+      {
+        code: "ER45if",
+        price: 345.99,
+        origin: "MUA",
+        destination: "LAX",
+        departureDate: "2015/02/11",
+        airlineName: "United",
+        planeType: "Boeing 737",
+        emptySeats: 52
+      }, 
+      {
+        code: "ER45jd",
+        price: 346,
+        origin: "MUA",
+        destination: "LAX",
+        departureDate: "2015/04/11",
+        airlineName: "United",
+        planeType: "Boeing 777",
+        emptySeats: 12
+      }, 
+      {
+        code: "ER0945",
+        price: 423,
+        origin: "MUA",
+        destination: "LAX",
+        departureDate: "2015/06/11",
+        airlineName: "United",
+        planeType: "Boeing 707",
+        emptySeats: 0
+      }, 
+      {
+        code: "ER9fje",
+        price: 845,
+        origin: "MUA",
+        destination: "CLE",
+        departureDate: "2015/07/11",
+        airlineName: "United",
+        planeType: "Boeing 727",
+        emptySeats: 32
+      }, 
+      {
+        code: "ER3kfd",
+        price: 245,
+        origin: "MUA",
+        destination: "CLE",
+        departureDate: "2015/08/11",
+        airlineName: "United",
+        planeType: "Boeing 747",
+        emptySeats: 13
+      }, 
+      {
+        code: "ER39rk",
+        price: 945,
+        origin: "MUA",
+        destination: "SFO",
+        departureDate: "2015/09/11",
+        airlineName: "United",
+        planeType: "Boeing 757",
+        emptySeats: 54
+      }, 
+      {
+        code: "ER39rj",
+        price: 954,
+        origin: "MUA",
+        destination: "SFO",
+        departureDate: "2015/02/12",
+        airlineName: "United",
+        planeType: "Boeing 777",
+        emptySeats: 23
+      }, 
+      {
+        code: "ER95jf",
+        price: 234,
+        origin: "MUA",
+        destination: "PDF",
+        departureDate: "2015/02/12",
+        airlineName: "United",
+        planeType: "Boeing 787",
+        emptySeats: 23
+      }, 
+      {
+        code: "ER49fd",
+        price: 853,
+        origin: "MUA",
+        destination: "PDX",
+        departureDate: "2015/02/13",
+        airlineName: "United",
+        planeType: "Boeing 777",
+        emptySeats: 0
+      }, 
+      {
+        code: "ER95jf",
+        price: 483,
+        origin: "MUA",
+        destination: "PDX",
+        departureDate: "2015/02/20",
+        airlineName: "United",
+        planeType: "Boeing 777",
+        emptySeats: 95
+      }, 
+      {
+        code: "ER04kf",
+        price: 532,
+        origin: "MUA",
+        destination: "PDX",
+        departureDate: "2015/02/12",
+        airlineName: "United",
+        planeType: "Boeing 777",
+        emptySeats: 30
+      }
+    ]
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

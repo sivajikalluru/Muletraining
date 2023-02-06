@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0113ca56-4b9d-483a-b6f5-62796033f7f0" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="18f4cf57-1ca3-49cf-a2a8-97167d8b087b" >
+		<http:request-connection host="mu.mulesoft-training.com" port="80"/>
+	</http:request-config>
+	<flow name="p1-sysFlow" doc:id="86f4a160-3aef-4e0a-85d2-1dbfffaa5f67" >
+		<http:listener doc:name="Listener" doc:id="22c230a8-e447-4708-9762-0ad959620e4a" config-ref="HTTP_Listener_config" path="/system">
+			<http:error-response statusCode="#[vars.httpstatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="73e6a5d8-9179-4c93-b44e-867a9733f2a4" config-ref="HTTP_Request_configuration" path="/essentials/united/flight"/>
+		<ee:transform doc:name="Transform Message" doc:id="1aa04689-e74f-4911-88cc-60ce0590e9b5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0e4c4b16-5b58-4c18-9cbe-09709c619e4d" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="e0e11fa3-a7af-4af2-87ae-fbc30f545101" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error":{
+"errorMessage":{
+"errorCode":error.muleMessage.attributes.statusCode,
+"errorType":error.errorType.identifier,
+"message":error.description
+}
+}
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpstatus" ><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.typedAttributes.statusCode]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="create-channel(anotherway)Flow" doc:id="c3b23fdd-9f2b-460f-91ea-ba2e6437837b" >
+		<http:listener doc:name="Listener" doc:id="1cc07642-c1ce-46d2-9cf5-24143cfc5da2" config-ref="HTTP_Listener_config" path="/publish"/>
+		<salesforce:publish-streaming-channel doc:name="Publish streaming channel" doc:id="01b2d1ab-da6e-403b-a1eb-4f3627446ec0" config-ref="Salesforce_Config" channelName="/u/SampleChannel" description="SampleChannelCreate(AnotherWay)"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1153b78d-5e7f-4afc-8683-82f6fdcb16d9" message="#[payload]"/>
+	</flow>
+	<flow name="create-channel(anotherway)Flow1" doc:id="cc62360d-7ddb-4ae4-a1ac-206ce21601c9" >
+		<http:listener doc:name="Listener" doc:id="8a522f64-fd1e-48a6-8a9c-e405b8f7a031" config-ref="HTTP_Listener_config" path="/push"/>
+		<ee:transform doc:name="Transform Message" doc:id="68ad2ebc-972e-4753-be04-0a5b75dd34c3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ 
+output application/java
+ 
+---
+ 
+[
+ 
+{
+ 
+"payload": "Broadcast message data ",
+ 
+"userIds": []
+ 
+}
+ 
+]
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:push-generic-event doc:name="Push generic event" doc:id="019ad0c9-7770-486c-8f71-2f447c9757b9" config-ref="Salesforce_Config" channelId="0M62w000000PSqY"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4cea456e-9576-4683-a8ab-d62de266c0fd" message="#[payload]"/>
+	</flow>
+</mule>

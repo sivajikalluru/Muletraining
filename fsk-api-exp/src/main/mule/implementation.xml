@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="implementationFlow_caseCreate" doc:id="c09fae0c-272d-42a5-8460-e7b263b564d9" >
+		<logger level="INFO" doc:name="InputPayloadFromPostman" doc:id="370bbed3-563c-4c41-938a-3fd4ce0a3ab5" message="#[payload]"/>
+		<http:request method="POST" doc:name="caseCreateRequest" doc:id="2805025b-d133-41b8-a0d1-1d0efb27d732" url="http://localhost:8081/api/case" responseTimeout="300000"/>
+		<ee:transform doc:name="afterCaseCreatePayload" doc:id="4c6c3d1d-5fdf-4544-8958-c0c481cffda2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+   
+        "caseId": item.id,
+        "statusCode": "",
+        "successful": payload.successful,            
+        "exception": "",
+        "message": ""
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="caseCreateResponseDebugLog" doc:id="e192d89a-be0c-45ba-bf12-7789d59968ce" message="#[payload]" category="com.fsk.caseCreate" />
+	</flow>
+	<flow name="implementationFlow_caseUpdate" doc:id="44015b39-340a-4993-91dd-870b49f13dac" >
+		<logger level="INFO" doc:name="InputPayloadFromPostman" doc:id="ddcc0e8c-0e6e-48db-8fcc-b4277ff057f1" message="#[payload]"/>
+		<http:request method="PUT" doc:name="caseUpdateRequest" doc:id="4f14f3be-cdf7-4f44-aa56-49046b607f64" url="http://localhost:8081/api/case" responseTimeout="300000" />
+		<ee:transform doc:name="afterCaseUpdatePayload" doc:id="d7f6f5e5-d297-4bd7-b677-ba95fd08b682" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+   
+        "id": item.id,
+        "statusCode": "",
+        "successful": payload.successful,
+        "exception": "",
+        "message": ""
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="caseUpdateResponseDebugLog" doc:id="eadddb82-6329-4a83-b22d-bf65668f078c" message="#[payload]" category="com.fsk.caseUpdate" />
+	</flow>
+</mule>

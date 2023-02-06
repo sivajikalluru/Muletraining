@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="ad055d40-4e22-4e36-ad17-3b35e40868c8" primaryNodeOnly="true" config-ref="Salesforce_Config" throwExceptionWhenOrganizationDailyLimitExceeded="false" topic="sample2">
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce:sfdc-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="db46e1c3-3d51-4556-ab8a-68cec1382f0a" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="records_insert"/>
+	</db:config>
+	<flow name="salesforce-subscribe-Topic-Listener" doc:id="328e5d4c-f88b-453a-86ca-a99806eba09e" >
+		<salesforce:subscribe-topic-listener topic="sample3" doc:name="Subscribe topic listener" doc:id="ad055d40-4e22-4e36-ad17-3b35e40868c8" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Start Log" doc:id="b7927cf8-1e4c-4768-a731-1e82233c949d" message="payload"/>
+		<choice doc:name="Choice" doc:id="adc1f329-e51c-4b4b-90f2-466002287888" >
+			<when expression="#[attributes.'type' == &quot;created&quot;]">
+				<logger level="INFO" doc:name="Logger" doc:id="31c47a45-6faa-43dc-8f2f-177c956427c9" />
+				<db:insert doc:name="Insert" doc:id="ff26d663-037a-42da-b43e-c874af795e79" config-ref="Database_Config">
+					<db:sql ><![CDATA[Insert into records_insert.records(SNO,Name,Branch) values(:SNO,:Name,:Branch);]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	SNO:payload.Id,
+	Name:payload.Name,
+	Branch:payload.UKG_Project_Id__c
+}]]]></db:input-parameters>
+				</db:insert>
+			</when>
+			<when expression="#[attributes.'type' == &quot;updated&quot;]">
+				<logger level="INFO" doc:name="Logger" doc:id="5ecda76c-3c1f-4df2-af24-e26a5756d66a" />
+				<db:update doc:name="Update" doc:id="c2fe1891-24ac-4003-aacd-88dcbf02e1d0" config-ref="Database_Config">
+					<db:sql ><![CDATA[UPDATE records_insert.records  set Name= :name  where SNO= :id;]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	name: payload.Name,
+	id: payload.Id
+}]]]></db:input-parameters>
+				</db:update>
+			</when>
+			<when expression="#[attributes.'type' == &quot;deleted&quot;]">
+				<logger level="INFO" doc:name="Logger" doc:id="69423ab5-8be1-4a64-b839-30b5a5109e00" />
+				<db:delete doc:name="Delete" doc:id="ec879586-a50f-4837-aa9a-ed28aa870100" config-ref="Database_Config">
+					<db:sql ><![CDATA[DELETE from records_insert.records where SNO= :id;]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	id:payload.Id
+}]]]></db:input-parameters>
+				</db:delete>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Default Log" doc:id="90cd9f96-3456-47f1-aaf5-5324bcfd4631" message="#[payload]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Log" doc:id="f1404b31-2cd6-4d51-b9c6-6e1ce5e52440" message="#[payload]"/>
+	</flow>
+	<flow name="salesforce-subscribe-Topic-ListenerFlow" doc:id="7c77a3b3-39e9-4b78-8647-3f7058230e8e" >
+		<salesforce:replay-topic-listener doc:name="Replay topic listener" doc:id="63e3470c-44be-487b-9dda-562f2fa4dca5" config-ref="Salesforce_Config" topic="sample1" replayOption="ALL"/>
+		<logger level="INFO" doc:name="Logger" doc:id="979c60df-d6a2-44ff-bc0f-41f6b77db8d5" message="#[payload]"/>
+	</flow>
+</mule>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="241bfc1c-3b6c-4337-baac-c7144c736e8d" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="records_insert" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d00899a1-1c3d-47ae-8cd7-658dc4ac70a6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="insertorupdatedata_databaseFlow" doc:id="4150e5e7-b487-4f61-9667-718a62faf4e1" >
+		<http:listener doc:name="Listener" doc:id="a4969c10-01bb-4471-8c8e-60bf95c2d978" config-ref="HTTP_Listener_config" path="/upsert"/>
+		<ee:transform doc:name="Transform Message" doc:id="6bc03e85-cd14-4507-94a1-cc528b81300d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="mainpayload" ><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "CUSTOMER_ID": 7890,
+    "CUSTOMER_NAME": "Sivanjaneyulu",
+    "ADDRESS1": "Flat 100",
+    "ADDRESS2": "Viman Nagar",
+    "POSTALCODE": "201018",
+    "CITY": "PUNE"
+  },
+  {
+    "CUSTOMER_ID": 123,
+    "CUSTOMER_NAME": "Ramanji",
+    "ADDRESS1": "Flat 101",
+    "ADDRESS2": "Viman Nagar 1",
+    "POSTALCODE": "201019",
+    "CITY": "PUNE"
+  },
+  {
+    "CUSTOMER_ID": 370,
+    "CUSTOMER_NAME": "sanjeev",
+    "ADDRESS1": "Flat 102",
+    "ADDRESS2": "Viman Nagar",
+    "POSTALCODE": "201018",
+    "CITY": "PUNE"
+  },
+  {
+    "CUSTOMER_ID": 567,
+    "CUSTOMER_NAME": "harish",
+    "ADDRESS1": "Flat 103",
+    "ADDRESS2": "Viman Nagar 4",
+    "POSTALCODE": "201019",
+    "CITY": "PUNE"
+  }
+]
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="d518febd-bdab-483a-8ad3-2d1d34b9bd59" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.mainpayload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="9b707b11-4120-48be-8523-ecdc9746ed24" >
+			<set-variable value="#[payload]" doc:name="Set Variable" doc:id="5f2ac580-6b07-4f83-a502-5dd93f885e38" variableName="data"/>
+			<db:select doc:name="Select" doc:id="b2701194-e074-4fa3-9ec4-b02dc7674c18" config-ref="Database_Config">
+				<db:sql><![CDATA[SELECT SNO FROM records_insert.records where SNO=:sno;]]></db:sql>
+				<db:input-parameters><![CDATA[#[{
+	sno: vars.data.CUSTOMER_ID
+}]]]></db:input-parameters>
+			</db:select>
+			<ee:transform doc:name="Transform Message" doc:id="0c65a25d-b91f-40b5-80e7-0b584a6477ae" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<choice doc:name="Choice" doc:id="1f09f6df-4ff6-4813-afad-d471bbb9196f">
+			<when expression="#[payload.SNO != null]">
+					<db:update doc:name="Update" doc:id="608f9b2e-377e-4246-9bce-c9f6d00d6e84" config-ref="Database_Config">
+						<db:sql ><![CDATA[UPDATE records_insert.records set Name= :name, Branch= :branch where SNO= :sno;]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	name:vars.data.CUSTOMER_NAME,
+	branch: vars.data.ADDRESS1,
+	sno: vars.data.CUSTOMER_ID
+}]]]></db:input-parameters>
+					</db:update>
+					<ee:transform doc:name="Transform Message" doc:id="50136191-121b-452b-a35f-fd9b8f9f55f7">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="db716f2d-d773-4b0a-8f31-8ebbaf8fd052" message="#[payload]"/>
+			</when>
+				<otherwise >
+					<db:insert doc:name="Insert" doc:id="42a47b53-7ed8-4898-818b-1d601f480859" config-ref="Database_Config">
+						<db:sql ><![CDATA[Insert into records_insert.records(SNO,Name,Branch) values(:sno,:name,:branch);]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	name:vars.data.CUSTOMER_NAME,
+	branch: vars.data.ADDRESS1,
+	sno: vars.data.CUSTOMER_ID
+}]]]></db:input-parameters>
+					</db:insert>
+					<ee:transform doc:name="Transform Message" doc:id="130d27ad-cea0-4ac2-bb97-a77e37dd9662" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="bc3a0188-5aec-4e5b-abfc-81794db670d0" message="#[payload]"/>
+				</otherwise>
+		</choice>
+		</foreach>
+	</flow>
+</mule>

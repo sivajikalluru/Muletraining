@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="ba90a7d6-1d2a-43bd-bb14-f69efc9c8984" >
+		<file:connection />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2f24be87-bf8b-42a5-be36-8abc1e7a429b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="7a4a9c41-932d-4612-9e7a-c4d12c8cfc74" >
+		<email:smtp-connection host="smtp.gmail.com" user="kallurusivaji@gmail.com" password="Siva@78654321" port="587">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="reef-proc-api-ukg-kitchensFlow" doc:id="e4c63653-7fbc-46d7-9ffb-c7fe35d845f6" >
+		<file:listener doc:name="On New or Updated File" doc:id="8cfb5262-8a2e-4f53-b4e1-3e7e80835696" config-ref="File_Config" directory="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\INPUT FIELS" moveToDirectory="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\Archive" outputMimeType="application/xlsx">
+			<scheduling-strategy >
+				<fixed-frequency/>
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="sourceCode" doc:id="a9c63f19-c4d3-4e73-99cc-460af8db13ce" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Sheet1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="495cc9fa-f884-44da-8f12-95a287f5136c" >
+			<when expression='#[sum(payload.Amount)!= 0 and attributes.fileName == "reef-kitchens_VES400 (4).xlsx"]' >
+				<set-variable value="#[[&#10;202135,&#10;601090,&#10;202060,&#10;202120,&#10;202035,&#10;202130,&#10;202115,&#10;202140,&#10;202080&#10;]]" doc:name="fixedGlCodes" doc:id="9930f6b5-794d-4187-80d2-b1fddb2e9f04" variableName="standardGlCodes" />
+				<ee:transform doc:name="mappinsWithFixedGlCodes" doc:id="9c409024-2ac5-4752-858b-f4a783e0014c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="fixedGlCodes"><![CDATA[%dw 2.0
+output application/json
+---
+//flatten(payload  map ((item, index) -> vars.standardGlCodes map ((item1, index1) -> if( item.GLCode == item1) item else "" ))) filter $ != ""
+//payload filter (vars.standardGlCodes contains ($.GLCode))
+payload filter (vars.standardGlCodes contains ($.GLCode)) groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="fixedGlCodesWithServiceId's" doc:id="2ac96160-d4a4-497f-a3f0-1c0d451d7a34">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="fixedGlCodesWithServiceId's"><![CDATA[
+%dw 2.0
+output application/json
+---
+ vars.fixedGlCodes map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+     debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: if( item.GLCode == 202135)"FC-1000192"  else "FC-1000199" 
+
+})
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="withoutFixedGlCodes&amp; (!=VES400)" doc:id="acbb04d9-56cb-4ad8-82b2-26ba7aedae17">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="withoutFixedGlCodes&amp; (!=VES400)" ><![CDATA[%dw 2.0
+output application/json
+---
+//flatten(payload map ((item, index) ->  vars.standardGlCodes map ((item1, index1) -> if( item.GLCode != item1 and item."Intercompany ID" != ("VES400"))item  else "" ))) filter $ != "" 
+//payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" != "VES400") 
+payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" != "VES400") groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="ServiceIds(!=VES400)" doc:id="a959ed2f-9195-40b6-aef1-c07d8849450a">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="ServiceIds!=VES400" ><![CDATA[%dw 2.0
+output application/json
+---
+vars."withoutFixedGlCodes& (!=VES400)" map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+     debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: if( item."Intercompany ID" == "IMP043" )"FC-1000200" else if (item."Intercompany ID" == "RPS001")"FC-1000204" else "FC-1000203" 
+})
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="withoutFixedGlCodes&amp; (==VES400)" doc:id="097e1a16-912d-4cca-be23-a5fcc34aad8f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="withoutFixedGlCodes&amp; (==VES400)" ><![CDATA[%dw 2.0
+output application/json
+---
+//payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" == "VES400") 
+payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" == "VES400")  groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<http:request method="GET" doc:name="retrieveServiceIds" doc:id="5dc979c6-d1ec-4dbe-85e1-7a62f20a84f6" url="http://localhost:8086/retrievee" target="retrieveServiceIds" responseTimeout="300000"/>
+				<ee:transform doc:name="ServiceIds(==VES400)" doc:id="ddd5e2cb-8a20-42fb-81c0-186d2f8d17e8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="ServiceIds(==VES400)" ><![CDATA[%dw 2.0
+output application/json
+---
+vars."withoutFixedGlCodes& (==VES400)"map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+   debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: vars.retrieveServiceIds filter (((item1, index1) -> item1.UKG_Project_Id__c == item."Project Code"[0] and item1.Country__c == "US" ) ) map $.Limestone_Project_ID__c reduce $
+})]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="finalOutPut" doc:id="7f21aa13-4d3f-42b4-a3ce-da36297dfa36">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+ payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="finalOutPut" ><![CDATA[%dw 2.0
+output application/json
+---
+vars."fixedGlCodesWithServiceId's" ++ vars."ServiceIds!=VES400" ++ vars."ServiceIds(==VES400)"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="ba21fa47-829b-40ba-a012-ba64e9f9450c">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.finalOutPut]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="63651ed9-52b5-4823-8dec-b826e6ae380b" message="#[vars.finalOutPut]"/>
+			</when>
+			<when expression='#[sum(payload.Amount)!= 0 and attributes.fileName == "reef-kitchens_VES800 (4).xlsx"]'>
+				<set-variable value="#[[&#10;202135,&#10;601090,&#10;106010,&#10;202060,&#10;202120,&#10;202035,&#10;202130,&#10;202115,&#10;202140,&#10;202080&#10;]]" doc:name="fixedGlCodes" doc:id="7a9f946c-c89b-4d1d-ad1b-3322c35b0d31" variableName="standardGlCodes" />
+				<ee:transform doc:name="mappinsWithFixedGlCodes" doc:id="e594edce-3d1c-464a-b05d-05f41f61f802" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="fixedGlCodes" ><![CDATA[%dw 2.0
+output application/json
+---
+//flatten(payload  map ((item, index) -> vars.standardGlCodes map ((item1, index1) -> if( item.GLCode == item1) item else "" ))) filter $ != ""
+//payload filter (vars.standardGlCodes contains ($.GLCode))
+payload filter (vars.standardGlCodes contains ($.GLCode)) groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="fixedGlCodesWithServiceId's" doc:id="f74d41f9-6bcf-43fa-b6b4-07175d470f73" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="fixedGlCodesWithServiceId's" ><![CDATA[
+%dw 2.0
+output application/json
+---
+ vars.fixedGlCodes map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+     debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: if( item.GLCode == 202135)"FC-1000632"  else "FC-1000639" 
+
+})
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="withoutFixedGlCodes&amp; (!=VES800)" doc:id="af00d693-e685-4c16-87cf-cc67e29d05ca" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="withoutFixedGlCodes&amp; (!=VES800)" ><![CDATA[%dw 2.0
+output application/json
+---
+//flatten(payload map ((item, index) ->  vars.standardGlCodes map ((item1, index1) -> if( item.GLCode != item1 and item."Intercompany ID" != ("VES400"))item  else "" ))) filter $ != "" 
+//payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" != "VES400") 
+payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" != "VES800") groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="ServiceIds(!=VES800)" doc:id="52f05ab2-e0c8-4c61-a045-d80ef8bf7442" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="ServiceIds!=VES800" ><![CDATA[%dw 2.0
+output application/json
+---
+vars."withoutFixedGlCodes& (!=VES800)" map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+     debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: if( item."Intercompany ID" == "IMP043" )"FC-1000640" else if (item."Intercompany ID" == "RPS001")"FC-1000644" else "FC-1000643" 
+})
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="withoutFixedGlCodes&amp; (==VES800)" doc:id="524db560-0ddd-45da-93c8-a188c8d5d8f4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="withoutFixedGlCodes&amp; (==VES800)" ><![CDATA[%dw 2.0
+output application/json
+---
+//payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" == "VES400") 
+payload filter !((vars.standardGlCodes contains ($.GLCode))) filter ((item, index) -> item."Intercompany ID" == "VES800")  groupBy ((item, index) -> item.GLCode) pluck $]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<http:request method="GET" doc:name="retrieveServiceIds" doc:id="25d59349-16bd-4aaf-9d6e-60de960d7496" url="http://localhost:8086/retrieve" target="retrieveServiceIds" responseTimeout="300000"/>
+				<ee:transform doc:name="finalOutPut" doc:id="93171797-cd8b-42ec-893f-7b7e5497e209" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="finalOutPut" ><![CDATA[%dw 2.0
+output application/json
+---
+vars."fixedGlCodesWithServiceId's" ++ vars."ServiceIds!=VES800" ++ vars."ServiceIds(==VES800)"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="ServiceIds(==VES800)" doc:id="b4b1e009-3806-43bb-ac3f-25cd69ce1a74">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="ServiceIds(==VES800)"><![CDATA[%dw 2.0
+output application/json
+---
+vars."withoutFixedGlCodes& (==VES800)"map ((item, index) -> {
+    batchName: "UKGKITCHGL",
+    postingDate: (item."Pay Period End")[0] as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "MM/dd/yyyy"},
+   debitAmount: if(sum(item.Amount) >= 0 ) sum(item.Amount) else "0",
+    creditAmount:if(sum(item.Amount) <=0 ) -sum(item.Amount) else "0",
+    externalDocumentNo:uuid(),
+    accountNo:item."GLCode"[0],
+    description:"AJE FOR COT'21 PAYROLL " ++ "- (" ++  ((item."Pay Period Start")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ "-" ++ ((item."Pay Period End")[0]  as Date {format: "yyyy-MM-dd'T'HH:mm:ss"} as String {format: "dd/MMMM/yyyy"}) ++ ")",
+    accountType: "G/L Account",
+    coid: item."Company ID"[0],
+    intercompanyId: item."Intercompany ID"[0],
+    ServiceId: vars.retrieveServiceIds filter (((item1, index1) -> item1.UKG_Project_Id__c == item."Project Code"[0] and item1.Country__c == "CA" ) ) map $.Limestone_Project_ID__c reduce $
+})]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="4eb3eec3-386d-4d1a-8616-448a491da22d">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.finalOutPut]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="805d63dc-315b-4f02-a28c-7790c5fee64b" message="#[vars.finalOutPut]" />
+			</when>
+			<otherwise >
+				<file:copy doc:name="Copy" doc:id="b0cf05ec-fceb-401d-b209-a1609533c077" config-ref="File_Config" sourcePath="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\INPUT FIELS" targetPath="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\Error" overwrite="true"/>
+				<ee:transform doc:name="Transform Message" doc:id="21b9a332-0554-440a-bd49-b3bd18dd96b7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	" Hi Team,
+	The Sum of Amount is not balanced in the given file from"++ ""   ++ attributes.fileName
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<email:send doc:name="Send" doc:id="1ef6b3cf-d1ec-45fc-89a2-1cc293717b01" config-ref="Email_SMTP" fromAddress="kallurusivaji@gmail.com" subject="Sum of Amount not balanced">
+					<email:to-addresses >
+						<email:to-address value="sivajikalluru786@gmail.com" />
+					</email:to-addresses>
+					<email:body contentType="text/plain" encoding="UTF-8" />
+				</email:send>
+			</otherwise>
+		</choice>
+		<http:request method="POST" doc:name="Request" doc:id="9121b064-84a4-46f8-9cc2-1a24d58125fc" url="http://localhost:8086/finalOutPutFromProcessLayer" responseTimeout="3000000">
+			<http:body ><![CDATA[#[vars.finalOutPut]]]></http:body>
+				</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="6499fe2d-23c5-4584-b9a6-257157e33767" message="#[vars.finalOutPut]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cc61464e-14cc-44b3-9a5c-67c8d71cde02" type="ANY">
+				<ee:transform doc:name="covertToCSV" doc:id="e445a29b-e1c6-431f-8d71-e5250ef389c6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv 
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value='#[{&#10;	"type": (( error.errorType.namespace) ++ ":" ++ (error.errorType.identifier))&#10;}]' doc:name="addingErrorFieldInPayload" doc:id="808af13b-d5b3-49fa-956c-284994f4ad0c" variableName="errorDetails"/>
+				<ee:transform doc:name="convertTocsvandQuoteValues&amp;Header" doc:id="5a8cf1af-b9ad-4fbd-8f55-2a64ea55b2d0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv quoteValues=true, header = true
+---
+payload map((item,index)-> item ++ vars.errorDetails)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<file:write doc:name="writeInErrorFolder" doc:id="35713693-96b0-40bb-bcab-4bf88a730c30" config-ref="File_Config" path="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\Error\Inputfile.csv" />
+				<email:send doc:name="SendEmailClient" doc:id="575ba30f-02fe-4cf0-8b0d-983ea9479c92" config-ref="Email_SMTP" fromAddress="kallurusivaji@gmail.com" subject="Sum of Amount not balanced" >
+					<email:to-addresses >
+						<email:to-address value="sivajikalluru786@gmail.com" />
+					</email:to-addresses>
+					<email:body contentType="text/plain" encoding="UTF-8" />
+				</email:send>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

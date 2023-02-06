@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/CalculatedInsightsMetadataResult",
+  "definitions": {"CalculatedInsightsMetadataResult": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {"metadata": {
+      "type": "array",
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    }},
+    "example": {"metadata": [{
+      "relationships": [{
+        "toEntity": "Total_Sales_by_Product_Category_Every5m__cio",
+        "fromEntity": "Mobile_App1_Behavioral_Events_788DD4E2__dlm"
+      }],
+      "partitionBy": "start__c",
+      "measures": [{
+        "displayName": "",
+        "name": "product_cost__c",
+        "type": "NUMBER",
+        "rollupable": true
+      }],
+      "displayName": "Total Sales by Product Category Every5m",
+      "name": "Total_Sales_by_Product_Category_Every5m__cio",
+      "dimensions": [
+        {
+          "displayName": "",
+          "name": "product_category__c",
+          "type": "STRING"
+        },
+        {
+          "displayName": "",
+          "name": "start__c",
+          "type": "DATE_TIME"
+        },
+        {
+          "displayName": "",
+          "name": "end__c",
+          "type": "DATE_TIME"
+        }
+      ]
+    }]}
+  }}
+}

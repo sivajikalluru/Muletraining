@@ -1,0 +1,10 @@
+#%RAML 1.0
+title: system-layer1
+resourceTypes:
+  property: !include api/systemResourceType.raml
+securitySchemes:
+  security: !include api/security-scheme/basicAuthentication.raml
+securedBy: security  
+/system:
+  type: property
+    

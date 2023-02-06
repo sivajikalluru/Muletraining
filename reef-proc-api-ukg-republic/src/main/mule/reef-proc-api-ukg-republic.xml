@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="eb6489d0-56c0-40bb-9f39-34efda766e60" >
+		<file:connection />
+	</file:config>
+	<flow name="reef-proc-api-ukg-republicFlow" doc:id="714b88b4-2f1d-4620-bb88-7fed97334ea9" >
+		<file:listener doc:name="On New or Updated File" doc:id="5b924ef8-cc5a-4d60-8ef2-5c89a4a1235a" config-ref="File_Config" directory="D:\REEF_PROJECTS\REEF_UKG_REPUBLIC\Input" moveToDirectory="D:\REEF_PROJECTS\REEF_UKG_REPUBLIC\Archieve" outputMimeType="application/csv">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="Transform Message" doc:id="c2a8075c-fea1-443f-9379-e697ac05d27b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="4b4b20a2-6c5a-4fe2-a9fc-730aecb3951a" >
+			<when expression='#[sum(payload.Amount)!= 0 and attributes.fileName == "REE1003.GLStandard.RPS013.20211117204532(sample).csv"]'>
+				<ee:transform doc:name="Transform Message" doc:id="fd631d80-be6a-4fd9-9fc9-f386b765ceb7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='sum(payload.Amount)!= 0 and attributes.fileName == "REE1003.LCAStandard.RPS013.20211117204532(sample).csv"'>
+				<ee:transform doc:name="Transform Message" doc:id="3e1c3dac-6ad3-4312-87c2-03943c20c01a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="8aabe70e-088a-4998-9d7b-f2ee2319aee1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="f9bbafbe-98a0-4ce1-99b9-f617df854ac9" message="#[payload]"/>
+	</flow>
+</mule>

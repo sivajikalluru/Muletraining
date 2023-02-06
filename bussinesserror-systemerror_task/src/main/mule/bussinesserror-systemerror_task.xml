@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5b2dd1cf-9506-477a-875d-349f1436fd63" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="974a7819-a2fa-4348-a801-a56afafff398" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="kallurusivaji@gmail.com" password="Siva@78654321" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="f5ee7198-2f06-48c7-8cc3-844588360b64" >
+	</os:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="52499ace-f0dc-4843-9691-f6a1f65d00f7" entryTtl="20" config-ref="ObjectStore_Config" maxEntries="100"/>
+	<os:object-store name="Object_store1" doc:name="Object store" doc:id="d7dfd7f7-d196-4266-aa7f-ba262c873aae" maxEntries="100" entryTtl="20" />
+	<flow name="bussinesserror-systemerror_taskFlow2" doc:id="1acd574c-3329-474f-ae13-6098c6fd7fa2" >
+		<http:listener doc:name="Listener" doc:id="f43d4252-1b5f-417d-a4fa-5c7e8400f88a" config-ref="HTTP_Listener_config" path="/choice"/>
+		<os:retrieve doc:name="Retrieve" doc:id="c0bcca18-ad37-48f6-abf6-ab687b456271" target="new" key="Siva" objectStore="Object_store1">
+			<os:default-value ><![CDATA[1]]></os:default-value>
+		</os:retrieve>
+		<http:request method="GET" doc:name="Request" doc:id="4eb2c537-3ff2-4990-ac12-ac7d9e171d3f" url=" http://mu.mulesoft-training.com/essentials/united/flight" responseTimeout="200000" />
+		<logger level="INFO" doc:name="Logger" doc:id="2f870259-1abf-47ea-b915-ab6f89318e07" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="93024ee5-43b3-408f-93f2-38d4e813b001" type="ANY">
+				<choice doc:name="Choice" doc:id="f204a701-1cf6-4a70-8a32-aca05ab52537" >
+					<when expression="error.muleMessage.typedAttributes.statusCode &lt;= 499 and error.muleMessage.typedAttributes.statusCode &gt;= 400 and vars.new &lt;= 3">
+						<os:store doc:name="Store" doc:id="5a31f647-f4c8-421f-96ea-66a63c66b863" key="Siva" objectStore="Object_store1">
+							<os:value><![CDATA[#[vars.new + 1]]]></os:value>
+						</os:store>
+						<flow-ref doc:name="Flow Reference" doc:id="a1e734a4-fb52-4bb1-ba65-1305fa1a7535" name="bussinesserror-systemerror_taskFlow2" />
+					</when>
+					<when expression="error.muleMessage.typedAttributes.statusCode &gt;= 500 and error.muleMessage.typedAttributes.statusCode &lt;= 599">
+						<ee:transform doc:name="Transform Message" doc:id="0c0fcdce-6b31-47d3-8ac4-6de556f1c848">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"error details":{
+"error":{
+"errorMessage":{
+"errorCode":error.muleMessage.typedAttributes.statusCode,
+"errorType":error.errorType.asString,
+"message":error.description
+}}}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<email:send doc:name="Send" doc:id="35067d64-93e6-415d-a91e-1e8c49773ec7" config-ref="Email_SMTP" fromAddress='#["kallurusivaji@gmail.com"]'>
+							<email:to-addresses>
+								<email:to-address value="kallurusivaji@gmail.com" />
+							</email:to-addresses>
+						</email:send>
+						<logger level="INFO" doc:name="Logger" doc:id="31f28797-ecb5-4f14-860d-b63a5896a13b" message="#[payload]" />
+					</when>
+					<otherwise>
+						<ee:transform doc:name="Transform Message" doc:id="424a6eb6-1eaf-4fb6-b1fb-71f060a2a66b">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"error details":{
+"error":{
+"errorMessage":{
+"errorCode":error.muleMessage.typedAttributes.statusCode,
+"errorType":error.errorType.asString,
+"message":error.description
+}}}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="value"><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.typedAttributes.statusCode]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+						<email:send doc:name="Send" doc:id="ea53f648-f889-45ad-ace7-98d3ebcf1a7a" config-ref="Email_SMTP" fromAddress='#["kallurusivaji@gmail.com"]'>
+							<email:to-addresses>
+								<email:to-address value="kallurusivaji@gmail.com" />
+							</email:to-addresses>
+						</email:send>
+						<logger level="INFO" doc:name="Logger" doc:id="ea8a755a-3bb3-48d0-a0db-4202f6d14707" message="#[payload]" />
+					</otherwise>
+				</choice>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

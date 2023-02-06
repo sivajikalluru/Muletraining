@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="43947225-9241-4b8e-8cbe-7a9e468d4cf1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="7e518a94-428d-4cdd-a553-9831c29b7ad5" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="demoschema" />
+	</db:config>
+	<flow name="sample-demo-databaseFlow" doc:id="685f0e9b-8097-4d1c-81a2-d5990ee1456f" >
+		<http:listener doc:name="Listener" doc:id="0305e02c-0627-4a98-aa12-ba7301c912b6" config-ref="HTTP_Listener_config" path="/select"/>
+		<db:select doc:name="Select" doc:id="7101f582-0b8a-4b85-b0f7-18efb5716f8e" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM demouser]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="60009d35-3c95-4cc6-9dec-ba7192a56a20" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sample-demo-databaseFlow2" doc:id="bba1c343-7876-42b5-97c2-48070d95cb9d" >
+		<http:listener doc:name="Listener" doc:id="e59a3f2e-c58e-468f-b294-4e39c5aa0245" config-ref="HTTP_Listener_config" path="/insert"/>
+		<db:insert doc:name="Insert" doc:id="08c1a171-e758-4cdc-b9ea-0f8384548344" config-ref="Database_Config">
+			<db:sql ><![CDATA[Insert into demouser(uid,name,email) values(:uid,:name,:email);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	uid:payload.uid,
+	name:payload.name,
+	email:payload.email
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="fb910687-198b-4f7a-abfc-2caedccc8a5f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sample-demo-databaseFlow4" doc:id="a3d3aa9a-da61-4df7-a51b-0708854796d6" >
+		<http:listener doc:name="Listener" doc:id="638e9e78-e5a0-4b4b-b7ab-86ffa249fb36" config-ref="HTTP_Listener_config" path="/delete"/>
+		<db:delete doc:name="Delete" doc:id="6f7f9fbd-f526-4c23-abec-fe95bccbff03" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE from demouser where uid= :uid;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	uid:payload.uid
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="c9af5e3f-75e4-46c7-94fb-e777a24d1ee2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sample-demo-databaseFlow3" doc:id="58d778ab-c893-4c61-8ad7-47bbdc540c3b" >
+		<http:listener doc:name="Listener" doc:id="d4a45c7e-7d73-4740-9f04-df594ec37b16" config-ref="HTTP_Listener_config" path="/update"/>
+		<db:update doc:name="Update" doc:id="22f34b85-362c-4116-a4e0-d088a3764422" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE demouser set name= :name where uid= :uid;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name: payload.name,
+	uid: payload.uid
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="ccc2d89b-7da5-438f-9cf5-a39b7a6b1615" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sample-demo-databaseFlow1" doc:id="861215fa-b4a3-4bd0-a277-8b22029e5e29" >
+		<http:listener doc:name="Listener" doc:id="5aa7222f-12b1-4bc7-8c2c-641d59ab61de" config-ref="HTTP_Listener_config" path="/select1" allowedMethods="GET"/>
+		<db:select doc:name="Select" doc:id="c2453f72-286a-4922-b02d-6d2ac7c3368f" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM demouser where uid = :uid;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	uid: attributes.queryParams.uid
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="8f97b8cb-a164-4ade-ad8c-3508f6c60ba6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

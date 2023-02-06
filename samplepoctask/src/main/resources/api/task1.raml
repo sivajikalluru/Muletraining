@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: task1
+/essentials:
+  /united:
+    /flights:
+      get:
+        queryParameters:
+          destination:
+            required: true
+            type: string
+        responses:
+          200:
+                body:
+                      application/json:
+                            example: !include /Example/task1example.raml

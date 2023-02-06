@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a5094c1b-6a67-4291-a688-04e5b90b5dfc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="b12b37f9-bf8a-4e1f-b526-e1356ecdda5a" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="muletrainingdb" />
+	</db:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="73b71b99-c149-4fe9-a00c-d6d29a585756" >
+		<salesforce:basic-connection username="bsharu777@gmail.com" password="Sharu@12345" securityToken="QliRMluCK7Hyc8Mg2PyygDO3x" />
+	</salesforce:sfdc-config>
+	<flow name="salesforce-database-demoFlow" doc:id="45d81367-1775-418b-a272-76fe6c27f489" >
+		<http:listener doc:name="Listener" doc:id="774a09d8-34fa-497c-93eb-feb471fe6d79" config-ref="HTTP_Listener_config" path="/demo"/>
+		<db:select doc:name="Select" doc:id="7397ed37-c30b-4262-a384-99d4d88ff8a4" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from informationdata]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="76f264f0-38d0-42f7-9850-7cee2967f794" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="dbData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	"Name": item.Name,
+    "id": item.id,
+    "Age": item.Age as Number
+}) ++ [ {
+	"Name": "krish",
+    "id": 11,
+    "Age":25
+},{
+	"Name": "Jadeja",
+    "id": 12,
+    "Age":25
+} ]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:query doc:name="Query" doc:id="1c3c00cf-2e0b-4c16-b56c-5bbe0d04dc43" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select Name,id__c,	Age__c from playerList__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="8c4cc39e-5479-4bc6-8787-191a1a7dffdc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	
+	"Name": item.Name,
+	"id": item.id__c as Number,
+	"Age": item.Age__c as Number
+} )]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	
+	"Name": item.Name,
+	"id": item.id__c as Number,
+	"Age": item.Age__c as Number
+} )]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="2db22053-00b1-40a2-b1ac-4c33482d17f2" >
+			<when expression="#[(vars.sfData orderBy ((item, index) -&gt; item.id )) == (vars.dbData)]">
+				<ee:transform doc:name="Transform Message" doc:id="ea725b38-c1cc-4b28-938d-006fb3354508" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.dbData ++ vars.sfData]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="2ec33316-36a1-4fc5-952d-e622d86ff2db" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+var sfData = vars.sfData
+var dbData = vars.dbData
+var matchedData = sfData reduce (item, acc = []) -> if (dbData contains item) acc + item else acc
+output application/json
+---
+
+sfData ++ dbData filter (not (matchedData contains {"Name": $."Name", "id": $."id", "Age": $.Age}))
+
+
+
+
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="insertingData" ><![CDATA[%dw 2.0
+var sfData = vars.sfData
+var dbData = vars.dbData
+var matchedData = sfData reduce (item, acc = []) -> if (dbData contains item) acc + item else acc
+output application/json
+---
+
+sfData ++ dbData filter (not (matchedData contains {"Name": $."Name", "id": $."id", "Age": $.Age}))
+
+
+
+
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="67dbbf8b-85d9-4941-96de-6116295ec84e">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	"Name": item.Name,
+    "id__c": item.id,
+    "Age__c": item.Age as Number
+}) ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<salesforce:create doc:name="Create" doc:id="5c44cf9a-5b98-4371-9963-14f08298abca" config-ref="Salesforce_Config" type="playerList__c"/>
+				<ee:transform doc:name="Transform Message" doc:id="2a76310b-93c8-41f5-8912-defd1c2fcd6b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+"select Name,id__c,	Age__c from playerList__c
+WHERE Name IN (" ++ ("'" ++ (vars.insertingData.Name joinBy  "','") ++ "'") ++ ") AND id__c IN (" ++ ("'" ++ (vars.insertingData.id joinBy  "','") ++ "'") ++ ") AND Age__c IN (" ++ ("'" ++ (vars.insertingData.Age joinBy  "','") ++ "'") ++ ")"]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+					</ee:variables>
+				</ee:transform>
+				<salesforce:query doc:name="Query" doc:id="fb5cfa61-71c9-4b5e-954c-7f74bf4828bc" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query ><![CDATA[#[payload]]]></salesforce:salesforce-query>
+				</salesforce:query>
+				<ee:transform doc:name="Transform Message" doc:id="faf79472-86aa-44a8-9a58-f0cb3619c7a2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

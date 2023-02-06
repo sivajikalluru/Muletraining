@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="Implementationpoc3-test-suite.xml" />
+	<munit:test name="Implementationpoc3-test-suite-Implementationpoc3FlowTest" doc:id="57fcb403-b1c3-41af-8ad2-46c753b364b1" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="poc3-raml-main" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3818ae66-178f-4c4a-b7c1-0550e505805f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a6c4db5b-564c-49a2-ac47-37633dbac117" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a79b368a-6a31-4d43-bd54-c3c7813c66f2" >
+				<munit:attributes value="#[{queryParams :{'price': '400'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to Implementationpoc3Flow" doc:id="832d73e7-ac82-4ead-9b44-3e91658d6726" name="Implementationpoc3Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b1bb694d-4f40-4862-a586-1cf5d89b0c55" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

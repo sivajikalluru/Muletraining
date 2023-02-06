@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_d694a964_496f_43b3_8041_88cfd54c0e18_Input_Variables_sfdata = Array<{|  name: String {"typeId": "name__c"} | Null,   branch: String {"typeId": "branch__c"} | Null|}>
+

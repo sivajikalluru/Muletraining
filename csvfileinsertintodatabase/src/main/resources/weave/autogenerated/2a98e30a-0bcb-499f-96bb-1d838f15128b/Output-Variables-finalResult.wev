@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_2a98e30a_0bcb_499f_96bb_1d838f15128b_Output_Variables_finalResult = Array<sfdata__c>
+type sfdata__c = {|
+  branch__c?: String {"typeId": "branch__c"}, 
+  Id?: String {"typeId": "Id"}, 
+  name__c?: String {"typeId": "name__c"}
+|} {"typeId": "sfdata__c"}
+
+
+

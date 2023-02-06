@@ -1,0 +1,6 @@
+http:
+ host: "localhost"
+ port: "8081"
+requester:
+ host: "mu.mulesoft-training.com"
+ path: "/essentials/united/flights" 

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="821b496f-3e76-4a94-aec7-37148cac0070" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="7858d79d-f5b1-4080-a8ee-da529e26ebed" >
+		<file:connection />
+	</file:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1a41f237-9f12-473e-8544-ee0a9496e382" >
+		<http:request-connection host="localhost" port="8081"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="13423b06-6e81-4b6d-89d8-9af399fd5255" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="process_layer_reef_clhFlow" doc:id="279ee7d7-7f61-4d05-8574-bf988232fc21" >
+		<file:listener doc:name="sourceFile" doc:id="fdfa00e7-2d31-48ac-9c74-ef46283c6fa0" config-ref="File_Config" directory="D:\REEF_CLH(Project)\INPUT" autoDelete="true" moveToDirectory="D:\REEF_CLH(Project)\Archieve">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="toJson" doc:id="13ff2eac-8dae-4bb1-a54b-da0c570ab64f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="infoLogger" doc:id="759e23c9-8e69-4c3a-a40b-5544f94ed7fb" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="7dfccb9b-da42-40de-b090-90bfd05473aa" >
+			<when expression='#[sum(payload  map ((item, index) -&gt;{&#10;    amount:(item.Amount replace "," with "") as Number&#10;}.amount)) != null]' >
+				<http:request method="POST" doc:name="glAccountCodes" doc:id="dcda3d61-5249-4346-b175-51a8efa63740" config-ref="HTTP_Request_configuration" path="/api/reef" target="glAccount" responseTimeout="300000"/>
+				<ee:transform doc:name="mappingsGlCodes and InputFiles" doc:id="1b8cb9c5-f0c8-4e2b-9cb1-bfdad332c9dd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) ->{
+    "Pay Period Start": item."Pay Period Start",
+    "Pay Period End": item."Pay Period End",
+    "Pay Date": item."Pay Date",
+    "Company ID": item."Company ID",
+    "Intercompany ID": item."Intercompany ID",
+    "Project Code": item."Project Code",
+    "Project Description": item."Project Description",
+    "Business Application Code": item."Business Application Code",
+    "Business Application Description": item."Business Application Description",
+    "Sub Job Family": item."Sub Job Family",
+    "Sub Job Family Description": item."Sub Job Family Description",
+    "Job Code": item."Job Code",
+    "Job Description": item."Job Description",
+    "Financial Level Code": item."Financial Level Code",
+    "Financial Level Description": item."Financial Level Description",
+    "Employee Code": item."Employee Code",
+    "Last First": item."Last First",
+    "GL/Pay Account Code": item."GL/Pay Account Code",
+    "Pay Type": item."Pay Type",
+    "Union Code": item."Union Code",
+    "Full-Time/Part-Time": item."Full-Time/Part-Time",
+    "GL Account Description": item."GL Account Description",
+    "Date Worked": item."Date Worked",
+    "Hours": item.Hours,
+    "Rate": item.Rate,
+    "Amount": item.Amount,
+    "Debit/Credit Indicator": item."Debit/Credit Indicator",
+    "GL Code Type": item."GL Code Type",
+    "GLCode":(vars.glAccount filter ((item1, index1) -> item1.Limestone_GL_account__c == item."GLCode"  and item1.Earnings_Code__c == item."GL/Pay Account Code" and item1.Type__c == item."GL Code Type") map ((item2, index2) -> item2.LAN_GL_Account__c ))[0],
+"GL REEF Description":(vars.glAccount filter ((item1, index1) -> item1.Limestone_GL_account__c == item."GLCode"  and item1.Earnings_Code__c == item."GL/Pay Account Code" and item1.Type__c == item."GL Code Type")  map ((item2, index2) -> item2.CLH_GL_Description__c ))[0]
+} ) filter ( $.GLCode != null )
+    ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="afterMappingPayload" doc:id="32d1fb07-16f5-404f-ac6f-c68f35902d67" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<http:request method="GET" doc:name="testJobCodes" doc:id="8f78d219-53e6-4a70-b939-3d3cde0f82e6" config-ref="HTTP_Request_configuration1" path="/api/reef" target="jobCode" responseTimeout="300000"/>
+				<ee:transform doc:name="testJobCodesPayload" doc:id="0f8788e3-1aa9-4163-9278-8e7dd3b34649" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="mappingsTestJobCodes and GlCodePayload" doc:id="e399be4c-1108-4676-bb75-34e4c55438b1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+    "Pay Period Start": item."Pay Period Start",
+    "Pay Period End":item."Pay Period End",
+    "Pay Date":item."Pay Date",
+    "Company ID":item."Company ID",
+    "Intercompany ID":item."Intercompany ID",
+    "Project Code":item."Project Code",
+    "Project Description": item."Project Description",
+    "Business Application Code":item."Business Application Code",
+    "Business Application Description":item."Business Application Description",
+    "Sub Job Family": item."Sub Job Family",
+    "Sub Job Family Description":item."Sub Job Family Description",
+    "Job Code":item."Job Code",
+    "Job Description":item."Job Description",
+    "Financial Level Code":item."Financial Level Code" ,
+    "Financial Level Description":item."Financial Level Description",
+    "Employee Code":item."Employee Code",
+    "Last First":item."Last First",
+    "GL/Pay Account Code":item."GL/Pay Account Code",
+    "Pay Type":item."Pay Type",
+    "Union Code":item."Union Code", 
+    "Full-Time/Part-Time":item."Full-Time/Part-Time",
+    "GL Account Description":item."GL Account Description",
+    "Date Worked":item."Date Worked",
+    "Hours":item.Hours,
+    "Rate":item.Rate,
+    "Amount":item.Amount,
+    "Debit/Credit Indicator":item."Debit/Credit Indicator",
+    "GL Code Type":item."GL Code Type",
+    "GLCode": if(item."Financial Level Code" == "SGA") ((vars.jobCode filter ((item1, index1) ->  item1.Job_Code__c == item."Job Code" ) map ((item2, index2) ->  item2.GLCode_SGA__c))[0]) else ((vars.jobCode filter ((item1, index1) ->  item1.Job_Code__c == item."Job Code" ) map ((item2, index2) ->  item2.GLCode_Others__c))[0]),
+    "GL REEF Description":item."GL REEF Description"
+   })]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="finalPayload" doc:id="6158d224-4f21-4d50-8023-4f00681e44fb" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<file:write doc:name="Write" doc:id="cb6271d4-ac7e-4fcf-8470-036e248563a4" config-ref="File_Config" path="D:\REEF_CLH(Project)\OutPut/OutPut1.csv" />
+			</when>
+			<otherwise >
+				<file:copy doc:name="copyInputFileInErrorFolder" doc:id="317dcdef-87f3-4f70-864c-63b164a1c62b" config-ref="File_Config" sourcePath="D:\REEF_CLH(Project)\INPUT" targetPath="D:\REEF_CLH(Project)\Error" renameTo="InputReefFile.csv" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

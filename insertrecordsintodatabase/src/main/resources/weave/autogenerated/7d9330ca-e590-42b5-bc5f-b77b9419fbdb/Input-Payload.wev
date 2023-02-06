@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_7d9330ca_e590_42b5_bc5f_b77b9419fbdb_Input_Payload = {|
+  SNO: Any, 
+  Name: Any, 
+  Branch: Any
+|}
+

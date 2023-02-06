@@ -1,0 +1,10 @@
+#%RAML 1.0
+title: Task1_exp
+/flights:
+  /exp:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include /Example/example.api.raml

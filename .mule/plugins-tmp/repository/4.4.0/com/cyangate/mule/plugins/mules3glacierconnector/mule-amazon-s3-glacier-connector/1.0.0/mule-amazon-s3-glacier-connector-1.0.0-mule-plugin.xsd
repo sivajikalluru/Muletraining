@@ -1,0 +1,1327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:mule="http://www.mulesoft.org/schema/mule/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.mulesoft.org/schema/mule/s3-glacier" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"></xs:import>
+  <xs:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"></xs:import>
+  <xs:import namespace="http://www.mulesoft.org/schema/mule/core" schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></xs:import>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstract-shared-extension" name="config">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractExtensionType">
+          <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element minOccurs="1" maxOccurs="1" ref="mule:abstractConnectionProvider"></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:expiration-policy"></xs:element>
+          </xs:sequence>
+          <xs:attribute type="xs:string" use="required" name="name">
+            <xs:annotation>
+              <xs:documentation>The identifier of this element used to reference it in other components</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstractConnectionProvider" name="basic-connection">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractConnectionProviderType">
+          <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:reconnection"></xs:element>
+          </xs:sequence>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="connectionTimeout"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="socketTimeout"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="accessKey"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="secretKey"></xs:attribute>
+          <xs:attribute type="mule:expressionBoolean" use="optional" default="false" name="tryDefaultAWSCredentialsProviderChain"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="maxConnections"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" default="US_EAST_1" name="region"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyHost"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="proxyPort"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyUsername"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyPassword"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyDomain"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyWorkstation"></xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstractConnectionProvider" name="role-connection">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractConnectionProviderType">
+          <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:reconnection"></xs:element>
+          </xs:sequence>
+          <xs:attribute type="mule:expressionString" use="required" name="roleARN"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="connectionTimeout"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="socketTimeout"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="accessKey"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="secretKey"></xs:attribute>
+          <xs:attribute type="mule:expressionBoolean" use="optional" default="false" name="tryDefaultAWSCredentialsProviderChain"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="maxConnections"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" default="US_EAST_1" name="region"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyHost"></xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="proxyPort"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyUsername"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyPassword"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyDomain"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyWorkstation"></xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="AbortMultipartUploadType" substitutionGroup="mule:abstract-operator" name="abort-multipart-upload"></xs:element>
+  <xs:complexType name="AbortMultipartUploadType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="uploadId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="AbortVaultLockType" substitutionGroup="mule:abstract-operator" name="abort-vault-lock"></xs:element>
+  <xs:complexType name="AbortVaultLockType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="AddTagsToVaultType" substitutionGroup="mule:abstract-operator" name="add-tags-to-vault"></xs:element>
+  <xs:complexType name="AddTagsToVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="tags">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="tag">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="key"></xs:attribute>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionMap" use="optional" name="tags"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="CompleteMultipartUploadType" substitutionGroup="mule:abstract-operator" name="complete-multipart-upload"></xs:element>
+  <xs:complexType name="CompleteMultipartUploadType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="uploadId"></xs:attribute>
+        <xs:attribute type="mule:expressionLong" use="required" name="archiveSize"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="checksum"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="CompleteVaultLockType" substitutionGroup="mule:abstract-operator" name="complete-vault-lock"></xs:element>
+  <xs:complexType name="CompleteVaultLockType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="lockId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="CreateVaultType" substitutionGroup="mule:abstract-operator" name="create-vault"></xs:element>
+  <xs:complexType name="CreateVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteArchiveType" substitutionGroup="mule:abstract-operator" name="delete-archive"></xs:element>
+  <xs:complexType name="DeleteArchiveType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="archiveId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteVaultType" substitutionGroup="mule:abstract-operator" name="delete-vault"></xs:element>
+  <xs:complexType name="DeleteVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteVaultAccessPolicyType" substitutionGroup="mule:abstract-operator" name="delete-vault-access-policy"></xs:element>
+  <xs:complexType name="DeleteVaultAccessPolicyType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteVaultNotificationsType" substitutionGroup="mule:abstract-operator" name="delete-vault-notifications"></xs:element>
+  <xs:complexType name="DeleteVaultNotificationsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DescribeJobType" substitutionGroup="mule:abstract-operator" name="describe-job"></xs:element>
+  <xs:complexType name="DescribeJobType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="jobId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DescribeVaultType" substitutionGroup="mule:abstract-operator" name="describe-vault"></xs:element>
+  <xs:complexType name="DescribeVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetDataRetrievalPolicyType" substitutionGroup="mule:abstract-operator" name="get-data-retrieval-policy"></xs:element>
+  <xs:complexType name="GetDataRetrievalPolicyType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetJobOutputType" substitutionGroup="mule:abstract-operator" name="get-job-output"></xs:element>
+  <xs:complexType name="GetJobOutputType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="jobId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="range"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetVaultAccessPolicyType" substitutionGroup="mule:abstract-operator" name="get-vault-access-policy"></xs:element>
+  <xs:complexType name="GetVaultAccessPolicyType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetVaultLockType" substitutionGroup="mule:abstract-operator" name="get-vault-lock"></xs:element>
+  <xs:complexType name="GetVaultLockType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetVaultNotificationsType" substitutionGroup="mule:abstract-operator" name="get-vault-notifications"></xs:element>
+  <xs:complexType name="GetVaultNotificationsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="InitiateJobType" substitutionGroup="mule:abstract-operator" name="initiate-job"></xs:element>
+  <xs:complexType name="InitiateJobType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="job-parameters">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.JobParameters"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="jobParameters"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.InventoryRetrievalJobInput">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="endDate"></xs:attribute>
+        <xs:attribute type="mule:expressionLong" use="optional" name="limit"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="marker"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="startDate"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.Grantee">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="displayName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="emailAddress"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="id"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="type"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="uri"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.Grant">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="grantee">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.Grantee"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" use="optional" name="grantee"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="permission"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" type="s3-glacier:org.mule.extension.s3glacier.api.model.job.Grant" abstract="true" name="abstract-grant"></xs:element>
+  <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" substitutionGroup="s3-glacier:abstract-grant" name="grant">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="s3-glacier:org.mule.extension.s3glacier.api.model.job.Grant"></xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.Encryption">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="encryptionType"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="kmsContext"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="kmsKeyId"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.S3Location">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="access-control-list">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" minOccurs="0" maxOccurs="unbounded" ref="s3-glacier:abstract-grant"></xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="encryption">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.Encryption"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="taggings">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="tagging">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="key"></xs:attribute>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="user-metadatas">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="user-metadatum">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="key"></xs:attribute>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionList" use="optional" name="accessControlList"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="bucketName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="cannedACL"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="encryption"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="prefix"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="storageClass"></xs:attribute>
+        <xs:attribute type="mule:expressionMap" use="optional" name="tagging"></xs:attribute>
+        <xs:attribute type="mule:expressionMap" use="optional" name="userMetadata"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.OutputLocation">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="s3">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.S3Location"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" use="optional" name="s3"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.CsvInput">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="comments"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="fieldDelimiter"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.FileHeaderInfoEnumType" use="optional" name="fileHeaderInfo"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="quoteCharacter"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="quoteEscapeCharacter"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="recordDelimiter"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.InputSerialization">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="csv-input">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.CsvInput"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" use="optional" name="csvInput"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.CsvOutput">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="fieldDelimiter"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="quoteCharacter"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="quoteEscapeCharacter"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="quoteFields"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="recordDelimiter"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.OutputSerialization">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="csv-output">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.CsvOutput"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" use="optional" name="csvOutput"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.SelectParameters">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="input-serialization">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.InputSerialization"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="output-serialization">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.OutputSerialization"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="expression"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="expressionType"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="inputSerialization"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="outputSerialization"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.job.JobParameters">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="inventory-retrieval-parameters">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.InventoryRetrievalJobInput"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="output-location">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.OutputLocation"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="select-parameters">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.job.SelectParameters"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="archiveId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="description"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.InventoryRetrievalFormatEnumType" use="optional" name="format"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="inventoryRetrievalParameters"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="outputLocation"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="retrievalByteRange"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="selectParameters"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="snsTopic"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.JobTierEnumType" use="optional" name="tier"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.JobTypeEnumType" use="optional" name="type"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="InitiateMultipartUploadType" substitutionGroup="mule:abstract-operator" name="initiate-multipart-upload"></xs:element>
+  <xs:complexType name="InitiateMultipartUploadType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="archiveDescription"></xs:attribute>
+        <xs:attribute type="mule:expressionLong" use="required" name="partSize"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="InitiateVaultLockType" substitutionGroup="mule:abstract-operator" name="initiate-vault-lock"></xs:element>
+  <xs:complexType name="InitiateVaultLockType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="policy"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListJobsType" substitutionGroup="mule:abstract-operator" name="list-jobs"></xs:element>
+  <xs:complexType name="ListJobsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="optional" name="limit"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="marker"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.StatusCodeEnumType" use="optional" name="statusCode"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.job.CompletedEnumType" use="optional" name="completed"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListMultipartUploadsType" substitutionGroup="mule:abstract-operator" name="list-multipart-uploads"></xs:element>
+  <xs:complexType name="ListMultipartUploadsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="limit"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="uploadIdMarker"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListPartsType" substitutionGroup="mule:abstract-operator" name="list-parts"></xs:element>
+  <xs:complexType name="ListPartsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="uploadId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="marker"></xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="optional" name="limit"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListProvisionedCapacityType" substitutionGroup="mule:abstract-operator" name="list-provisioned-capacity"></xs:element>
+  <xs:complexType name="ListProvisionedCapacityType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListTagsForVaultType" substitutionGroup="mule:abstract-operator" name="list-tags-for-vault"></xs:element>
+  <xs:complexType name="ListTagsForVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListVaultsType" substitutionGroup="mule:abstract-operator" name="list-vaults"></xs:element>
+  <xs:complexType name="ListVaultsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="marker"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="limit"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="PurchaseProvisionedCapacityType" substitutionGroup="mule:abstract-operator" name="purchase-provisioned-capacity"></xs:element>
+  <xs:complexType name="PurchaseProvisionedCapacityType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="RemoveTagsFromVaultType" substitutionGroup="mule:abstract-operator" name="remove-tags-from-vault"></xs:element>
+  <xs:complexType name="RemoveTagsFromVaultType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="tag-keys">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="tag-key">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionList" use="optional" name="tagKeys"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SetDataRetrievalPolicyType" substitutionGroup="mule:abstract-operator" name="set-data-retrieval-policy"></xs:element>
+  <xs:complexType name="SetDataRetrievalPolicyType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="policy">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.DataRetrievalPolicy"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="policy"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.DataRetrievalRule">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionLong" use="optional" name="bytesPerHour"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.StrategyEnumType" use="optional" name="strategy"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" type="s3-glacier:org.mule.extension.s3glacier.api.model.DataRetrievalRule" abstract="true" name="abstract-data-retrieval-rule"></xs:element>
+  <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" substitutionGroup="s3-glacier:abstract-data-retrieval-rule" name="data-retrieval-rule">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="s3-glacier:org.mule.extension.s3glacier.api.model.DataRetrievalRule"></xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.DataRetrievalPolicy">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="rules">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" minOccurs="0" maxOccurs="unbounded" ref="s3-glacier:abstract-data-retrieval-rule"></xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionList" use="optional" name="rules"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SetVaultAccessPolicyType" substitutionGroup="mule:abstract-operator" name="set-vault-access-policy"></xs:element>
+  <xs:complexType name="SetVaultAccessPolicyType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="policy"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SetVaultNotificationsType" substitutionGroup="mule:abstract-operator" name="set-vault-notifications"></xs:element>
+  <xs:complexType name="SetVaultNotificationsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="vault-notification-config">
+            <xs:complexType>
+              <xs:complexContent>
+                <xs:extension xmlns:s3-glacier="http://www.mulesoft.org/schema/mule/s3-glacier" base="s3-glacier:org.mule.extension.s3glacier.api.model.VaultNotificationConfig"></xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="vaultNotificationConfig"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.s3glacier.api.model.VaultNotificationConfig">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" name="events">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="event">
+                  <xs:complexType>
+                    <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" type="org.mule.extension.s3glacier.api.model.NotificationEventEnumType" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionList" use="optional" name="events"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="snsTopic"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="UploadArchiveType" substitutionGroup="mule:abstract-operator" name="upload-archive"></xs:element>
+  <xs:complexType name="UploadArchiveType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="body"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="archiveDescription"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="checksum"></xs:attribute>
+        <xs:attribute type="mule:expressionLong" use="required" name="contentLength"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/s3-glacier" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="UploadMultipartPartType" substitutionGroup="mule:abstract-operator" name="upload-multipart-part"></xs:element>
+  <xs:complexType name="UploadMultipartPartType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="body"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="accountId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="vaultName"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="uploadId"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="checksum"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="required" name="range"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.InventoryRetrievalFormatEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="CSV"></xs:enumeration>
+          <xs:enumeration value="JSON"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.FileHeaderInfoEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NONE"></xs:enumeration>
+          <xs:enumeration value="IGNORE"></xs:enumeration>
+          <xs:enumeration value="USE"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.JobTierEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="EXPEDITED"></xs:enumeration>
+          <xs:enumeration value="STANDARD"></xs:enumeration>
+          <xs:enumeration value="BULK"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.JobTypeEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="SELECT"></xs:enumeration>
+          <xs:enumeration value="ARCHIVE_RETRIEVAL"></xs:enumeration>
+          <xs:enumeration value="INVENTORY_RETRIEVAL"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.StatusCodeEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="IN_PROGRESS"></xs:enumeration>
+          <xs:enumeration value="SUCCEEDED"></xs:enumeration>
+          <xs:enumeration value="FAILED"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.job.CompletedEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="TRUE"></xs:enumeration>
+          <xs:enumeration value="FALSE"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.StrategyEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BYTES_PER_HOUR"></xs:enumeration>
+          <xs:enumeration value="FREE_TIER"></xs:enumeration>
+          <xs:enumeration value="NONE"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="org.mule.extension.s3glacier.api.model.NotificationEventEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ARCHIVE_RETRIEVAL_COMPLETED"></xs:enumeration>
+          <xs:enumeration value="INVENTORY_RETRIEVAL_COMPLETED"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+</xs:schema>

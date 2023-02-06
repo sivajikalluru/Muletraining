@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/JobResponse",
+  "definitions": {"JobResponse": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {
+      "systemModstamp": {"type": "string"},
+      "retries": {
+        "maximum": 2147483647,
+        "type": "integer",
+        "minimum": -2147483648
+      },
+      "contentUrl": {"type": "string"},
+      "createdDate": {"type": "string"},
+      "apiVersion": {"type": "string"},
+      "id": {
+        "description": "The unique identifier of the job created",
+        "type": "string"
+      },
+      "sourceName": {"type": "string"},
+      "state": {
+        "description": "The state of job. 'Aborted', 'Failed', 'JobComplete', 'Open' or 'UploadComplete' are the only valid values.",
+        "type": "string"
+      },
+      "totalProcessingTime": {
+        "maximum": 2147483647,
+        "type": "integer",
+        "minimum": -2147483648
+      },
+      "operation": {
+        "description": "The kind of job operation. 'upsert' or 'delete' are the only valid values.",
+        "type": "string"
+      },
+      "contentType": {
+        "description": "The content type of data that this job will handle. 'CSV' is the only valid value.",
+        "type": "string"
+      },
+      "createdById": {"type": "string"},
+      "object": {"type": "string"}
+    },
+    "example": {
+      "contentUrl": "api/v1/ingest/jobs/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/batches",
+      "createdDate": "2021-01-01T13:35:31.000Z",
+      "apiVersion": "v1",
+      "systemModstamp": "2021-01-01T13:35:31.000Z",
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "state": "Open",
+      "operation": "upsert",
+      "contentType": "CSV",
+      "createdById": "005R0000000sJ1hIAE",
+      "object": "type_name"
+    }
+  }}
+}

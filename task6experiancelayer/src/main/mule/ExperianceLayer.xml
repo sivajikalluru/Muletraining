@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="70611ac5-2d82-4e10-9a88-b5c3e32a630c" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="ExperianceLayerFlow" doc:id="050348f7-dcbd-4d68-9cb5-bb2502c9ebbb" >
+		<logger level="INFO" doc:name="Logger" doc:id="c96010db-7c62-4d92-b813-2abf83453cdf" message="#[payload]"/>
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="0e5ee2ef-bfbe-486b-ac07-9d99eb2489df" variableName="destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="2c642167-597b-43ce-8c34-0a9545266e6d" config-ref="HTTP_Request_configuration" path="/api/Soap" responseTimeout="300000">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"destination" : vars.destination
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="e91689aa-1ab0-48f8-946e-11878747d829" message="#[payload]"/>
+	</flow>
+</mule>

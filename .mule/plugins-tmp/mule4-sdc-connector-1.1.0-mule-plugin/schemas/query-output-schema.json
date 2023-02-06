@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/SqlQueryResult",
+  "definitions": {"SqlQueryResult": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {
+      "metadata": {
+        "description": "Result set Metadata",
+        "additionalProperties": {},
+        "type": "object",
+        "example": {
+          "BirthDate__c": {
+            "type": "TIMESTAMP",
+            "placeInOrder": 0,
+            "typeCode": 93
+          },
+          "MiddleName__c": {
+            "type": "VARCHAR",
+            "placeInOrder": 10,
+            "typeCode": 12
+          }
+        }
+      },
+      "data": {
+        "type": "array",
+        "items": {}
+      },
+      "done": {
+        "description": "If the flag is set to true then there are no more records to be queried.",
+        "type": "boolean",
+        "example": true
+      },
+      "arrowStream": {
+        "description": "Arrow stream of data in base64 string format.",
+        "type": "string"
+      }
+    },
+    "example": {
+      "data": [
+        {
+          "GenderId__c": "F",
+          "Id__c": "05d01a06-0c61-3990-808d-2aa602dd3e7f",
+          "Occupation__c": "Staffing",
+          "FirstName__c": "Don"
+        },
+        {
+          "GenderId__c": "M",
+          "Id__c": "11bcc846-1a80-3293-8cc4-3449835d8d4c",
+          "Occupation__c": "Operational",
+          "FirstName__c": "Don"
+        },
+        {
+          "GenderId__c": "M",
+          "Id__c": "18213566-df86-34a8-97aa-2cb75b70ae3b",
+          "Occupation__c": "Organizational",
+          "FirstName__c": "Don"
+        }
+      ],
+      "done": false
+    }
+  }}
+}

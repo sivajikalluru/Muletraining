@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_d694a964_496f_43b3_8041_88cfd54c0e18_Output_Variables_db = Array<{|  name: String,   branch: String|}>
+

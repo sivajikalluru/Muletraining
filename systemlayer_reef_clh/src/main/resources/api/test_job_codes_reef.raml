@@ -1,0 +1,9 @@
+#%RAML 1.0
+title: test_Job_Codes_Reef
+resourceTypes:
+  get_test_job: !include api/test_Job_Codes_ResourceType.raml
+uses:
+  lib1: api/libraries/gl_Account_Library.raml
+/reef:
+  type:
+    get_test_job 

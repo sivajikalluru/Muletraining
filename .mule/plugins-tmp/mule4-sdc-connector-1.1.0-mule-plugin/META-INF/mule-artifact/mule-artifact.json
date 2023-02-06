@@ -1,0 +1,35 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "java",
+    "attributes": {
+      "type": "com.mulesoft.connectors.sdc.internal.extension.SalesforceDataCloudConnector",
+      "version": "1.1.0"
+    }
+  },
+  "license": {
+    "allowsEvaluation": true
+  },
+  "name": "Salesforce CDP",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "privilegedExportedPackages": [],
+      "privilegedArtifactIds": [],
+      "exportedPackages": [
+        "com.mulesoft.connectivity.salesforcecdpconnector.rest.commons.api.request",
+        "com.mulesoft.connectors.sdc.api.metadata",
+        "com.mulesoft.connectivity.salesforcecdpconnector.rest.commons.api.configuration",
+        "com.mulesoft.connectors.sdc.api.custom",
+        "com.mulesoft.connectivity.salesforcecdpconnector.rest.commons.api.proxy",
+        "com.mulesoft.connectivity.salesforcecdpconnector.rest.commons.api.operation"
+      ],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "minMuleVersion": "4.3.0"
+}

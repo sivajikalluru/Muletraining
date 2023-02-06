@@ -1,0 +1,10 @@
+#%RAML 1.0 SecurityScheme
+type: Basic Authentication
+displayName: This is for Basic Authorization
+description: This API supports Basic Authentication
+describedBy:
+  headers:
+     Authorization: 
+      required: true
+      type: string
+      minLength: 1

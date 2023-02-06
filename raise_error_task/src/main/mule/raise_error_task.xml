@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="53a452b4-ae8b-4bdf-895c-a3d3ce94e6ec" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="fb126883-c1c7-4230-889d-c4ae721ae520" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="kallurusivaji@gmail.com" password="Siva@78654321" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c3866f5b-d8d8-4036-a6d4-fb31b1779ac7" >
+		<http:request-connection host="mu.mulesoft-training.com" />
+	</http:request-config>
+	<flow name="raise_error_taskFlow1" doc:id="350c6733-ddfc-4278-b3f6-d3df6216838d" >
+		<http:listener doc:name="Listener" doc:id="5a815d21-d6e1-4b08-9f5e-8665d41c2094" config-ref="HTTP_Listener_config" path="/raise">
+			<http:error-response statusCode="#[vars.value default  500]" />
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="a29f7c0b-9300-45ce-9ed2-cfbe6c9dd2f2" config-ref="HTTP_Request_configuration" path="/essentials/united/flight"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c5f7985f-6b79-45a6-b730-7e377bc9c01e" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="e0dca745-bddd-4f48-afaf-a838022ff3e6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"error details":{
+"error":{
+"errorMessage":{
+"errorCode":error.muleMessage.typedAttributes.statusCode,
+"errorType":error.errorType.asString,
+"message":error.description
+}}}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="value" ><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.typedAttributes.statusCode]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<email:send doc:name="Send" doc:id="253c9aae-cfd5-4440-9257-c5a3ae3d08a5" config-ref="Email_SMTP" fromAddress='#["kallurusivaji@gmail.com"]' subject="[ErrorMessage]">
+					<email:to-addresses >
+						<email:to-address value="testsmtp841@gmail.com" />
+						<email:to-address value="kallurusivaji@gmail.com" />
+					</email:to-addresses>
+				</email:send>
+				<logger level="INFO" doc:name="Logger" doc:id="78791552-fe7d-4458-b5eb-a25c1ff59a81" message="#[payload]"/>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

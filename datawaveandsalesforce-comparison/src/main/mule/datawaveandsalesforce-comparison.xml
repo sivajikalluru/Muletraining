@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="62d8d627-2081-4c00-9777-77edd483b625" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="ade60a69-c2c2-415b-a63b-8a21b83c2f88" >
+		<salesforce:basic-connection username="sivajikalluru786@gmail.com" password="Siva@123456789" securityToken="PkAXKlo7ZpgwPenssRV6OUGRH"/>
+	</salesforce:sfdc-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="c1e2bac9-54d1-4aa4-aa47-de681d07b33c" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="dbdata"/>
+	</db:config>
+	<flow name="datawaveandsalesforce-comparisonFlow" doc:id="d694a964-496f-43b3-8041-88cfd54c0e18" >
+		<http:listener doc:name="Listener" doc:id="14b4c96e-121c-41bd-88a9-1a7fa9bc313c" config-ref="HTTP_Listener_config" path="/data"/>
+		<db:select doc:id="cd439f83-0fbc-4075-b5f5-46d02190454c" config-ref="Database_Config" target="database" doc:name="Database" >
+			<db:sql ><![CDATA[SELECT * FROM dbdata.db_table;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="databasedata" doc:id="93c5c6fc-98bb-4ef4-a448-a842d66e27fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.database]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<salesforce:query doc:id="b202a28f-d757-4cab-903f-1ee0b6b2e112" config-ref="Salesforce_Config" target="sfResponse" doc:name="salesforce" >
+			<salesforce:salesforce-query ><![CDATA[SELECT branch__c,Id,name__c FROM sfdata__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="salesforcedata" doc:id="45d5cbee-1397-4e51-9a82-45935c4946c7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfdata" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.sfResponse map ((item, index) ->{
+    name: item.name__c,
+    branch:item.branch__c
+    } )]]></ee:set-variable>
+				<ee:set-variable variableName="value" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.sfResponse]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Diff between DB and SF" doc:id="972d4b9f-01bf-4294-80d5-11c2437aa1bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="diff" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.database -- vars.sfdata) distinctBy $]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="4998d121-d4a1-43f9-acf9-0df7d4ff4bae" >
+			<when expression="#[vars.diff == []]">
+				<ee:transform doc:name="Transform Message" doc:id="5e13b841-2af0-48df-b726-e0bc8f9e6a11" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ flatten(vars.database  map(data, index) ->
+
+( vars.value filter ( $.name__c contains data.name) map( data1, index1) ->{
+
+"Id" : data1.Id
+
+}  ))distinctBy $]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="9063e0b7-9365-4e91-8078-f5e9b65930d8" message="#[payload]"/>
+			</when>
+			<when expression="#[vars.diff != []]">
+				<ee:transform doc:name="Transform Message" doc:id="3c2223c3-ef54-4ba8-ab34-b976ffbf061b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.diff  map{
+	name__c: $.name,
+	branch__c: $.branch
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<salesforce:create doc:name="Create" doc:id="26ef3a2c-c783-4a3a-9770-e4bbff812797" config-ref="Salesforce_Config" type="sfdata__c"/>
+				<salesforce:query doc:name="Query" doc:id="2d8ad0d5-8d22-4517-845f-77fa6d4eff6b" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query ><![CDATA[SELECT branch__c,Id,name__c FROM sfdata__c]]></salesforce:salesforce-query>
+				</salesforce:query>
+				<flow-ref doc:name="Flow Reference" doc:id="9259871a-f647-4228-bc6f-c8e1a03e7e33" name="datawaveandsalesforce-comparisonFlow"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="a3e4e65e-a99d-436a-9947-965166ac8385" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="7bf62b2a-1edf-4502-830e-762360e3ce56" message="#[payload]"/>
+	</flow>
+</mule>

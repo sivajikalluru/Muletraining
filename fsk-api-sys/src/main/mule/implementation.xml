@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="implementationFlow_caseCreate" doc:id="af516376-d5b9-491c-a46f-6678701a5de1" >
+		<logger level="INFO" doc:name="InputPayloadFromPostman" doc:id="af8c7899-0a33-4017-abfc-bc49ed07dd36" message="#[payload]" />
+		<ee:transform doc:name="caseCreateRequestMappings" doc:id="703267d8-095b-4206-a2dd-72120ebcb79a" >
+			<ee:message >
+				<ee:set-payload resource="dwl/caseCreate.dwl" />
+				
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="caseCreateInCustomObject" doc:id="b0b08774-0935-4582-9aea-ff96ea09948d" config-ref="Salesforce_Config1" type="Case"/>
+		<ee:transform doc:name="caseCreateResponse" doc:id="8b4a41e7-991f-4941-a908-5ff13ae0747a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+   
+        "caseId": item.id,
+        "statusCode": "",
+        "successful": payload.successful,         
+        "exception": "",
+        "message": ""
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="caseCreateResponseDebugLog" doc:id="286e4e69-d195-47d5-8eb1-c5698693eba1" message="#[payload]" category="com.fsk.caseCreate" />
+	</flow>
+	<flow name="implementationFlow_caseUpdate" doc:id="48abe228-23be-431e-aba4-87bbcd4407a2" >
+		<logger level="INFO" doc:name="InputPayloadFromPostman" doc:id="49e87c1a-a7a1-4695-b9a4-1077db11c023" message="#[payload]"/>
+		<ee:transform doc:name="caseCreateRequestMappings" doc:id="3fce202b-0b89-427c-90bf-d99b7e5d5fdc">
+			<ee:message>
+				<ee:set-payload resource="dwl/caseUpdate.dwl" />
+				
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="Case" doc:name="caseUpdateInCustomObject" doc:id="ec8b8d07-a4fb-431e-b6ec-29ac450887d7" config-ref="Salesforce_Config1"/>
+		<ee:transform doc:name="caseUpdateResponse" doc:id="679f8be4-5c03-4ed9-89b2-55d956b0e897" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+   
+        "caseId": item.id,
+        "statusCode": "",
+        "successful": payload.successful,
+        "exception": "",
+        "message": ""
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="caseUpdateResponseDebugLog" doc:id="8ea00575-bd02-47d3-8817-dd4a75f56c7a" message="#[payload]" category="com.fsk.caseUpdate" />
+	</flow>
+</mule>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="766e4c5d-2b39-421c-a6fa-9462a01eb20c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="ba3e0ede-25e3-47d3-82b0-5ca149c09605" maxEntries="100" entryTtl="20" expirationInterval="30" expirationIntervalUnit="SECONDS"/>
+	<flow name="poctask21Flow" doc:id="27af29aa-5161-457b-be2e-9a9e954e0ede" >
+		<http:listener doc:name="Listener" doc:id="076878fe-fcb1-4dda-a1f5-61f65ff787c8" config-ref="HTTP_Listener_config" path="/poc21"/>
+		<os:retrieve doc:name="Retrieve" doc:id="236e82d9-faa7-44ac-856c-59f365ae588b" key="key" objectStore="Object_store">
+			<os:default-value><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+"technology" : "mulesoft"
+
+}]]]></os:default-value>
+				</os:retrieve>
+		<choice doc:name="Choice" doc:id="d1baa82c-9039-4c49-a2b2-70b8ee7f5fab" >
+			<when expression='#[payload.technology == "mulesoft"]'>
+				<os:store doc:name="Store" doc:id="2e0c9ee1-b723-48b7-9bcf-a2c1be7f3ef3" key="key" objectStore="Object_store">
+					<os:value ><![CDATA[#[{
+	
+"technology": "integration"
+}]]]></os:value>
+				</os:store>
+				<ee:transform doc:name="Transform Message" doc:id="f4469886-a4eb-4119-83e5-95a6ec725b97" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+payload wait 15000]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<os:clear doc:name="Clear" doc:id="882ab097-c0ea-4b77-a1dd-775e365fc86c" objectStore="Object_store"/>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="550a17d2-66b0-4e02-a92d-93737d91fca7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "try after sometime"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

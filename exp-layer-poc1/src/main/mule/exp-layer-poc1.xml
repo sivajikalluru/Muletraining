@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4b7a5006-b3fa-476b-9a52-10f157b48f7d" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e087010e-c790-4216-ab53-a236d96542f3" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="exp-layer-poc1Flow" doc:id="baa2422e-6fc6-4525-a756-1c7bf2ad3e3d" >
+		<http:listener doc:name="Listener" doc:id="a1575c5c-a5af-4ebf-b0e8-3774a50e6e29" config-ref="HTTP_Listener_config" path="/exp">
+			<http:error-response statusCode="#[vars.error default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="eecff415-262d-41b8-8b57-c6c03be00ab8" config-ref="HTTP_Request_configuration" path="/process" responseTimeout="300000"/>
+		<ee:transform doc:name="Transform Message" doc:id="71eaca7c-d45e-440b-96a4-fe9083bdc4f3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2c26738b-786f-4db6-a700-33bec042b6aa" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="2f27feb7-2ad7-4519-87d6-663407472afc" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.typedValue]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="error" ><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.typedAttributes.statusCode]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

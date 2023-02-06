@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a1d3e5da-1975-4273-8331-7a98c242f7e8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="poctask14Flow" doc:id="ce8a422b-ca9d-41f5-9552-2cc0e74240ec" >
+		<http:listener doc:name="Listener" doc:id="9dc800e8-638f-4d76-92b9-9970f0bafc00" config-ref="HTTP_Listener_config" path="/poc14"/>
+		<ee:transform doc:name="Transform Message" doc:id="b7623018-861c-4f17-8427-7217a4291c0f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+
+
+var a = "20200909080000"
+---
+a as LocalDateTime {format:"yyyyMMddHHmmss"} as String {format:"yyyy-MM-dd'T'HH:mm:ss"}
+
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

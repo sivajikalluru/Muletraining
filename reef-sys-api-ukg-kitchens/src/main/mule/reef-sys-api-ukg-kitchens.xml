@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="df3dffdc-d2d4-413c-ba7e-cb73ffe0e5a4" >
+		<salesforce:basic-connection username="sivajikalluru123@gmail.com" password="Siva@78654321" securityToken="jaHfaqI6sup60zrOG0NPxKWIO"/>
+	</salesforce:sfdc-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="95b5476c-d982-4a49-b5ea-5f558b2e4806" >
+		<file:connection />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="96839ba1-d275-4a8c-bbc5-aa06ae3237bc" >
+		<http:listener-connection host="0.0.0.0" port="8086" />
+	</http:listener-config>
+	<flow name="reef-sys-api-ukg-kitchens-insertTheDataInSalesforce(step1)" doc:id="9ddf5ba3-ad5d-4162-a01a-1fab42238353" >
+		<http:listener doc:name="Listener" doc:id="62c75667-17cc-4d31-9a26-ee8ca7a522b4" config-ref="HTTP_Listener_config" path="/create"/>
+		<file:read doc:name="readTheServiceIdFile" doc:id="e4638ac2-227d-4ef8-9cc3-77bd6eae1248" config-ref="File_Config" path="D:\REEF_PROJECTS\REEF_UKG_KITCHEN\AllInputFiles\service_id (5).xlsx" outputMimeType="application/xlsx"/>
+		<ee:transform doc:name="convertToJson" doc:id="01f4b34a-d2a1-4ee7-8ccc-c287a14b5cd8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.serviceID.Sheet1]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="mappings" doc:id="c00da286-c8c4-4676-a6c6-937304bd4f82" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+    "Country__c": item.Country,
+    "UKG_Project_Id__c": item.UKG_Project_ID,
+    "Limestone_Project_ID__c": item.Limestone_Project_ID
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="createTheDataIntoSalesforce" doc:id="9a3eabc3-6bd6-44dc-bba9-e248dc04d14c" config-ref="Salesforce_Config" type="serviceId__c"/>
+		<logger level="INFO" doc:name="endLogger" doc:id="d4db5e9f-0363-4077-ad73-8b218e9919d6" message="Records Successfully Inserted #[payload]" />
+	</flow>
+	<flow name="reef-sys-api-ukg-kitchens-finalOutPutFromProcessLayer" doc:id="e68cab69-ae44-443b-8211-5358e9c5ce2d" >
+		<http:listener doc:name="Listener" doc:id="9f6afc87-80f5-4c4d-a82a-7c37c8dbb36a" config-ref="HTTP_Listener_config" path="/finalOutPutFromProcessLayer" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="a81c352a-bda7-4cdf-8bea-8380c56cb2b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="28259bb0-b522-4dec-bdf4-b570bfac2099" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) ->{
+    	"batchName__c "        : item.batchName,
+        "postingDate__c"       : item.postingDate,
+        "debitAmount__c "      : item.debitAmount,
+        "creditAmount__c"      : item.creditAmount,
+        "externalDocumentNo__c": item.externalDocumentNo,
+        "accountNo__c"         : item.accountNo,
+        "description__c"       : item.description,
+        "accountType__c"       : item.accountType,
+        "coid__c"              : item.coid,
+        "intercompanyId__c"    : item.intercompanyId,                   
+         "ServiceId__c"         : item.ServiceId    
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="D365_object__c" doc:name="Create" doc:id="fd98d865-27f7-492f-b025-139f5037a9af" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="5b1e04e0-dffb-4361-9e17-cda25744478a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e94a0fc4-89d1-4e34-81c6-a35fb4346420" message="#[payload]"/>
+	</flow>
+	<flow name="reef-sys-api-ukg-kitchens-retrieveServiceIdsFromSalesforce-(step2)" doc:id="d0a040ff-0111-4628-a9bd-dc5d82094f4b" >
+		<http:listener doc:name="Listener" doc:id="f9c5d229-144c-4bef-82c3-70252b3e41e5" config-ref="HTTP_Listener_config" path="/retrieve"/>
+		<salesforce:query doc:name="retrieveTheServiceIdsFromSalesforce" doc:id="c503bee3-8f6e-4378-9126-89c59876565b" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Country__c,Limestone_Project_ID__c,UKG_Project_Id__c FROM serviceId__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="convertToJson" doc:id="e6726202-48b6-40e8-b31e-8703bd0a9d57" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="endLogger" doc:id="ab12f910-55db-4db6-9687-d1a13491e626" message="#[payload]"/>
+	</flow>
+</mule>

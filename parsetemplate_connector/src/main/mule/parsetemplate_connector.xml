@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1e61c022-fdea-4bc0-aef5-d132808233c9" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="parsetemplate_connectorFlow" doc:id="65c0e64c-fc09-4b3c-b45d-f93390a3134f" >
+		<http:listener doc:name="Listener" doc:id="84a3e825-2dfe-441f-a4ab-1cfba93c5b64" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<logger level="INFO" doc:name="Logger" doc:id="84554450-c3e7-4c1a-bd22-ab5046358977" message="#[payload]"/>
+		<parse-template doc:name="Parse Template" doc:id="cc72e84d-5c11-45f3-9694-a7aa76f069c0" location="companyStandardMails.txt"/>
+	</flow>
+</mule>

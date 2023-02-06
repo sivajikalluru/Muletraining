@@ -1,0 +1,22 @@
+[{
+        "code" : "E1234S",
+		"price" : "1234",
+		"origin" : "MUA",
+		"destination" :"SFO",
+		"departureDate" :"20-03-2015",
+		"airlineName" :"United",
+		"planeType" :"Boeing 737",
+		"emptySeats" :"123",
+		"countryname" :"India"
+		},
+		{
+        "code" : "E1234S",
+		"price" : "1234",
+		"origin" : "MUA",
+		"destination" :"SFO",
+		"departureDate" :"20-03-2015",
+		"airlineName" :"United",
+		"planeType" :"Boeing 737",
+		"emptySeats" :"123",
+		"countryname" :"India"
+		}]

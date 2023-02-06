@@ -1,0 +1,38 @@
+[
+  {
+    "Job Code": "DIRI",
+    "Job Description": "Director I",
+    "GLCode_SGA": 70095.0,
+    "GLCode_Others": 60297.0
+  },
+  {
+    "Job Code": "ASSOCI",
+    "Job Description": "Associate I/Field Associate",
+    "GLCode_SGA": 70095.0,
+    "GLCode_Others": 60297.0
+  },
+  {
+    "Job Code": "MGRI           ",
+    "Job Description": "Manager I",
+    "GLCode_SGA": 70095.0,
+    "GLCode_Others": 60297.0
+  },
+  {
+    "Job Code": "EXECC",
+    "Job Description": "Executive C",
+    "GLCode_SGA": 70095.0,
+    "GLCode_Others": 60297.0
+  },
+  {
+    "Job Code": "KEYMTR         ",
+    "Job Description": "Key Master",
+    "GLCode_SGA": "XXXXXXX",
+    "GLCode_Others": 60281.0
+  },
+  {
+    "Job Code": "MGRII          ",
+    "Job Description": "Manager II",
+    "GLCode_SGA": 70095.0,
+    "GLCode_Others": 60297.0
+  }
+]

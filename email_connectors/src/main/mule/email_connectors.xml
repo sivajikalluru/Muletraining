@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="13108f5b-8238-4b30-b2df-01b6146fd7ed" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="11a16bd5-2a30-41ce-b435-ee3d4fd1e33c" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="testsmtp841@gmail.com" password="1234Test">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<email:imap-config name="Email_IMAP" doc:name="Email IMAP" doc:id="13efb069-05b5-4a20-b6d2-18117b8e8b3c" >
+		<email:imap-connection host="imap.gmail.com" user="testsmtp841@gmail.com" password="1234Test" timeoutUnit="MINUTES">
+			<email:properties >
+				<email:property key="mail.imap.ssl.enable" value="true" />
+			</email:properties>
+		</email:imap-connection>
+	</email:imap-config>
+	<email:pop3-config name="Email_POP3" doc:name="Email POP3" doc:id="1228ee32-728b-4290-93cb-d885373ef770" >
+		<email:pop3-connection host="pop.gmail.com" port="995" user="testsmtp841@gmail.com" password="1234Test" timeoutUnit="MINUTES">
+			<email:properties >
+				<email:property key="mail.pop3.ssl.enable" value="true" />
+			</email:properties>
+		</email:pop3-connection>
+	</email:pop3-config>
+	<flow name="email_connectorsFlow" doc:id="810528b4-61cd-4bf9-bb6e-255031999ff0" >
+		<http:listener doc:name="Listener" doc:id="4718fb8d-d50c-4972-9d33-a265c874fe30" config-ref="HTTP_Listener_config" path="/send"/>
+		<email:send doc:name="Send" doc:id="839eaa84-b03a-4cfc-a997-c90e356070c0" config-ref="Email_SMTP" fromAddress='#["testsmtp841@gmail.com"]' subject="[Hello Friends]">
+			<email:to-addresses >
+				<email:to-address value='sivajikalluru786@gmail.com' />
+				<email:to-address value="testsmtp841@gmail.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain">
+			</email:body>
+			<email:attachments ><![CDATA[#[{
+     "hello.txt": "Hello"
+}]]]></email:attachments>
+		</email:send>
+	</flow>
+	<flow name="email_connectorsFlow2" doc:id="cb3e40d7-a5f1-48dc-bdba-f9aa46725c3d" >
+		<http:listener doc:name="Listener" doc:id="36ca35b2-2012-4037-ba1b-515295df487b" config-ref="HTTP_Listener_config" path="/pop"/>
+		<email:list-pop3 doc:name="List - POP3" doc:id="8732b79b-e74b-402a-a7aa-ca0eb00cef38" config-ref="Email_POP3">
+		</email:list-pop3>
+		<logger level="INFO" doc:name="Logger" doc:id="4033f23e-287b-4f69-902c-438f44ee6860" message="#[payload]"/>
+	</flow>
+	<!-- <flow name="email_connectorsFlow4" doc:id="e96dc52a-cc3b-4733-a5af-1be41d8f9cc8" >
+		<email:listener-pop3 doc:name="On New Email - POP3" doc:id="6af4f9c8-ed8d-435d-a6b1-cbe56632268c" config-ref="Email_POP3">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</email:listener-pop3>
+		<ee:transform doc:name="Transform Message" doc:id="7c102698-52e2-444d-b2a6-b004b5fff09f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+	"subject": payload.body
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="eaf23285-d0c5-48f0-aaea-f2480c0e12e9" message="#[payload]"/>
+	</flow>
+ -->	<flow name="email_connectorsFlow7" doc:id="e736d96a-9033-4d3c-b1bf-71f098193f43" >
+		<http:listener doc:name="Listener" doc:id="6befe774-d08c-4c7e-b1ec-db99ab277e50" config-ref="HTTP_Listener_config" path="/markread"/>
+		<email:list-imap doc:name="List - IMAP" doc:id="1747871e-a23c-43ca-bc78-3c0abc645bca" config-ref="Email_IMAP" mailboxFolder="[Gmail]/Spam"/>
+		<ee:transform doc:name="Transform Message" doc:id="7191d120-8f76-432a-9696-848d31906a21" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map{
+Id: $.attributes.id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<email:mark-as-read emailId="#[payload[0].Id]" doc:name="Mark as read" doc:id="4cedf880-260e-4be3-8d4f-32605729b6d5" config-ref="Email_IMAP" mailboxFolder="[Gmail]/Spam"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b231c938-3430-4bc4-a773-4b44f1809b70" message="#[payload]"/>
+	</flow>
+	<flow name="email_connectorsFlow5" doc:id="f6c23234-9b5d-47a0-8323-2f554bf9c668" >
+		<http:listener doc:name="Listener" doc:id="3e5cff29-5746-4c32-9fb8-7475f6c5ca6b" config-ref="HTTP_Listener_config" path="/deletemark"/>
+		<email:list-imap doc:name="List - IMAP" doc:id="cf83596e-7fd5-49bc-928a-22045cedda9b" config-ref="Email_IMAP"/>
+		<ee:transform doc:name="Transform Message" doc:id="74bc764a-a527-45ec-84f3-7b3d193e04be" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map{
+Id: $.attributes.id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<email:mark-as-deleted emailId="#[payload[0].Id]" doc:name="Mark as deleted" doc:id="749b5c20-ad35-495b-bde9-f6de47295aa5" config-ref="Email_IMAP"/>
+		<logger level="INFO" doc:name="Logger" doc:id="75386b6b-5bf0-4698-b923-8685214cf8da" message="#[payload]"/>
+	</flow>
+	<flow name="email_connectorsFlow6" doc:id="a5d04a85-5611-4148-90a2-d93f8dd52791" >
+		<http:listener doc:name="Listener" doc:id="3cd88043-a995-4518-8f4b-eaab31805166" config-ref="HTTP_Listener_config" path="/delete"/>
+		<email:list-imap doc:name="List - IMAP" doc:id="24647fb5-3036-48fe-aa6d-f8b07bb9c458" config-ref="Email_IMAP"/>
+		<ee:transform doc:name="Transform Message" doc:id="715eba2c-56b8-4e3e-ae78-14f7e76ef48c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map{
+Id: $.attributes.id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<email:delete emailId="#[payload[0].Id]" doc:name="Delete" doc:id="64c0599b-27f9-4015-8042-9e637eb23e13" config-ref="Email_IMAP"/>
+		<logger level="INFO" doc:name="Logger" doc:id="61729fe2-1a3f-40d5-9ad1-0fe0ff19db12" message="#[payload]"/>
+	</flow>
+	<!-- <flow name="email_connectorsFlow3" doc:id="3b07cc6c-8b38-448d-98df-fcd902adf2a1" >
+		<email:listener-imap doc:name="On New Email - IMAP" doc:id="78c84cec-c270-4582-89fd-6a401641c977" config-ref="Email_IMAP">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</email:listener-imap>
+		<ee:transform doc:name="Transform Message" doc:id="b635c87b-07b7-4f9e-9741-1880513ecda9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+	"subject": payload.body
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="361f8eab-ebdd-4532-b1d9-ec76acc651e4" message="#[payload]"/>
+	</flow>
+ -->	<flow name="email_connectorsFlow1" doc:id="ac40f768-0af2-47b6-a819-8effb67c2fc2" >
+		<http:listener doc:name="Listener" doc:id="891cef1b-ac03-48ff-9a89-57108d3400f2" config-ref="HTTP_Listener_config" path="/imap"/>
+		<email:list-imap doc:name="List - IMAP" doc:id="8ede4b03-38fb-41a5-a4c9-bf3f0f2e4128" config-ref="Email_IMAP">
+			<email:imap-matcher answered="EXCLUDE" deleted="EXCLUDE" recent="EXCLUDE" />
+		</email:list-imap>
+		<ee:transform doc:name="Transform Message" doc:id="d994b0fc-a119-417f-9974-7bef6ca7a71c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"subject":payload.attributes.subject]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

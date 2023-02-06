@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="bankjson" format="json">
+      <types:shape format="weave" example="sample.json"><![CDATA[%dw 2.0
+
+type bankjson = Array<{|  name: String,   id: String,   address: String,   cellno: String|}> {"example": "[{\\\"name\\\":\\\"bhargavu\\\",\\\"id\\\":\\\"1040960\\\",\\\"address\\\":\\\"AP\\\",\\\"cellno\\\":\\\"7095065394\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+</types:mule>

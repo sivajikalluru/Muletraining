@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="pocfirst-taskFlow" doc:id="bb7c45e7-9351-4424-9e4d-e6cb2a62d270" >
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="55f7059c-c94d-4546-b7dd-9a416de79034" variableName="Destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="86c49728-3b30-4512-bc39-adaf4516a622" config-ref="HTTP_Request_configuration1" path="/essentials/united/flights">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	name : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="0c5d4d91-bac0-4f43-a263-f807e0abefb0" >
+			<when expression="#[vars.Destination !=null]">
+				<ee:transform doc:name="Transform Message" doc:id="e4618575-0dda-4c75-802e-a492e6debdba" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights filter ($.destination == vars.Destination)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="0196776b-17b4-4897-87f6-5232be19efe5" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

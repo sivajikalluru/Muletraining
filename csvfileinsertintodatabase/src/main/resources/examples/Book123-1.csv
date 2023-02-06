@@ -1,0 +1,3 @@
+﻿code,price,origin,destination,departureDate,airlineName,planeType,emptySeats,countryname
+ER38sd,400,MUA,SFO,20-03-2015,United,Boeing 737,0,India
+ED39ks,500,AUM,LAX,09-04-2022,United,Boeing 737,1,America

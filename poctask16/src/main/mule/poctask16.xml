@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7ecbdbfc-f9c9-486d-9113-2d627e0ba2e6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="poctask16Flow" doc:id="10f54def-355b-44c7-a19d-46f98655e023" >
+		<http:listener doc:name="Listener" doc:id="5c53fd93-96e9-490b-b26a-f71b12f37903" config-ref="HTTP_Listener_config" path="script"/>
+		<set-variable value="#[attributes.queryParams.inp as Number]" doc:name="Set Variable" doc:id="e863ffb4-de66-4bd8-a3bf-b1d3125a6c1c" variableName="input"/>
+		<choice doc:name="Choice" doc:id="a92b40bb-398d-41b9-9e2c-d5d509c8fd21" >
+			<when expression='#[(vars."input" == 1)]'>
+				<ee:transform doc:name="Transform Message" doc:id="e1c687a7-fcc2-4b0c-a3de-273dd811a132" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+---
+[(payload.Lib mapObject ((value,key, index)->{"price":value.price})
+pluck($ ++ " " ++ "INR") joinBy ", ")]]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[(vars."input" == 2)]'>
+				<ee:transform doc:name="Transform Message" doc:id="eadb8c60-0d5d-493d-8e3e-241425ca6496" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+flatten(flatten(payload map((item, index)->
+	{
+		(product:item.product.items map{
+			product:item.product.id,
+			item:$.name,
+			quantity:$.quantity,
+			createdate:$.createdate
+		})
+	} pluck$
+)))]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="37f68a03-48a2-4e81-bfb4-74eb511a4832" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+//payload.product.items flatMap $ map $ - "createdate"
+payload.product.items flatMap $ map(value,index)->{
+    item:value.name,
+    quantity:value.quantity,
+  
+}
+ ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="ef4ee0f8-8cae-4229-ae55-47200cf5ac7d" message="#[payload]"/>
+	</flow>
+</mule>

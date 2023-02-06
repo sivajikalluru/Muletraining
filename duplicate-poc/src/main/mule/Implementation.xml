@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="ImplementationFlow" doc:id="b8438b3a-747e-4826-a651-669649eeec6d" >
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="bcc63934-de16-4344-9ec1-0aa996fdbb53" variableName="destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="97532267-5f3d-4ab6-b509-d1bdfa45bf07" config-ref="HTTP_Request_configuration" path="/essentials/united/flights">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	destination : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="3adb3e05-56b8-4571-bd49-c0131b7a1f65" >
+			<when expression="#[vars.destination != null]">
+				<ee:transform doc:name="Transform Message" doc:id="8babaa79-ebc2-4fd8-9d58-6db86c9539ff" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.flights filter($.destination == vars.destination)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="58e6fdee-23e5-4b50-94fe-3851c4932c42" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler ref="Error_Handler" />
+	</flow>
+</mule>

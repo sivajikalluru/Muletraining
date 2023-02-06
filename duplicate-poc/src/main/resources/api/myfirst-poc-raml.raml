@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: myfirst-poc-raml
+/essentials:
+  /united:
+    /flights:
+      get:
+        queryParameters:
+          destination:
+            required: false
+            type: string
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include /Example/exampleapi.raml

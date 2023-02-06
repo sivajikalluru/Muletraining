@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sample-poc6-test-suite.xml" />
+	<munit:test name="sample-poc6-test-suite-sample-poc6FlowTest" doc:id="9da6ff22-13e4-489a-9f28-6a9a34c3e5d6" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="poc6-raml-main" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="03ef8ba0-03d6-4089-8f1c-ae085b89126b" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="bd4ad2bc-cb91-447f-ba13-f8280915fe43" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cc1692f8-6ea2-4857-8bfb-e96a34051d04" >
+				<munit:attributes value="#[{queryParams :{'destination': 'LAX'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to sample-poc6Flow" doc:id="de636879-25c3-47d0-8fef-fad167b999c2" name="sample-poc6Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="da4116c2-7455-4df3-b640-69860b489f2f" is='#[MunitTools::equalTo((readUrl("classpath://folderName/fileName", MunitTools::notNullValue()]' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="ImplementationFlow" doc:id="2c40422a-0e17-48b1-9995-9a3d78021951" >
+		<set-variable value="#[attributes.queryParams.destination]" doc:name="Set Variable" doc:id="6a0874d5-061c-46bb-b997-7285cfd34324" variableName="destination"/>
+		<http:request method="GET" doc:name="Request" doc:id="ba243803-c91d-44e6-9a26-59e5b46da566" config-ref="HTTP_Request_configuration" path="/essentials/united/flights /{dest}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"dest" : vars.destination
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"destination" : "attributes.queryParams.destination"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="8fee3150-92ba-4c75-8ed7-ee39a2dedf47" >
+			<when expression="#[vars.destination != null]">
+				<ee:transform doc:name="Transform Message" doc:id="1a9f9a81-b77e-4d60-9e50-7a6a4e761f87" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+flights: payload.flights filter($.destination == vars.destination)
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="ff18ae22-bf4d-4ce3-a899-484a9c444a8a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

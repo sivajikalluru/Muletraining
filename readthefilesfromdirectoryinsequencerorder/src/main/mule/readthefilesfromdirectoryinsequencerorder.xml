@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="12016eb2-2256-41d7-83bf-ecebfca1f4cf" >
+		<file:connection workingDir="D:\Write Files" />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="90b941b0-5c39-4d56-b1d2-1b61949aaf8f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="readthefilesfromdirectoryinsequencerorderFlow1" doc:id="a82efaa6-21da-49fb-b093-7e8cc12174eb" initialState="started">
+		<http:listener doc:name="Listener" doc:id="4577d2d5-df89-41a5-a516-062938b4f82d" config-ref="HTTP_Listener_config" path="/file"/>
+		<file:list doc:name="List" doc:id="8638653e-bb72-4c69-bac8-46fabe8e4db7" config-ref="File_Config" directoryPath="D:\csv files">
+			<file:matcher filenamePattern="*.csv"/>
+		</file:list>
+		<logger level="INFO" doc:name="Logger" doc:id="d5aafb46-afe2-4d5f-bdbf-bc00cfc28cff" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="28f7cc53-c66e-4cf9-91f9-fd2e8d269695" collection="#[payload]">
+			<choice doc:name="Choice" doc:id="60af464e-dce6-40f0-8b43-9446f2887127">
+			<when expression='#[payload != "D:\\csv files\\Book123.csv"]'>
+				<try doc:name="Try" doc:id="fa73d6fd-c5a7-4464-a18d-71ed56a6aae1" transactionalAction="ALWAYS_BEGIN">
+					<ee:transform doc:name="Transform Message" doc:id="a46f364a-9e7a-490f-a336-4d079f30a5ff">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+						<ee:transform doc:name="Transform Message" doc:id="edd06dec-364b-45a3-ac99-b7fc8edfd691" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<file:write doc:name="Write" doc:id="10f543ff-6971-4642-86b7-dc2ab707e0a0" config-ref="File_Config" path="#['flights' ++ now() as String {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} ++ '.csv']">
+						</file:write>
+						<logger level="INFO" doc:name="Logger" doc:id="a0d44d9c-5ee3-429c-ace4-83fb8378072b" message="#[payload]"/>
+						<error-handler>
+							<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="84c442cf-fec1-4374-a469-6dc51f27bdf8" type="ANY">
+								<ee:transform doc:name="Transform Message" doc:id="a1e9fa4d-577d-4680-bb41-8ddc23ad439f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.typedAttributes.path]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+								<file:write doc:name="Write" doc:id="f4eb353a-58ac-48ec-9736-b8a64d6feb1f" config-ref="File_Config" path=".csverrorfiles" />
+							</on-error-continue>
+					</error-handler>
+				</try>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="57669b89-9ade-4c12-b95f-8ad9feefb675">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		</foreach>
+	</flow>
+</mule>

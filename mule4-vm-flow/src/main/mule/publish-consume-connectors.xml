@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<flow name="publish-consume-connectorsFlow" doc:id="70a43eb1-e121-4f97-9641-4f6dbeda4a3a" >
+		<http:listener doc:name="Listener" doc:id="03e24371-df69-4617-922b-5ccf8adc91fe" config-ref="HTTP_Listener_config" path="/storeQ"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0caaac21-4414-4ee0-9bc0-4a3933422498" message="flowStarted"/>
+		<ee:transform doc:name="Transform Message" doc:id="e16aa4e5-95ad-426c-8756-423b11eccd72" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"FullName": payload.FirstName ++ " " ++ payload.LastName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<vm:publish doc:name="Publish" doc:id="fdf11e8f-2239-48f0-ac97-e645ed8bd5fd" config-ref="VM_Config" sendCorrelationId="ALWAYS" correlationId="#[correlationId]" queueName="outboundQ"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4d7b4ad4-e847-4c52-a866-8003f6c5ff97" message="flow ended"/>
+	</flow>
+	<flow name="publish-consume-connectorsFlow1" doc:id="a525179a-ee9f-4cba-aa2b-13386e0128e0" >
+		<http:listener doc:name="Listener" doc:id="102ac597-dbf8-422a-ad65-332f1a7cc067" config-ref="HTTP_Listener_config" path="/readQ"/>
+		<vm:consume doc:name="Consume" doc:id="eb37ac67-f576-4047-9d2f-d0237db490b6" config-ref="VM_Config" queueName="outboundQ"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9e6ae4b7-efef-466e-ba60-b6bf5e479365" message="payload"/>
+	</flow>
+</mule>

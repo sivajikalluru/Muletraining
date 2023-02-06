@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="job" format="json">
+      <types:shape format="weave" example="examples/test_job_codes.json"><![CDATA[%dw 2.0
+
+type job = Array<{|  "Job Code": String,   "Job Description": String,   GLCode_SGA: Number {"typeId": "double"},   GLCode_Others: Number {"typeId": "double"}|}> {"example": "[{\\\"Job Code\\\":\\\"DIRI\\\",\\\"Job Description\\\":\\\"Director I\\\",\\\"GLCode_SGA\\\":70095.0,\\\"GLCode_Others\\\":60297.0},{\\\"Job Code\\\":\\\"ASSOCI\\\",\\\"Job Description\\\":\\\"Associate I\\/Field Associate\\\",\\\"GLCode_SGA\\\":70095.0,\\\"GLCode_Others\\\":60297.0},{\\\"Job Code\\\":\\\"MGRI           \\\",\\\"Job Description\\\":\\\"Manager I\\\",\\\"GLCode_SGA\\\":70095.0,\\\"GLCode_Others\\\":60297.0},{\\\"Job Code\\\":\\\"EXECC\\\",\\\"Job Description\\\":\\\"Executive C\\\",\\\"GLCode_SGA\\\":70095.0,\\\"GLCode_Others\\\":60297.0},{\\\"Job Code\\\":\\\"KEYMTR         \\\",\\\"Job Description\\\":\\\"Key Master\\\",\\\"GLCode_SGA\\\":\\\"XXXXXXX\\\",\\\"GLCode_Others\\\":60281.0},{\\\"Job Code\\\":\\\"MGRII          \\\",\\\"Job Description\\\":\\\"Manager II\\\",\\\"GLCode_SGA\\\":70095.0,\\\"GLCode_Others\\\":60297.0}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#789d3abc-6dda-44f5-87a3-be4b577e8c77">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="job"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

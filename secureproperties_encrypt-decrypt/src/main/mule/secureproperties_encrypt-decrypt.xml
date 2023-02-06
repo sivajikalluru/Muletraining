@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="secureproperties_encrypt-decryptFlow" doc:id="f044afbb-1790-43ec-bd06-989b8cee1b49" >
+		<http:listener doc:name="Listener" doc:id="39e63c2a-0fda-4c3e-8304-d2898bd2150a" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2ed1116e-3704-410a-b6a5-3e977f3c3836" message="Flow Started............"/>
+		<logger level="INFO" doc:name="Logger" doc:id="63efd904-eeb7-4871-8876-ca94c029fe88" message="Database Name ::: ${db.username}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="150c9a5c-c3ef-4751-8bc5-657cd0a5c07d" message="Database Password:::: ${secure::db.password}"/>
+		<set-payload value='#["Successfully run the properties"]' doc:name="Set Payload" doc:id="1e7d9855-4455-4ecf-91dd-db84828781d6" />
+	</flow>
+</mule>

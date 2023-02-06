@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="171fe7dd-85cc-4bc8-a6ed-1ddf6441bece" >
+		<http:listener-connection protocol="HTTPS" host="localhost" port="8092" >
+			<tls:context >
+				<tls:key-store type="jks" path="serverkeystore.jks" alias="myserver" keyPassword="123456" password="123456" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<flow name="oneway-ssl-serverFlow" doc:id="d48776e2-bf3c-4f8f-9afd-79593e0290b3" >
+		<http:listener doc:name="Listener" doc:id="d53b1ffc-e7da-442c-b685-26a914522f36" config-ref="HTTP_Listener_config" path="/system"/>
+		<set-payload value='#["Successfully Run the oneway ssl"]' doc:name="Set Payload" doc:id="b1bd4154-f200-459f-bcfc-58104fc93009" />
+		<logger level="INFO" doc:name="Logger" doc:id="6afaac0e-b329-46b6-b511-f3ffadb3738a" message="#[payload]"/>
+	</flow>
+</mule>

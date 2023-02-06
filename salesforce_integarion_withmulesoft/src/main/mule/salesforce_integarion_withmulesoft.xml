@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c0e2978a-3117-42b2-ab66-bf12a8267683" >
+		<http:listener-connection host="0.0.0.0" port="8087" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="9e2aac9f-ec9e-4c0e-9321-b241383d01eb" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="salesforce_integarion_withmulesoftFlow" doc:id="5b682feb-3b2f-4919-a8e3-4363df6f85c6" >
+		<http:listener doc:name="Listener" doc:id="47f6d38e-db40-4309-be56-a4c9a4495ab5" config-ref="HTTP_Listener_config" path="/exp"/>
+		<http:request method="GET" doc:name="Request" doc:id="7f63ccfd-3435-4669-8e87-f3908f3a9760" config-ref="HTTP_Request_configuration" path="/oauth"/>
+		<ee:transform doc:name="Transform Message" doc:id="2070fe26-409b-434c-b058-35ade095c37e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1a9c6f84-6390-4abc-b7b0-a4eb0f0387e4" message="#[payload]"/>
+	</flow>
+</mule>

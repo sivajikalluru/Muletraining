@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2a12bde2-6efb-4978-8850-883de8240163" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="77f9bacb-c2c4-4044-9fad-4ad1352cef39" >
+		<salesforce:basic-connection username="sivanjaneyuluk.in@mouritech.com" password="Siva@78654321" securityToken="Sgx9aA1x8TeTm3rRALYNneQO" />
+	</salesforce:sfdc-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="ef604ccd-50d4-4293-940b-041968feed7d" >
+		<file:connection workingDir="C:\Users" />
+	</file:config>
+	<flow name="15pocFlow" doc:id="6d683753-585e-457b-a18c-b5b9c141f683" >
+		<http:listener doc:name="Listener" doc:id="d93a0af6-6656-4d0a-bbe7-a580cf72d8f9" config-ref="HTTP_Listener_config" path="/15poc"/>
+		<salesforce:query doc:name="Query" doc:id="31a3c988-7393-472c-b6b0-5ffd15ea3db3" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Name__c,Age__c,Address__C,Phone__c FROM Account__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="70c24ac0-7aee-4b8f-abc4-4d369661e38a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="Batch_Job" doc:id="76832f8f-2932-4020-bda2-81c210b05dc4" maxFailedRecords="-1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="5aa06f34-a77d-406b-87db-b549c6494126" acceptExpression="#[payload.Age__c &lt;= 30]">
+					<ee:transform doc:name="Transform Message" doc:id="ceadda3a-81cc-4a4a-a730-ea7061297bde" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="f10c0d83-a1fc-4123-b643-837e2ffe9e04" streaming="true">
+						<ee:transform doc:name="Transform Message" doc:id="7102b453-316c-4670-9736-f91eff954ede" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="fa5f49b0-552c-4fc7-b4e5-01aeff2fc35d" message="#[payload]"/>
+						<file:write doc:name="Write" doc:id="585b0719-da53-4b5d-bbbb-25d0b4f27470" config-ref="File_Config" path="agelessthan30.csv"/>
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="397e239e-bfa9-41b8-818f-551bdc9858a3" acceptExpression="#[payload.Age__c &gt; 30]">
+					<ee:transform doc:name="Transform Message" doc:id="3d9f5f04-d6a2-4c70-8381-3d287f4c717f" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="c701e314-d241-44dc-a07c-05758975c3f5" streaming="true">
+						<ee:transform doc:name="Transform Message" doc:id="7b212bf1-a78e-4373-9428-25047d262920" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="c2ae13d8-9f6c-44f3-9c96-25858fe6ac98" message="#[payload]"/>
+						<file:write doc:name="Write" doc:id="19f7fb98-70da-4c39-8ffe-30b58ff6bdba" config-ref="File_Config" path="agegreaterthan30.csv"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="3715a15d-2388-46ee-a9a6-9e69eb4bb87a" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>

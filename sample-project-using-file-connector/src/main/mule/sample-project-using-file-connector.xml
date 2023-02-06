@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="1845fdef-6d77-4b99-a44a-d951361551ee" >
+		<file:connection />
+	</file:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a6b660f6-62b5-473a-8213-d7fa752b3367" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="sample-project-using-file-connectorFlow1" doc:id="771a5c72-a11a-4fd8-806d-5ae591efd9ed" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="6cf84263-5044-4ed5-9ab1-e215eb6edca9" config-ref="HTTP_Listener_config" path="/api/*"/>
+		<file:list doc:name="List" doc:id="a320569a-07da-46f5-900b-c36b6f42ad3c" config-ref="File_Config" directoryPath="D:\samplefiles\sample-file-connector" recursive="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7d153783-e417-4665-b430-90e11be35899" message="payload"/>
+		<ee:transform doc:name="Transform Message" doc:id="040d1d7b-cf2e-457c-aa6e-88a86f24b7ae" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

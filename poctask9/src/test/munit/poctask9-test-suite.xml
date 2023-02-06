@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="poctask9-test-suite.xml" />
+	<munit:test name="poctask9-test-suite-poctask9FlowTest" doc:id="b090900d-b99f-4d19-9970-0e21ae6705f2" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="poctask9Flow" />
+		</munit:enable-flow-sources>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="70f67a68-8d53-4946-b88b-d226c2dee1ce" >
+				<munit:payload value="#[MunitTools::getResourceAsString('response.txt')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to poctask9Flow" doc:id="970f18cc-ae56-445a-808b-5204051503b9" name="poctask9Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d2a6296c-d2f6-47a5-b896-2bd6c434a943" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

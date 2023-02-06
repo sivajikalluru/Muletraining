@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/IngestDataRequest",
+  "definitions": {
+    "IngestData": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "IngestDataRequest": {
+      "additionalProperties": true,
+      "type": "object",
+      "properties": {"data": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/IngestData"}
+      }},
+      "example": {"data": [{
+        "boolProp": "true",
+        "dateProp": "2014-01-01T23:28:56.782Z",
+        "intProp": 1,
+        "stringProp": "str"
+      }]}
+    }
+  }
+}

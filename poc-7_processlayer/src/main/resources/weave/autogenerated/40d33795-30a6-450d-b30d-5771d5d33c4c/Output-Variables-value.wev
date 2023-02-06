@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_40d33795_30a6_450d_b30d_5771d5d33c4c_Output_Variables_value = Any
+

@@ -1,0 +1,22 @@
+#%RAML 1.0
+title: Basic_raml
+/customer:
+  get:
+    queryParameters:
+      destination:
+        minLength: 3
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "message" : "Hydrabad"
+              }
+      400:
+        body:
+          application/json:
+            example:
+              {
+                "message" : "Bad request"
+              }            

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="myfirst-poc-raml-test-suite.xml" />
+	<munit:test name="myfirst-poc-raml-test-suite-myfirst-poc-raml-mainTest" doc:id="5b515cc6-4998-4227-afb5-f5dffb88e374" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to myfirst-poc-raml-main" doc:id="dd34c7ed-9605-4eec-9f99-05e2bd07e0f5" name="myfirst-poc-raml-main"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

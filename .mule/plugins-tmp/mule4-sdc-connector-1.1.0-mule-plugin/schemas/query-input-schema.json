@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/SqlQuery",
+  "definitions": {"SqlQuery": {
+    "additionalProperties": true,
+    "type": "object",
+    "properties": {"sql": {"type": "string"}}
+  }}
+}

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4061614b-910a-478a-83ea-6ca158646e98" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="84892636-30a7-4272-bf5d-971e6cb58da6" >
+		<file:connection />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="54d883be-1d5e-4d55-8d58-3679076d076a" >
+		<file:connection />
+	</file:config>
+	<flow name="rms_reef_kitchen_projectFlow" doc:id="d0cf684d-db53-4260-b7f0-548357079b51" >
+		<http:listener doc:name="Listener" doc:id="7f16b740-b483-4757-a7a2-3d219345ac25" config-ref="HTTP_Listener_config" path="/reef"/>
+		<file:read doc:name="Read" doc:id="f17fc3e5-179a-4c1c-86a1-9fbe138f4a49" config-ref="File_Config" path="C:\Users\sivanjaneyuluk\Downloads\RMS Project\Uber Aug 2020- Raw Data (1).xlsx" outputMimeType="application/xlsx"/>
+		<ee:transform doc:name="Transform Message" doc:id="18e9ff79-8509-456c-af8e-7facf6e31226" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="14d714ef-9b1b-42b2-b457-edbdf70419e3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.in]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f0b9eb05-d5bb-4c7e-965b-cc7f45f8345f" message="#[payload]"/>
+		<batch:job jobName="rms_reef_kitchen_projectBatch_Job" doc:id="671d83e7-5d02-4685-8e4d-64f7c8135fa7" maxFailedRecords="-1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="653dde21-446c-489a-8041-adf6d2e78b47" acceptExpression='#[(payload."Order Status" != "Refund" and  payload."Order Status" != "")]'>
+					<logger level="INFO" doc:name="Logger" doc:id="7687b7f9-f052-4afe-80f0-e1504018d3d8" message="beforeaggregator:#[payload]"/>
+					<ee:transform doc:name="Transform Message" doc:id="5621c8fa-e2f1-4495-8b14-73b554130252" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="1aa24f45-ba4b-4d31-ac7e-5772a2da0858" streaming="true">
+						<ee:transform doc:name="Transform Message" doc:id="a141a512-e691-4541-b952-47e32933947c" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload groupBy ((item,index)->(item."Order Date / Refund date" as Date as String {format: "MM-yyyy"} default "" ++ "_" ++ item."Order Status")) pluck $
+ map ((item1, index1) -> [{
+    "revenueFeeder": "RMS",
+    "revenueType":"Food Sales (excluding tax)",
+    "amount": sum(item1."Food Sales (excluding tax)"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+
+},
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Food Sales",
+    "amount": sum(item1."Tax on Food Sales"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Adjustments (excluding tax)",
+    "amount": sum(item1."Adjustments (excluding tax)"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Adjustments",
+    "amount": sum(item1."Tax on Adjustments"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Promo Spend on food",
+    "amount": sum(item1."Promo Spend on food"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Promotion on Food",
+    "amount": sum(item1."Tax on Promotion on Food"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Promo Spend on Delivery",
+    "amount": sum(item1."Promo Spend on Delivery"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Promo Spend on Delivery",
+    "amount": sum(item1."Tax on Promo Spend on Delivery"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Uber Service Fee",
+    "amount": sum(item1."Uber Service Fee"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Dispatch Fee",
+    "amount": sum(item1."Tax on Dispatch Fee"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Miscellaneous Payments",
+    "amount": sum(item1."Miscellaneous Payments"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tip",
+    "amount": 0,
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Marketplace Facilitator Tax",
+    "amount": sum(item1."Marketplace Facilitator Tax"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Payout",
+    "amount": sum(item1."Payout"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    }] )]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="31239959-0e34-4cf1-b908-d004348eb05c" message="#[payload]"/>
+						<file:write doc:name="Write" doc:id="dbf5b987-3482-450a-abd8-53ed52cc4e24" config-ref="File_Config" path="D:\completed2.json"/>
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="a64912ad-c667-4ac2-951d-a05a09b9b7a1" acceptExpression='#[payload."Order Status" == "Refund"]'>
+					<logger level="INFO" doc:name="Logger" doc:id="6c1884b1-cfc1-44c5-a25d-4483a28fd225" message="afteraggregator:#[payload]"/>
+					<ee:transform doc:name="Transform Message" doc:id="546487c3-5ebd-4c90-a58d-e037721d70f4" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="f31f01ca-22ff-4b35-90c3-030c94e25feb" streaming="true">
+						<ee:transform doc:name="Transform Message" doc:id="7931058a-70dd-4449-9426-888836a0363f" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload groupBy ((item,index)->(item."Order Date / Refund date" as Date as String {format: "MM-yyyy"}default "" ++ "_" ++ item."Order Status"))pluck $
+ map ((item1, index1) -> [{
+    "revenueFeeder": "RMS",
+    "revenueType":"Food Sales (excluding tax)",
+    "amount": sum(item1."Food Sales (excluding tax)"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+
+},
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Tax on Food Sales",
+    "amount": sum(item1."Tax on Food Sales"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    },
+    {
+        "revenueFeeder": "RMS",
+    "revenueType":"Payout",
+    "amount": sum(item1."Payout"),
+    "orderStatus": item1."Order Status"[0],
+    "serviceType": "Kitchen"
+    }])
+]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="6cde603f-c703-47b8-88ae-c10bb97673a3" message="#[payload]"/>
+						<file:write doc:name="Write" doc:id="27a720d5-ef66-4a1c-888a-19fc454683bc" config-ref="File_Config" path="D:\Refund1.json"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="8e519714-9f7b-43e9-94bb-711dd1786169" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+		<logger level="INFO" doc:name="Logger" doc:id="43a60381-a85b-496e-afd7-42c2da61ca12" message="#[payload]"/>
+	</flow>
+</mule>

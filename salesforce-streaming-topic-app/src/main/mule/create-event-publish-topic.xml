@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="60851bbb-8209-48ba-b480-34f34ef13f7c" >
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	<flow name="create-event-publish-topicFlow" doc:id="31315aff-b78b-4f95-8cdd-6415a3c86120" >
+		<http:listener doc:name="Listener" doc:id="0234b2d8-6ad5-4693-9ac3-b40ffe51a65b" config-ref="HTTP_Listener_config" path="/createTopic"/>
+		<logger level="INFO" doc:name="Start Log" doc:id="002dd9e0-17fa-41ad-a3e7-11bbf97c0269" message="payload"/>
+		<salesforce:publish-topic doc:name="CreateTopicUtility" doc:id="5f461e8b-90dd-4863-9a46-d6d5b6bc25a3" config-ref="Salesforce_Config" topicName="#[payload.topic]" query="#[payload.query]"/>
+		<logger level="INFO" doc:name="End Log" doc:id="b39f3c49-dc6e-4ccb-ae39-eff72799ed4e" message="payload"/>
+	</flow>
+</mule>
